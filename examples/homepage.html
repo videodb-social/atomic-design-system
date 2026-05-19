@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The VideoDB Platform — One backend. Six primitives. Any video.</title>
-<meta name="description" content="One backend. Six primitives. Ingest, index, search, edit, and stream — across files, live streams, cameras, screens. Same SDK across cloud, VPC, and the edge.">
+<title>VideoDB — Data infrastructure for video, built for machines and agents</title>
+<meta name="description" content="One backend that structures video and audio so any model or agent can perceive, recall, and act on it. Search, remember, edit, and stream across cloud, VPC, and the edge.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +14,9 @@
 <link rel="preconnect" href="https://code.iconify.design">
 <link rel="preconnect" href="https://api.iconify.design" crossorigin>
 <script defer src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
-/* ============================================================================
 /* ============================================================================
    v2.0 · Atomic Design — Docs site for VideoDB Brand Kit
    Single HTML, hash-based routing, shadcn-inspired chrome.
@@ -5588,213 +5588,91 @@ a.ds-testimonial-card { cursor: pointer; }
   .ds-mobile-drawer.is-open .ds-mobile-drawer__panel { transform: translateX(0); }
 }
 </style>
-</head>
 
 <style>
 /* ────────────────────────────────────────────────────────────────────────
-   Platform-scoped page styles — overrides only.
-   1. .vh-kicker — eyebrow-above-heading spacer.
-   2. #primitives .vh-primitives-tabs + .vh-primitive-panel — panels get
-      bordered card chrome around the system's tabgroup panel (system panels
-      ship as plain text by default).
-   3. #search-demo .vh-search-demo composition — centered search-input
-      chrome + materialized caption + dot-grid result card with scene
-      markers + Play CTA. Net-new pattern, candidate for system promotion
-      as organisms/search-demo.
-   4. #architecture .vh-mode-grid — strict 2-up wrapper for the Batch /
-      Real-time mode cards.
+   Homepage-scoped page styles — drained list
+   Most overrides now live in the design system (v2 patch round 2026-05-18).
+   What remains:
+   1. .vh-kicker — thin spacing helper for the eyebrow that sits ABOVE the
+      .ds-section-heading block (system slot .ds-section-heading__kicker
+      lives INSIDE the heading; our markup keeps the kicker outside).
+   2. .vh-solutions-grid — strict 2×2 wrapper. Content-card has no system
+      template that locks to 2×2; auto-fit doesn't fit when card content
+      is rich. Candidate for a system "rich-card grid" template later.
+   3. #developers .ds-use-case-grid > * { min-width: 0 } — defensive guard
+      so <pre> in the code block can't blow its grid track. Should be
+      promoted to .ds-use-case-grid base CSS in a future patch round.
+
+   Landed in design system (this round):
+   - Frame + chrome geometry → 1320px on .ds-frame / .ds-footer__inner /
+     .ds-header-nav__inner (with auto-center + 32px padding)
+   - Chrome wordmark @ 20px (header parity with footer)
+   - Compare-card bracket full-width default
+   - .ds-logo-card--lg modifier (40×40 icon frame, 28×28 image)
+   - .ds-cta-pair--center modifier (block-level flex)
+   - .ds-metrics-ticker--bare modifier
+   - .ds-section--tight modifier
+   - .ds-section-heading__kicker slot
+   - .ds-cta-band--bare variant
+   - .ds-lifecycle-grid forced 3-col (was auto-fit)
+   - Footer __top border-bottom dropped (border lives on __bottom only)
+   - Editorial footer default markup dropped the prelude-eyebrow (opt-in)
    ──────────────────────────────────────────────────────────────────────── */
-.vh-kicker { display: inline-block; margin-bottom: 24px; }
-
-/* ── Six Primitives — Tabs panel card chrome ─────────────────────────── */
-#primitives .vh-primitives-tabs { margin-top: 40px; max-width: 100%; }
-#primitives .ds-tabgroup {
+.vh-kicker {
+  display: inline-block;
   margin-bottom: 24px;
-  border: 1px solid var(--border-on-light);
-  border-radius: var(--r-control);
-  padding: 4px;
-  background: var(--white);
-  flex-wrap: wrap;
 }
-#primitives .vh-primitive-panel {
-  border: 1px solid var(--border-on-light);
-  border-radius: var(--r-surface-md);
-  background: var(--white);
-  padding: 48px 56px;
-  min-height: 240px;
-}
-#primitives .vh-primitive-panel__title {
-  font-family: 'Geist', sans-serif;
-  font-size: clamp(28px, 3vw, 36px);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin: 0 0 18px;
-  color: var(--text-on-light);
-}
-#primitives .vh-primitive-panel__body {
-  font-family: 'Geist', sans-serif;
-  font-size: 17px;
-  line-height: 1.6;
-  margin: 0 0 28px;
-  color: var(--text-on-light-muted);
-  max-width: 680px;
-}
-#primitives .vh-primitive-panel__cta {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-@media (max-width: 720px) {
-  #primitives .vh-primitive-panel { padding: 32px 24px; }
-}
-
-/* ── Search Demo — chat-style input + dot-grid result card ───────────── */
-#search-demo .vh-search-demo {
-  margin-top: 48px;
-  max-width: 880px;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-#search-demo .vh-search-input {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 14px 14px 20px;
-  border: 1px solid var(--border-on-light);
-  border-radius: var(--r-control);
-  background: var(--white);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.04);
-}
-#search-demo .vh-search-input__icon { display: inline-flex; color: var(--text-on-light-subtle); flex-shrink: 0; }
-#search-demo .vh-search-input__query {
-  flex: 1;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px;
-  color: var(--text-on-light);
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#search-demo .vh-search-input__fn { color: var(--text-on-light-second); }
-#search-demo .vh-search-input__submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: var(--r-control);
-  background: var(--orange-500);
-  color: var(--white);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background var(--dur-fast) var(--ease-ui);
-}
-#search-demo .vh-search-input__submit:hover { background: var(--orange-600); }
-
-#search-demo .vh-search-caption {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 12px 0;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-on-light-subtle);
-}
-#search-demo .vh-search-caption__rail {
-  flex: 1;
-  height: 1px;
-  background: var(--border-on-light);
-  max-width: 200px;
-}
-
-#search-demo .vh-search-result {
-  border: 1px solid var(--border-on-light);
-  border-radius: var(--r-surface-md);
-  padding: 56px 40px 48px;
-  background-color: var(--white);
-  background-image: radial-gradient(circle, var(--text-on-light-subtle) 1px, transparent 1px);
-  background-size: 16px 16px;
-  background-position: 8px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-#search-demo .vh-scene-markers {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-}
-#search-demo .vh-scene-marker {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.10);
-}
-#search-demo .vh-scene-marker.is-active {
-  background: var(--orange-500);
-  box-shadow: 0 0 0 6px rgba(var(--orange-rgb), 0.18);
-}
-#search-demo .vh-search-result__caption {
-  font-family: 'Geist', sans-serif;
-  font-size: 15px;
-  color: var(--text-on-light);
-  margin: 0;
-}
-#search-demo .vh-search-result__caption strong { font-weight: 500; }
-#search-demo .vh-search-result__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#architecture .vh-mode-grid {
+#solutions .vh-solutions-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 @media (max-width: 720px) {
-  #architecture .vh-mode-grid { grid-template-columns: 1fr; }
+  #solutions .vh-solutions-grid { grid-template-columns: 1fr; }
 }
-#architecture .vh-mode-card-code {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-on-light);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--text-on-light-second);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+#developers .ds-use-case-grid > * { min-width: 0; }
+
+/* ──── Hero — WebGL particle dome positioning ───────────────────────────
+   Dome canvas is absolute-positioned behind the hero content. Section
+   keeps overflow hidden so the breathing scale doesn't leak. Content
+   (frame) sits at z-index 2; the dome sits at 1. Mask gradient softens
+   the dome's top and bottom edges into the section bg so the canvas
+   reads as ambient, not framed. */
+#hero { position: relative; overflow: hidden; }
+#hero > .ds-frame { position: relative; z-index: 2; }
+#vh-hero-dome {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+}
+#hero.is-webgl-fallback::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(60% 50% at 70% 50%, rgba(var(--orange-rgb), 0.10) 0%, transparent 65%);
 }
 </style>
 </head>
 <body>
 
+
 <!-- ════════════════════════════════════════════════════════════════════
-     SITE HEADER — Sticky dark chrome bar with Platform + Solutions mega-menus
+     SITE HEADER — Sticky dark chrome bar
+     (organisms/site-header + organisms/nav-dropdown — Solutions has mega-menu)
      ════════════════════════════════════════════════════════════════════ -->
 <header class="ds-header-nav ds-header-nav--dark" role="banner" style="position: sticky; top: 0; z-index: 50;">
   <div class="ds-header-nav__inner">
-    <a class="ds-header-nav__brand" href="../pages-experiments/homepage.html" aria-label="VideoDB home">
-      <img class="ds-header-nav__wordmark" src="assets/logos/wordmark-dark.png" alt="VideoDB" loading="eager" decoding="async">
+    <a class="ds-header-nav__brand" href="#" aria-label="VideoDB home">
+      <img class="ds-header-nav__wordmark" src="../assets/logos/wordmark-dark.png" alt="VideoDB" loading="eager" decoding="async">
     </a>
     <div class="ds-header-nav__center">
       <nav class="ds-nav-dropdown ds-nav-dropdown--dark" data-ds-nav-dropdown aria-label="Primary">
         <ul class="ds-nav-dropdown__bar" role="menubar">
           <li class="ds-nav-dropdown__item" data-ds-nav-dropdown-item role="none">
-            <a class="ds-nav-dropdown__trigger" href="#hero" role="menuitem" aria-current="page">Platform</a>
+            <a class="ds-nav-dropdown__trigger" href="#platform" role="menuitem">Platform</a>
           </li>
           <li class="ds-nav-dropdown__item" data-ds-nav-dropdown-item role="none">
             <button class="ds-nav-dropdown__trigger" type="button" role="menuitem" aria-haspopup="true" aria-expanded="false">
@@ -5865,7 +5743,7 @@ a.ds-testimonial-card { cursor: pointer; }
   <div class="ds-mobile-drawer__panel">
     <div class="ds-mobile-drawer__header">
       <a class="ds-mobile-drawer__brand" href="#" aria-label="VideoDB home">
-        <img src="assets/logos/wordmark-dark.png" alt="VideoDB">
+        <img src="../assets/logos/wordmark-dark.png" alt="VideoDB">
       </a>
       <button class="ds-mobile-drawer__close" type="button" aria-label="Close menu" data-ds-mobile-drawer-close>
         <iconify-icon icon="solar:close-circle-linear" width="20" height="20"></iconify-icon>
@@ -5924,140 +5802,69 @@ a.ds-testimonial-card { cursor: pointer; }
 
   <!-- ════════════════════════════════════════════════════════════════════
        SECTION 1 — HERO  (dark)
-       Component: templates/hero (simple: eyebrow + display + lead + CTA pair)
-       Note: content doesn't supply stats or code, so the hero ships without
-       the stats grid / code block. Pure header shell.
+       Component: templates/hero (Variant C — Big stats / homepage hero)
+       Edits: section-code rail removed; "Give your AI eyes and ears" eyebrow removed;
+       small mono stats strip swapped to display-scale 4-up big stats grid per Gaurav.
        ════════════════════════════════════════════════════════════════════ -->
   <section class="ds-section ds-section--dark" id="hero">
+    <div id="vh-hero-dome" aria-hidden="true"></div>
     <div class="ds-frame">
       <div>
-        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">The VideoDB Platform</span>
-        <h1 class="ds-hero__display">One backend. Six primitives. <span class="ds-hero__display-second">Any video.</span></h1>
-        <p class="ds-hero__lead">Ingest, index, search, edit, and stream &mdash; across files, live streams, cameras, screens. Same SDK across cloud, VPC, and the edge.</p>
+        <span class="ds-pill-status ds-pill-status--dark" style="margin-bottom: 32px;"><span class="ds-pill-status__dot"></span>v2.4 &middot; RTStream is generally available</span>
+        <h1 class="ds-hero__display">Data infrastructure for video, <span class="ds-hero__display-second">built for machines and agents.</span></h1>
+        <p class="ds-hero__lead">One backend that turns files, live streams, cameras, and screen capture into machine-readable context &mdash; search, remember, edit, stream &mdash; across cloud, VPC, and the edge.</p>
         <div class="ds-cta-pair">
-          <a class="ds-btn ds-btn--primary" href="#start">Try VideoDB <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
-          <a class="ds-btn ds-btn--ghost-dark" href="#docs">Read the docs <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></a>
+          <a class="ds-btn ds-btn--primary" href="#platform">Explore the platform <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
+          <a class="ds-btn ds-btn--ghost-dark" href="#start">Start building <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></a>
+        </div>
+        <div class="ds-hero__big-stats">
+          <div class="ds-hero__big-stat"><span class="ds-hero__big-stat-value">82%</span><span class="ds-hero__big-stat-label">Of internet traffic is video</span></div>
+          <div class="ds-hero__big-stat"><span class="ds-hero__big-stat-value">1</span><span class="ds-hero__big-stat-label">API across cloud, VPC, edge</span></div>
+          <div class="ds-hero__big-stat"><span class="ds-hero__big-stat-value">~5 min</span><span class="ds-hero__big-stat-label">To first query</span></div>
+          <div class="ds-hero__big-stat"><span class="ds-hero__big-stat-value is-orange">&#8734;</span><span class="ds-hero__big-stat-label">Agent queries per video</span></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 2 — TRUST BAND  (dark, tight)
-       Component: molecules/tag-list in .ds-section--tight wrapper
+       SECTION 2 — CUSTOMER WALL  (light)
+       Component: organisms/customer-wall (Variant B — marquee ticker)
+       Edits: switched from static grid (Variant A) to ticker (Variant B).
+       Thin band — no full section padding.
        ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--dark ds-section--tight" id="trust">
-    <div class="ds-frame">
-      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 28px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">
-        <span style="display: inline-flex; align-items: center; gap: 8px;"><iconify-icon icon="solar:check-circle-linear" width="14" height="14" style="color: var(--orange-500);"></iconify-icon>Fully Managed</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px;"><iconify-icon icon="solar:check-circle-linear" width="14" height="14" style="color: var(--orange-500);"></iconify-icon>Cross-Cloud</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px;"><iconify-icon icon="solar:check-circle-linear" width="14" height="14" style="color: var(--orange-500);"></iconify-icon>Real-time + Batch</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px;"><iconify-icon icon="solar:check-circle-linear" width="14" height="14" style="color: var(--orange-500);"></iconify-icon>BYO Models</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px;"><iconify-icon icon="solar:check-circle-linear" width="14" height="14" style="color: var(--orange-500);"></iconify-icon>Sovereign-Ready</span>
-        <span style="display: inline-flex; align-items: center; gap: 8px;"><iconify-icon icon="solar:check-circle-linear" width="14" height="14" style="color: var(--orange-500);"></iconify-icon>SOC 2 Type II</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 3 — SIX PRIMITIVES  (light)
-       Component: organisms/tabs — 6 pill triggers + 6 panels (one per primitive).
-       Each panel is a bordered card containing title + body + arrow CTA.
-       Note: tabs usage rules call for 3-5 tabs; 6 is the content count and
-       fits at desktop width. Logged as a default-deviation.
-       ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--light" id="primitives">
+  <section class="ds-section ds-section--light ds-section--tight" id="customers">
     <div class="ds-frame">
       <div>
-        <div class="ds-section-heading ds-section-heading--light ds-section-heading--centered">
-          <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose" style="margin-bottom: 18px;">Six primitives</span>
-          <h2 class="ds-section-heading__title">Use one. <span style="color: var(--text-on-light-second);">Use all of them.</span></h2>
-          <p class="ds-section-heading__lead">Files, streams, cameras, and screens &mdash; handled the same way. Real-time and batch through the same SDK.</p>
-        </div>
-        <div data-ds-tabs-root class="vh-primitives-tabs" data-ds-reveal data-ds-reveal-delay="120">
-          <div class="ds-tabgroup ds-tabgroup--light" data-ds-tabs role="tablist" aria-label="Six primitives">
-            <button class="ds-tabgroup__trigger is-selected" type="button" role="tab" aria-selected="true" data-target="pp-ingest">Ingest</button>
-            <button class="ds-tabgroup__trigger" type="button" role="tab" aria-selected="false" data-target="pp-index">Index</button>
-            <button class="ds-tabgroup__trigger" type="button" role="tab" aria-selected="false" data-target="pp-memory">Memory</button>
-            <button class="ds-tabgroup__trigger" type="button" role="tab" aria-selected="false" data-target="pp-search">Search</button>
-            <button class="ds-tabgroup__trigger" type="button" role="tab" aria-selected="false" data-target="pp-director">Director</button>
-            <button class="ds-tabgroup__trigger" type="button" role="tab" aria-selected="false" data-target="pp-rtstream">RTStream</button>
-          </div>
-          <div class="ds-tabgroup-panel ds-tabgroup-panel--light vh-primitive-panel" role="tabpanel" data-ds-tabs-panel="pp-ingest">
-            <h3 class="vh-primitive-panel__title">Bring in any source.</h3>
-            <p class="vh-primitive-panel__body">URL, upload, RTSP, ONVIF, RTMP, screen and audio capture, webhook, dataset. One ingestion path, normalized for everything that comes after.</p>
-            <a class="ds-arrow-cta ds-arrow-cta--on-light vh-primitive-panel__cta" href="#">Read about Ingest <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
-          </div>
-          <div class="ds-tabgroup-panel ds-tabgroup-panel--light vh-primitive-panel" role="tabpanel" data-ds-tabs-panel="pp-index" hidden>
-            <h3 class="vh-primitive-panel__title">Indexes as code.</h3>
-            <p class="vh-primitive-panel__body">Reusable, additive structures over media: scenes, speech, objects, embeddings, brands, talent, custom domain events. Composable at query time.</p>
-            <a class="ds-arrow-cta ds-arrow-cta--on-light vh-primitive-panel__cta" href="#">Read about Indexes <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
-          </div>
-          <div class="ds-tabgroup-panel ds-tabgroup-panel--light vh-primitive-panel" role="tabpanel" data-ds-tabs-panel="pp-memory" hidden>
-            <h3 class="vh-primitive-panel__title">Persistent video memory.</h3>
-            <p class="vh-primitive-panel__body">Scene-level memory across sessions, archives, and live workloads. Scoped per user, agent, workspace, or fleet. Re-indexable forever.</p>
-            <a class="ds-arrow-cta ds-arrow-cta--on-light vh-primitive-panel__cta" href="#">Read about Memory <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
-          </div>
-          <div class="ds-tabgroup-panel ds-tabgroup-panel--light vh-primitive-panel" role="tabpanel" data-ds-tabs-panel="pp-search" hidden>
-            <h3 class="vh-primitive-panel__title">Search returns playable clips. In milliseconds.</h3>
-            <p class="vh-primitive-panel__body">Sub-second semantic + structured search across petabyte archives. Every hit is a streamable clip URL &mdash; verifiable for users, consumable for agents.</p>
-            <a class="ds-arrow-cta ds-arrow-cta--on-light vh-primitive-panel__cta" href="#">Read about Search <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
-          </div>
-          <div class="ds-tabgroup-panel ds-tabgroup-panel--light vh-primitive-panel" role="tabpanel" data-ds-tabs-panel="pp-director" hidden>
-            <h3 class="vh-primitive-panel__title">Programmable timeline.</h3>
-            <p class="vh-primitive-panel__body">Director SDK: cut, compose, dub, subtitle, reframe, brand &mdash; by code. The agentic skill SDK for media editing.</p>
-            <a class="ds-arrow-cta ds-arrow-cta--on-light vh-primitive-panel__cta" href="#">Read about Director <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
-          </div>
-          <div class="ds-tabgroup-panel ds-tabgroup-panel--light vh-primitive-panel" role="tabpanel" data-ds-tabs-panel="pp-rtstream" hidden>
-            <h3 class="vh-primitive-panel__title">RTStream &mdash; live perception.</h3>
-            <p class="vh-primitive-panel__body">Attach 1,000+ live cameras, calls, or screens. Define events in natural language. Sub-second alerts via webhook, WebSocket, or pager &mdash; every alert ships a playable clip.</p>
-            <a class="ds-arrow-cta ds-arrow-cta--on-light vh-primitive-panel__cta" href="#">Read about RTStream <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 4 — SEARCH DEMO  (light)
-       Composition: centered section-heading + .vh-search-input (chat-style
-       input chrome with mono query + orange-circle submit) + materialized
-       caption + .vh-search-result card (dot-grid bg + 5 scene-markers + caption
-       + play CTA). Net-new page-scoped pattern; candidate for system
-       promotion as organisms/search-demo. Surface flipped to LIGHT to match
-       the design reference — clusters with Primitives (L) and Search
-       Archives (L) as the "Search story" trio.
-       ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--light" id="search-demo">
-    <div class="ds-frame">
-      <div>
-        <div class="ds-section-heading ds-section-heading--light ds-section-heading--centered">
-          <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose" style="margin-bottom: 18px;">Search</span>
-          <h2 class="ds-section-heading__title">Every result is a playable clip <span style="color: var(--text-on-light-second);">&mdash; in milliseconds.</span></h2>
-          <p class="ds-section-heading__lead">Most products return timestamps and metadata. VideoDB returns the moment, fully streamable, fully embeddable.</p>
-        </div>
-        <div class="vh-search-demo" data-ds-reveal data-ds-reveal-delay="120">
-          <div class="vh-search-input" role="group" aria-label="Search input">
-            <span class="vh-search-input__icon" aria-hidden="true"><iconify-icon icon="solar:add-circle-linear" width="22" height="22"></iconify-icon></span>
-            <span class="vh-search-input__query"><span class="vh-search-input__fn">search(</span>"the moment the demo fails"<span class="vh-search-input__fn">)</span></span>
-            <button class="vh-search-input__submit" type="button" aria-label="Run search"><iconify-icon icon="solar:arrow-up-linear" width="16" height="16"></iconify-icon></button>
-          </div>
-          <div class="vh-search-caption" aria-hidden="true">
-            <span class="vh-search-caption__rail"></span>
-            <span><iconify-icon icon="solar:alt-arrow-down-linear" width="14" height="14"></iconify-icon>&nbsp;Materialized in ~120 ms</span>
-            <span class="vh-search-caption__rail"></span>
-          </div>
-          <div class="vh-search-result" role="region" aria-label="Search result">
-            <div class="vh-scene-markers" aria-hidden="true">
-              <span class="vh-scene-marker"></span>
-              <span class="vh-scene-marker"></span>
-              <span class="vh-scene-marker"></span>
-              <span class="vh-scene-marker is-active"></span>
-              <span class="vh-scene-marker"></span>
+        <span class="ds-eyebrow ds-eyebrow--xs ds-eyebrow--loose ds-eyebrow--muted-on-light vh-kicker" style="text-align: center; display: block;">Building on VideoDB</span>
+        <div class="ds-metrics-ticker ds-metrics-ticker--light ds-metrics-ticker--bare" data-ds-reveal data-ds-reveal-delay="120">
+          <div class="ds-marquee">
+            <div class="ds-marquee__track" style="--ds-marquee-duration: 60s;">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/cp.png" alt="CloudPhysician">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/voxel.png" alt="Voxel">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/hoichoi.png" alt="Hoichoi">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/svf.png" alt="SVF">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/docket.png" alt="Docket">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/wisdocity.png" alt="Wisdocity">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/futuresmart.png" alt="FutureSmart AI">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/palette.png" alt="Palette">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/clario.png" alt="Clario">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/paradigm-life.png" alt="Paradigm Life">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/ezoic.png" alt="Ezoic">
+              <img class="ds-logo-img" loading="lazy" decoding="async" src="../assets/customer-logos/art-of-living.png" alt="Art of Living">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/cp.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/voxel.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/hoichoi.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/svf.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/docket.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/wisdocity.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/futuresmart.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/palette.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/clario.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/paradigm-life.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/ezoic.png" alt="">
+              <img class="ds-logo-img" aria-hidden="true" loading="lazy" decoding="async" src="../assets/customer-logos/art-of-living.png" alt="">
             </div>
-            <p class="vh-search-result__caption">Found <strong>scene #18</strong> &mdash; <strong>keynote.mp4</strong> &middot; t = 42.18 &rarr; 58.90s</p>
-            <button class="ds-btn ds-btn--primary vh-search-result__cta" type="button"><iconify-icon icon="solar:play-bold" width="14" height="14"></iconify-icon>&nbsp;Play clip</button>
           </div>
         </div>
       </div>
@@ -6065,162 +5872,137 @@ a.ds-testimonial-card { cursor: pointer; }
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 5 — SEARCH ACROSS ARCHIVES  (light)
-       Component: templates/problem-solution Variant A (side-by-side compare)
+       SECTION 3 — THE PROBLEM  (dark)
+       Component: templates/problem-solution (Variant A — side-by-side compare)
+       Edits: section-code rail removed; kicker moved above heading.
        ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--light" id="search-archives">
+  <section class="ds-section ds-section--dark" id="problem">
     <div class="ds-frame">
       <div>
-        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Search across archives</span>
-        <div class="ds-section-heading ds-section-heading--light">
-          <h2 class="ds-section-heading__title">Searching MP4s <span style="color: var(--text-on-light-second);">is searching filenames.</span></h2>
-          <p class="ds-section-heading__lead">VideoDB makes the inside of every video queryable &mdash; by what's said, what's shown, who's there, what happened.</p>
+        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">The problem</span>
+        <div class="ds-section-heading ds-section-heading--dark">
+          <h2 class="ds-section-heading__title">All of today's video infrastructure<br><span style="color: var(--text-on-dark-second);">was designed for human playback.</span></h2>
+          <p class="ds-section-heading__lead">Making video usable for AI today means stitching together six to eight tools &mdash; storage, transcoding, speech, vision models, vectors, glue. VideoDB collapses all of it into one backend.</p>
         </div>
         <div class="ds-compose-grid-2" data-ds-reveal data-ds-reveal-delay="120">
           <article class="ds-compare-card">
-            <div class="ds-bracket ds-bracket--on-light"><span class="ds-bracket__label">[TODAY]</span><span class="ds-bracket__tag">Folder of files</span></div>
-            <p class="ds-compare-card__desc">Folder of files. Metadata. Luck.</p>
+            <div class="ds-bracket ds-bracket--on-dark"><span class="ds-bracket__label">[TODAY]</span><span class="ds-bracket__tag">The frankenstack</span></div>
+            <p class="ds-compare-card__desc">What teams stitch together to ship a single video AI feature.</p>
             <ul class="ds-compare-card__rows">
-              <li><span><span class="ds-vbar"></span>Query filenames and tags the editor remembered</span><span class="ds-compare-card__row-tag">Tags</span></li>
-              <li><span><span class="ds-vbar"></span>"Find the lead crying" returns nothing</span><span class="ds-compare-card__row-tag">Missed</span></li>
-              <li><span><span class="ds-vbar"></span>Scrub through hours of footage by hand</span><span class="ds-compare-card__row-tag">Manual</span></li>
-              <li><span><span class="ds-vbar"></span>Every new question reruns a transcription + vector job</span><span class="ds-compare-card__row-tag">Rebuild</span></li>
-              <li><span><span class="ds-vbar"></span>MP4 is the unit; the moment inside is invisible</span><span class="ds-compare-card__row-tag">Opaque</span></li>
+              <li><span><span class="ds-vbar"></span>S3 / GCS</span><span class="ds-compare-card__row-tag">Storage</span></li>
+              <li><span><span class="ds-vbar"></span>ffmpeg</span><span class="ds-compare-card__row-tag">Transcode</span></li>
+              <li><span><span class="ds-vbar"></span>Mux / Cloudflare</span><span class="ds-compare-card__row-tag">Streaming</span></li>
+              <li><span><span class="ds-vbar"></span>Whisper</span><span class="ds-compare-card__row-tag">Speech</span></li>
+              <li><span><span class="ds-vbar"></span>CLIP / VLMs</span><span class="ds-compare-card__row-tag">Vision</span></li>
+              <li><span><span class="ds-vbar"></span>Pinecone</span><span class="ds-compare-card__row-tag">Vectors</span></li>
+              <li><span><span class="ds-vbar"></span>Postgres</span><span class="ds-compare-card__row-tag">Metadata</span></li>
+              <li><span><span class="ds-vbar"></span>Custom glue</span><span class="ds-compare-card__row-tag">Orchestration</span></li>
             </ul>
-            <span class="ds-pill-status ds-pill-status--light"><span class="ds-pill-status__dot"></span>Filename search &middot; no inside-the-video</span>
+            <span class="ds-pill-status ds-pill-status--dark"><span class="ds-pill-status__dot"></span>8 services &middot; 4 vendors &middot; ~6 weeks to ship</span>
           </article>
 
           <article class="ds-compare-card ds-compare-card--good">
-            <div class="ds-bracket ds-bracket--orange"><span class="ds-bracket__label">[VIDEODB]</span><span class="ds-bracket__tag">Archive as a database</span></div>
-            <p class="ds-compare-card__desc">Archive as a database.</p>
+            <div class="ds-bracket ds-bracket--orange"><span class="ds-bracket__label">[VIDEODB]</span><span class="ds-bracket__tag">One backend</span></div>
+            <p class="ds-compare-card__desc">One SDK across cloud, VPC, hybrid. Intelligence is pluggable.</p>
             <ul class="ds-compare-card__rows">
-              <li><span><span class="ds-vbar ds-vbar--orange"></span>Query the inside &mdash; scenes, speech, brands, events, sentiment</span><span class="ds-compare-card__row-tag">Semantic</span></li>
-              <li><span><span class="ds-vbar ds-vbar--orange"></span>"Find the lead crying" returns the clip, not the file</span><span class="ds-compare-card__row-tag">Playable</span></li>
-              <li><span><span class="ds-vbar ds-vbar--orange"></span>Sub-second semantic search across petabytes</span><span class="ds-compare-card__row-tag">Fast</span></li>
-              <li><span><span class="ds-vbar ds-vbar--orange"></span>Indexes are additive &mdash; new questions, no reprocessing</span><span class="ds-compare-card__row-tag">Stack</span></li>
-              <li><span><span class="ds-vbar ds-vbar--orange"></span>The moment is the unit; files are just provenance</span><span class="ds-compare-card__row-tag">Unit</span></li>
+              <li><span><span class="ds-vbar ds-vbar--orange"></span>Ingest &middot; Index &middot; Memory</span><span class="ds-compare-card__row-tag">Core</span></li>
+              <li><span><span class="ds-vbar ds-vbar--orange"></span>Semantic + Scene Search</span><span class="ds-compare-card__row-tag">Retrieval</span></li>
+              <li><span><span class="ds-vbar ds-vbar--orange"></span>Director SDK + Timeline</span><span class="ds-compare-card__row-tag">Edit</span></li>
+              <li><span><span class="ds-vbar ds-vbar--orange"></span>Low-latency stream</span><span class="ds-compare-card__row-tag">Deliver</span></li>
+              <li><span><span class="ds-vbar ds-vbar--orange"></span>RTStream monitor + alert</span><span class="ds-compare-card__row-tag">Perception</span></li>
+              <li><span><span class="ds-vbar ds-vbar--orange"></span>Bring-your-own model</span><span class="ds-compare-card__row-tag">Intelligence</span></li>
             </ul>
-            <span class="ds-pill-status ds-pill-status--orange"><span class="ds-pill-status__dot"></span>Every match is a playable clip</span>
+            <span class="ds-pill-status ds-pill-status--orange"><span class="ds-pill-status__dot"></span>1 API &middot; 1 mental model &middot; ~5 minutes to first query</span>
           </article>
         </div>
+        <p style="margin-top: 40px; max-width: 720px; color: var(--text-on-dark-muted); font-size: 15px; line-height: 1.65;">VideoDB is the database for continuous media, designed for how AI actually reads it. Intelligence is pluggable &mdash; Twelve Labs, Gemini, OpenAI, Anthropic, your model.</p>
       </div>
     </div>
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 6 — DEVELOPER PRIMITIVE (Indexes)  (dark)
-       Component: templates/feature-grid Variant A (left-aligned 3-up tiles)
+       SECTION 4 — THE PLATFORM  (light)
+       Component: templates/lifecycle-grid (numbered 6-up primitives grid)
+       Edits: section-code rail removed; kicker moved above heading.
        ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--dark" id="developer-primitive">
+  <section class="ds-section ds-section--light" id="platform">
     <div class="ds-frame">
       <div>
-        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Developer primitive</span>
-        <div class="ds-section-heading ds-section-heading--dark">
-          <h2 class="ds-section-heading__title">Indexes make video <span style="color: var(--text-on-dark-second);">programmable.</span></h2>
-          <p class="ds-section-heading__lead">Most products talk about clips and summaries. VideoDB talks about indexes &mdash; composable, additive, programmable.</p>
-        </div>
-        <div class="ds-feature-tile-grid" data-ds-reveal data-ds-reveal-delay="120">
-          <div class="ds-feature-tile">
-            <div class="ds-feature-tile__icon"><iconify-icon icon="solar:layers-linear" width="20" height="20"></iconify-icon></div>
-            <h3 class="ds-feature-tile__title">Build once, query forever.</h3>
-            <p class="ds-feature-tile__desc">Indexes persist alongside the source media. New queries don't reprocess the video.</p>
-          </div>
-          <div class="ds-feature-tile">
-            <div class="ds-feature-tile__icon"><iconify-icon icon="solar:branching-paths-down-linear" width="20" height="20"></iconify-icon></div>
-            <h3 class="ds-feature-tile__title">Stack new understanding.</h3>
-            <p class="ds-feature-tile__desc">Add indexes for scenes, speech, events, brands, safety, domain logic &mdash; without rebuilding.</p>
-          </div>
-          <div class="ds-feature-tile">
-            <div class="ds-feature-tile__icon"><iconify-icon icon="solar:widget-linear" width="20" height="20"></iconify-icon></div>
-            <h3 class="ds-feature-tile__title">Combine at query time.</h3>
-            <p class="ds-feature-tile__desc">Answer questions no single model could &mdash; events × time × scene.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 7 — ARCHITECTURE  (light)
-       Component: organisms/content-card 2-up (Batch / Real-time modes)
-       ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--light" id="architecture">
-    <div class="ds-frame">
-      <div>
-        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Architecture</span>
+        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">The platform</span>
         <div class="ds-section-heading ds-section-heading--light">
-          <h2 class="ds-section-heading__title">Real-time and batch <span style="color: var(--text-on-light-second);">are modes of the same platform.</span></h2>
-          <p class="ds-section-heading__lead">Whether the source is a 4-hour archive or a 1,000-camera live deployment, the same primitives apply. That's what makes the platform a platform.</p>
+          <h2 class="ds-section-heading__title">A single backend for the<br><span style="color: var(--text-on-light-second);">entire video lifecycle.</span></h2>
+          <p class="ds-section-heading__lead">Six primitives that compose. Use one, use all of them. The same SDK across files, live streams, cameras, screen capture, and datasets.</p>
         </div>
-        <div class="vh-mode-grid" data-ds-reveal data-ds-reveal-delay="120">
-          <article class="ds-card ds-card--light ds-content-card ds-content-card--light">
-            <span class="ds-eyebrow">Mode &middot; Batch</span>
-            <h3 class="ds-content-card__title">Files and archives.</h3>
-            <p class="ds-content-card__lead">Upload, index, and search large libraries &mdash; recorded shows, podcasts, training corpora, sports archives, recorded sessions.</p>
-            <div class="vh-mode-card-code" aria-label="Sample calls">
-              <span>// upload.file()</span>
-              <span>// upload.dataset()</span>
-              <span>// search across indexes</span>
-            </div>
-          </article>
-          <article class="ds-card ds-card--light ds-content-card ds-content-card--light">
-            <span class="ds-eyebrow">Mode &middot; Real-time (RTStream)</span>
-            <h3 class="ds-content-card__title">Live streams and cameras.</h3>
-            <p class="ds-content-card__lead">Attach feeds, define events, respond as they happen. Sub-second alerts via webhook, WebSocket, or pager. Every alert returns a playable clip.</p>
-            <div class="vh-mode-card-code" aria-label="Sample calls">
-              <span>// rtstream.attach(rtsp=&hellip;)</span>
-              <span>// define_event(prompt=&hellip;)</span>
-              <span>// on_event &rarr; webhook / agent</span>
-            </div>
-          </article>
+        <div class="ds-lifecycle-grid" data-ds-reveal data-ds-reveal-delay="120">
+          <div class="ds-lifecycle-card is-start" tabindex="0">
+            <div><div class="ds-lifecycle-card__num">01</div><h3 class="ds-lifecycle-card__title">Ingest</h3></div>
+            <p class="ds-lifecycle-card__desc">URL, upload, RTSP, ONVIF, RTMP, screen and audio capture, webhook, dataset. One ingestion path, normalized for everything that comes after.</p>
+          </div>
+          <div class="ds-lifecycle-card" tabindex="0">
+            <div><div class="ds-lifecycle-card__num">02</div><h3 class="ds-lifecycle-card__title">Index</h3></div>
+            <p class="ds-lifecycle-card__desc">Reusable, additive structures over media: scenes, speech, objects, embeddings, brands, talent, custom domain events. Composable at query time.</p>
+          </div>
+          <div class="ds-lifecycle-card" tabindex="0">
+            <div><div class="ds-lifecycle-card__num">03</div><h3 class="ds-lifecycle-card__title">Memory</h3></div>
+            <p class="ds-lifecycle-card__desc">Scene-level memory across sessions, archives, and live workloads. Re-indexable forever. Scoped per user, agent, workspace, or fleet.</p>
+          </div>
+          <div class="ds-lifecycle-card" tabindex="0">
+            <div><div class="ds-lifecycle-card__num">04</div><h3 class="ds-lifecycle-card__title">Search</h3></div>
+            <p class="ds-lifecycle-card__desc">Sub-second, semantic + structured search across petabyte archives. Every hit is a playable clip, materialized in milliseconds.</p>
+          </div>
+          <div class="ds-lifecycle-card" tabindex="0">
+            <div><div class="ds-lifecycle-card__num">05</div><h3 class="ds-lifecycle-card__title">Director</h3></div>
+            <p class="ds-lifecycle-card__desc">Cut, compose, dub, subtitle, reframe, brand &mdash; by code, not by drag-and-drop. The agentic skill SDK for media editing.</p>
+          </div>
+          <div class="ds-lifecycle-card" tabindex="0">
+            <div><div class="ds-lifecycle-card__num">06</div><h3 class="ds-lifecycle-card__title">RTStream</h3></div>
+            <p class="ds-lifecycle-card__desc">HLS, WebSocket, agent-callable URLs. Output fits the consuming system &mdash; live cameras, calls, and screens at 1,000+ feed scale.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-
   <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 8 — DATA MODEL  (dark)
-       Component: templates/industries-grid (split intro + 4 bare-icon tiles)
-       Per Gaurav — swapped from lifecycle-grid (numbered) to industries-grid.
-       Left intro carries eyebrow + heading + lead + "See the SDK reference"
-       arrow CTA. Right grid shows the 4 platform objects as bare-icon tiles.
+       SECTION 5 — ARCHITECTURE  (dark)
+       Component: templates/industries-grid (split intro + bare-icon tile grid)
+       Edits: section-code rail removed; eyebrow lives inside the intro column.
        ════════════════════════════════════════════════════════════════════ -->
-  <section class="ds-section ds-section--dark" id="data-model">
+  <section class="ds-section ds-section--dark" id="architecture">
     <div class="ds-frame">
       <div>
         <div class="ds-split-grid" data-ds-reveal data-ds-reveal-delay="120">
           <div class="ds-split-grid__intro">
             <span class="ds-eyebrow ds-eyebrow--xs ds-eyebrow--loose ds-eyebrow--strong-on-dark" style="display: inline-flex; align-items: center; gap: 10px;">
               <span style="display: inline-block; width: 6px; height: 6px; background: var(--orange-500); border-radius: 50%; flex-shrink: 0;"></span>
-              Data model
+              Architecture
             </span>
-            <h2 class="ds-split-grid__intro-title">What machines actually consume.</h2>
-            <p class="ds-split-grid__intro-lead">The platform exposes four core objects to the systems that build on top.</p>
+            <h2 class="ds-split-grid__intro-title">One platform loop. Many video intelligence products.</h2>
+            <p class="ds-split-grid__intro-lead">Real-time and batch are modes of the same backend. The SDK that powers a screen-aware agent also powers a 1,000-camera healthcare deployment.</p>
             <div style="margin-top: 8px;">
-              <a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#docs">See the SDK reference <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></span></a>
+              <a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#platform">See the primitives <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></span></a>
             </div>
           </div>
           <div class="ds-split-grid__cards">
             <div class="ds-feature-tile ds-feature-tile--icon-bare">
-              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:videocamera-record-linear" width="24" height="24"></iconify-icon></div>
-              <h3 class="ds-feature-tile__title">Media</h3>
-              <p class="ds-feature-tile__desc">The source &mdash; files, streams, camera feeds, screen and audio capture, datasets. Stored once, referenced everywhere.</p>
+              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:cloud-upload-linear" width="24" height="24"></iconify-icon></div>
+              <h3 class="ds-feature-tile__title">Any source. Any mode.</h3>
+              <p class="ds-feature-tile__desc">Files, RTSP cameras, ONVIF, RTMP, screen and audio capture, datasets. One ingestion path. Real-time and batch through the same primitives.</p>
             </div>
             <div class="ds-feature-tile ds-feature-tile--icon-bare">
-              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:database-linear" width="24" height="24"></iconify-icon></div>
-              <h3 class="ds-feature-tile__title">Indexes</h3>
-              <p class="ds-feature-tile__desc">Reusable, additive structures over media: scenes, speech, objects, embeddings, events, brands, talent, and domain logic.</p>
+              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:layers-linear" width="24" height="24"></iconify-icon></div>
+              <h3 class="ds-feature-tile__title">Layers, not transcripts.</h3>
+              <p class="ds-feature-tile__desc">VideoDB structures media into reusable, additive layers &mdash; searchable, queryable, programmable as data.</p>
             </div>
             <div class="ds-feature-tile ds-feature-tile--icon-bare">
-              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:server-linear" width="24" height="24"></iconify-icon></div>
-              <h3 class="ds-feature-tile__title">Memory</h3>
-              <p class="ds-feature-tile__desc">What the application chooses to remember across sessions and archives &mdash; scoped, queryable, retention-aware.</p>
+              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:magnifer-linear" width="24" height="24"></iconify-icon></div>
+              <h3 class="ds-feature-tile__title">Exact moments. Playable.</h3>
+              <p class="ds-feature-tile__desc">Search returns clips, scenes, and events &mdash; not timestamps. Every answer carries playable evidence in milliseconds.</p>
             </div>
             <div class="ds-feature-tile ds-feature-tile--icon-bare">
-              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:bolt-linear" width="24" height="24"></iconify-icon></div>
-              <h3 class="ds-feature-tile__title">Events</h3>
-              <p class="ds-feature-tile__desc">Discrete moments worth acting on. Events carry context, evidence, and a playable clip &mdash; and trigger workflows.</p>
+              <div class="ds-feature-tile__icon"><iconify-icon icon="solar:branching-paths-down-linear" width="24" height="24"></iconify-icon></div>
+              <h3 class="ds-feature-tile__title">Programmable response.</h3>
+              <p class="ds-feature-tile__desc">Webhooks, WebSocket events, agent tool-calls, downstream automations &mdash; driven by what happened in the video.</p>
             </div>
           </div>
         </div>
@@ -6229,48 +6011,277 @@ a.ds-testimonial-card { cursor: pointer; }
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 9 — DEPLOYMENT  (light)
-       Component: organisms/pricing-card Variant B (separated, --detached)
+       SECTION 6 — TRACTION  (light)
+       Component: organisms/research-card (2-up grid) + molecules/stat-block strip
+       Edits: section-code rail removed; kicker moved above heading.
+       ════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section ds-section--light" id="traction">
+    <div class="ds-frame">
+      <div>
+        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Traction</span>
+        <div class="ds-section-heading ds-section-heading--light">
+          <h2 class="ds-section-heading__title">Already running serious workloads.<br><span style="color: var(--text-on-light-second);">Not a roadmap.</span></h2>
+          <p class="ds-section-heading__lead">CloudPhysician, Voxel, WithVale, Hoichoi, Docket, and others are live in production today.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-on-light); border: 1px solid var(--border-on-light); border-radius: var(--r-card); overflow: hidden; margin-bottom: 40px;">
+          <div class="ds-stat ds-stat--light" style="background: var(--white); padding: 32px 28px; border-radius: 0;">
+            <span class="ds-stat__value ds-stat__value--orange">3 TB</span>
+            <span class="ds-stat__label">Uploaded every month</span>
+            <span style="font-size: 12px; color: var(--text-on-light-second); margin-top: 4px;">Across cloud, VPC, and edge</span>
+          </div>
+          <div class="ds-stat ds-stat--light" style="background: var(--white); padding: 32px 28px; border-radius: 0;">
+            <span class="ds-stat__value">40K+</span>
+            <span class="ds-stat__label">Custom indexes built each month</span>
+            <span style="font-size: 12px; color: var(--text-on-light-second); margin-top: 4px;">Bring your own model</span>
+          </div>
+          <div class="ds-stat ds-stat--light" style="background: var(--white); padding: 32px 28px; border-radius: 0;">
+            <span class="ds-stat__value">25K+</span>
+            <span class="ds-stat__label">Searches per month</span>
+            <span style="font-size: 12px; color: var(--text-on-light-second); margin-top: 4px;">Every result a playable clip</span>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px;">
+          <article class="ds-research-card ds-research-card--light">
+            <span class="ds-research-card__kicker">Pattern &middot; OTT engagement</span>
+            <h3 class="ds-research-card__title">"Custom search and editing on 2,500 hours of premium content &mdash; pilots that used to take six months ran in six weeks."</h3>
+            <div class="ds-research-card__authors">Streaming customer &middot; 2,500 hrs catalog &middot; programmable timeline</div>
+            <p class="ds-research-card__lead">Catalog search returns playable evidence. Director SDK composes clip-factory pipelines. The team replaced four orchestration scripts with one Python file.</p>
+            <a class="ds-arrow-cta ds-arrow-cta--on-light" href="#" style="margin-top: 8px;">Read the case <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
+          </article>
+          <article class="ds-research-card ds-research-card--light">
+            <span class="ds-research-card__kicker">Pattern &middot; Healthcare deployment</span>
+            <h3 class="ds-research-card__title">"1,000+ cameras, custom CV models, sub-second alerts in production &mdash; VideoDB collapsed nine months of integration into eight weeks."</h3>
+            <div class="ds-research-card__authors">Healthcare customer &middot; 1,000+ feeds &middot; custom CV models</div>
+            <p class="ds-research-card__lead">RTStream ingests every feed. Custom indexes carry the model output. Webhooks and WebSocket events drive the alerting layer the team already had.</p>
+            <a class="ds-arrow-cta ds-arrow-cta--on-light" href="#" style="margin-top: 8px;">Read the case <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 7 — SOLUTIONS  (dark)
+       Component: organisms/content-card (4-up grid)
+       Edits: section-code rail removed; kicker moved above heading.
+       ════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section ds-section--dark" id="solutions">
+    <div class="ds-frame">
+      <div>
+        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Solutions</span>
+        <div class="ds-section-heading ds-section-heading--dark">
+          <h2 class="ds-section-heading__title">Four surfaces.<br><span style="color: var(--text-on-dark-second);">One platform underneath.</span></h2>
+          <p class="ds-section-heading__lead">Different applications, the same loop. Whether the source is a screen, a live camera, a media archive, or a training corpus &mdash; the platform stays the same.</p>
+        </div>
+        <div class="vh-solutions-grid" data-ds-reveal data-ds-reveal-delay="120">
+          <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
+            <span class="ds-eyebrow">01 / Agentic Perception</span>
+            <h3 class="ds-content-card__title">Give agents eyes, ears, and memory.</h3>
+            <p class="ds-content-card__lead">For AI agents, copilots, browser agents, and agent platforms. Capture screen, audio, video, and sessions. Skill-first install across Claude Code, OpenAI, Cursor, n8n, Zapier. OSS reference agents: pair-programmer, bloom, call.md.</p>
+            <div class="ds-content-card__meta">
+              <span class="ds-tag-chip ds-tag-chip--dark">Docket</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">Wisdocity</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">mixiopro</span>
+              <a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#" style="margin-left: auto;">Read more <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
+            </div>
+          </article>
+          <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
+            <span class="ds-eyebrow">02 / Real-time Monitoring</span>
+            <h3 class="ds-content-card__title">Continuous perception for cameras, sensors, and live ops.</h3>
+            <p class="ds-content-card__lead">For ICU, industrial, drones, smart facilities, and home security. 1,000+ concurrent RTSP / ONVIF feeds. Custom CV indexes &mdash; bring your model, keep your IP. Sub-second alerts via webhook, WebSocket, or pager.</p>
+            <div class="ds-content-card__meta">
+              <span class="ds-tag-chip ds-tag-chip--dark">CloudPhysician</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">Voxel</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">WithVale</span>
+              <a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#" style="margin-left: auto;">Read more <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
+            </div>
+          </article>
+          <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
+            <span class="ds-eyebrow">03 / Programmable Media</span>
+            <h3 class="ds-content-card__title">Make video queryable, editable, and streamable by code.</h3>
+            <p class="ds-content-card__lead">For OTT, broadcasters, archives, AI editing, and content platforms. Search 2,500+ hours of catalog with playable evidence. AI clip factories, multi-language dubs, live event enrichment. Editor copilots inside Premiere and Resolve.</p>
+            <div class="ds-content-card__meta">
+              <span class="ds-tag-chip ds-tag-chip--dark">Hoichoi</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">SVF</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">palette</span>
+              <a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#" style="margin-left: auto;">Read more <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
+            </div>
+          </article>
+          <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
+            <span class="ds-eyebrow">04 / World Model Training Data</span>
+            <h3 class="ds-content-card__title">Prepare video data for the physical AI era.</h3>
+            <p class="ds-content-card__lead">For world model labs, robotics teams, autonomy companies, and data providers. Petabyte-scale ingest with provenance metadata. Quality scoring, scene segmentation, event labeling. Lab-grade reproducibility for training pipelines.</p>
+            <div class="ds-content-card__meta">
+              <span class="ds-tag-chip ds-tag-chip--dark">Physical AI labs</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">Robotics</span>
+              <span class="ds-tag-chip ds-tag-chip--dark">Research</span>
+              <a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#" style="margin-left: auto;">Read more <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 8 — ECOSYSTEM  (light)
+       Component: organisms/logo-card (grid of category logo-cards)
+       Edits: section-code rail removed; real partner logos swapped in
+       (Anthropic, Claude, Cursor, Gemini, n8n, OpenAI, Seedance, Twelve Labs, Zapier);
+       icon-frame sized to 40px via page-scoped style.
+       ════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section ds-section--light" id="ecosystem">
+    <div class="ds-frame">
+      <div>
+        <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Ecosystem</span>
+        <div class="ds-section-heading ds-section-heading--light">
+          <h2 class="ds-section-heading__title">Built to power the next generation<br><span style="color: var(--text-on-light-second);">of video intelligence products.</span></h2>
+          <p class="ds-section-heading__lead">VideoDB sits inside agent platforms, cameras, geospatial tools, media products, robotics stacks, sovereign clouds, and world model training pipelines as the common video data layer.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+          <div class="ds-logo-card ds-logo-card--light ds-logo-card--lg">
+            <div class="ds-logo-card__title">Agent runtimes</div>
+            <ul class="ds-logo-card__list">
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/anthropic-logo-dark-bg.svg" alt="Claude Code"></span><span class="ds-logo-card__name">Claude Code</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/openai-logo-light-bg.svg" alt="OpenAI"></span><span class="ds-logo-card__name">OpenAI</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><iconify-icon icon="simple-icons:cursor" width="20" height="20" style="color: var(--text-on-light-subtle);"></iconify-icon></span><span class="ds-logo-card__name">Cursor</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/n8n-logo-light-bg.svg" alt="n8n"></span><span class="ds-logo-card__name">n8n</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/zapier-logo-any-bg.svg" alt="Zapier"></span><span class="ds-logo-card__name">Zapier</span></li>
+            </ul>
+          </div>
+          <div class="ds-logo-card ds-logo-card--light ds-logo-card--lg">
+            <div class="ds-logo-card__title">Models (BYO)</div>
+            <ul class="ds-logo-card__list">
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/twelvelabs-logo-light-bg.svg" alt="Twelve Labs"></span><span class="ds-logo-card__name">Twelve Labs</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/gemini-logo-any-bg.svg" alt="Gemini"></span><span class="ds-logo-card__name">Gemini</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/openai-logo-light-bg.svg" alt="OpenAI"></span><span class="ds-logo-card__name">OpenAI</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><iconify-icon icon="solar:stars-linear" width="20" height="20" style="color: var(--text-on-light-subtle);"></iconify-icon></span><span class="ds-logo-card__name">Seedance</span></li>
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><img loading="lazy" decoding="async" src="../assets/partner-logos/anthropic-logo-dark-bg.svg" alt="Anthropic"></span><span class="ds-logo-card__name">Anthropic</span></li>
+            </ul>
+          </div>
+          <div class="ds-logo-card ds-logo-card--light ds-logo-card--lg">
+            <div class="ds-logo-card__title">Camera &amp; security</div>
+            <ul class="ds-logo-card__list">
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><iconify-icon icon="solar:videocamera-linear" width="20" height="20" style="color: var(--text-on-light-subtle);"></iconify-icon></span><span class="ds-logo-card__name" style="color: var(--text-on-light-subtle);">Partner program</span></li>
+            </ul>
+          </div>
+          <div class="ds-logo-card ds-logo-card--light ds-logo-card--lg">
+            <div class="ds-logo-card__title">Geospatial</div>
+            <ul class="ds-logo-card__list">
+              <li class="ds-logo-card__row"><span class="ds-logo-card__icon-frame"><iconify-icon icon="solar:map-linear" width="20" height="20" style="color: var(--text-on-light-subtle);"></iconify-icon></span><span class="ds-logo-card__name" style="color: var(--text-on-light-subtle);">Partner program</span></li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top: 40px; padding: 24px 28px; background: var(--white); border: 1px solid var(--border-on-light); border-radius: var(--r-card); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+          <div>
+            <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs" style="display: block; margin-bottom: 8px;">Sovereign cloud partnership</span>
+            <p style="margin: 0; font-size: 15px; color: var(--text-on-light); line-height: 1.55; max-width: 600px;">Sovereign cloud partnership program now in market: turn your hosting customers into AI platform customers.</p>
+          </div>
+          <a class="ds-arrow-cta ds-arrow-cta--on-light" href="#partner">Read the partnership brief <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 9 — DEVELOPER EXPERIENCE  (dark)
+       Component: templates/use-case-row (Variant B — Centered)
+       Edits: section-code rail removed; section-heading uses --centered
+       modifier so eyebrow + display + lead sit centered above the
+       list-left / code-right grid.
+       ════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section ds-section--dark" id="developers">
+    <div class="ds-frame">
+      <div>
+        <div class="ds-section-heading ds-section-heading--dark ds-section-heading--centered">
+          <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose" style="margin-bottom: 18px;">Developer experience</span>
+          <h2 class="ds-section-heading__title">One command. <span style="color: var(--text-on-dark-second);">Your agent gets a video backend.</span></h2>
+          <p class="ds-section-heading__lead">Skill-first install across every modern agent runtime. SDKs for Python and TypeScript. Free tier for prototypes; production scales without rewrite.</p>
+        </div>
+        <div class="ds-use-case-grid" data-ds-reveal data-ds-reveal-delay="120">
+          <div>
+            <ul class="ds-use-case-list">
+              <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>Skills, not SDKs.</strong> One command bootstraps every primitive. Works with Claude Code, OpenAI, Cursor, n8n, Zapier &mdash; any agent that speaks tools.</span></li>
+              <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>OSS reference agents.</strong> Fork, run, ship. pair-programmer, bloom, agentic-streams, call.md &mdash; production-shaped reference apps.</span></li>
+              <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>Free &rarr; usage-based &rarr; annual.</strong> Free tier covers your prototype. Usage-based to $5K/mo. Committed annual contract above.</span></li>
+            </ul>
+            <div class="ds-cta-pair" style="margin-top: 32px;">
+              <a class="ds-btn ds-btn--primary" href="#docs">Read the docs <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
+              <a class="ds-btn ds-btn--ghost-dark" href="#github">View on GitHub <iconify-icon icon="ri:github-fill" width="14" height="14"></iconify-icon></a>
+            </div>
+          </div>
+          <div class="ds-code-block ds-code-block--dark">
+            <div class="ds-code-block__head">
+              <div role="tablist" aria-label="Runtime">
+                <div class="ds-code-tab-pills ds-code-tab-pills--dark">
+                  <button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">python</button>
+                  <button class="ds-code-tab-pills__btn" role="tab" aria-selected="false">typescript</button>
+                </div>
+              </div>
+              <button class="ds-code-block__copy" type="button">Copy</button>
+            </div>
+            <pre class="ds-code-block__body">$ claude /install videodb-skills
+
+from videodb import connect
+
+conn  = connect()
+video = conn.upload("keynote.mp4")
+video.index_spoken_words()
+video.index_scenes()
+
+result = video.search("latency")
+print(result.timestamps)</pre>
+            <div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">Live &middot; agent.py &middot; v2.4.0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION 10 — DEPLOYMENT  (light)
+       Component: organisms/pricing-card (Variant B — separated, light)
+       Edits: section-code rail removed; kicker moved above heading.
        ════════════════════════════════════════════════════════════════════ -->
   <section class="ds-section ds-section--light" id="deployment">
     <div class="ds-frame">
       <div>
         <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose vh-kicker">Deployment</span>
         <div class="ds-section-heading ds-section-heading--light">
-          <h2 class="ds-section-heading__title">Three ways to run VideoDB. <span style="color: var(--text-on-light-second);">Same SDK across all three.</span></h2>
+          <h2 class="ds-section-heading__title">Three ways to run VideoDB.<br><span style="color: var(--text-on-light-second);">Same SDK across all three.</span></h2>
           <p class="ds-section-heading__lead">Pick the deployment that matches your security and latency needs. The SDK doesn't change.</p>
         </div>
         <div class="ds-pricing-row" data-ds-reveal data-ds-reveal-delay="120">
           <article class="ds-price-card ds-price-card--detached ds-price-card--light">
             <div class="ds-bracket ds-bracket--on-light"><span class="ds-bracket__label">[CLOUD]</span><span class="ds-bracket__tag">Default &mdash; fastest</span></div>
-            <p class="ds-price-card__desc">Managed SaaS. POC live in under 48 hours. Multi-region: US, EU, IN. Auto-scaling indexing and retrieval.</p>
+            <p class="ds-price-card__desc">Managed SaaS. POC live in under 48 hours. Pay for storage, ingest, search.</p>
             <ul class="ds-price-card__features">
+              <li><span class="ds-vbar"></span>Multi-region: US, EU, IN</li>
               <li><span class="ds-vbar"></span>SOC 2 Type II controls</li>
-              <li><span class="ds-vbar"></span>Multi-region US / EU / IN</li>
-              <li><span class="ds-vbar"></span>Auto-scaling indexing</li>
-              <li><span class="ds-vbar"></span>Best for: media teams, agentic startups, fast pilots</li>
+              <li><span class="ds-vbar"></span>Same SDK as VPC + Edge</li>
+              <li><span class="ds-vbar"></span>Usage-based pricing</li>
             </ul>
             <a class="ds-price-card__cta" href="#start">Start free trial</a>
           </article>
           <article class="ds-price-card ds-price-card--detached ds-price-card--light ds-price-card--active">
             <div class="ds-bracket ds-bracket--orange"><span class="ds-bracket__label">[VPC / DEDICATED]</span><span class="ds-bracket__tag">Regulated buyers</span></div>
-            <p class="ds-price-card__desc">Your AWS, GCP, or Azure. Single-tenant control plane. Customer-managed keys (KMS). Private link / peering.</p>
+            <p class="ds-price-card__desc">Your AWS, GCP, or Azure. Single-tenant control plane, customer-managed keys, private link.</p>
             <ul class="ds-price-card__features">
-              <li><span class="ds-vbar ds-vbar--orange"></span>Annual contract, fixed envelope</li>
+              <li><span class="ds-vbar ds-vbar--orange"></span>HIPAA, GDPR, defense</li>
               <li><span class="ds-vbar ds-vbar--orange"></span>Customer-managed keys</li>
               <li><span class="ds-vbar ds-vbar--orange"></span>Private link / VPC peering</li>
-              <li><span class="ds-vbar ds-vbar--orange"></span>Best for: healthcare, fintech, defense, EU residency</li>
+              <li><span class="ds-vbar ds-vbar--orange"></span>Annual contract</li>
             </ul>
             <a class="ds-price-card__cta" href="#contact">Contact sales</a>
           </article>
           <article class="ds-price-card ds-price-card--detached ds-price-card--light">
             <div class="ds-bracket ds-bracket--on-light"><span class="ds-bracket__label">[EDGE + CLOUD]</span><span class="ds-bracket__tag">Hybrid</span></div>
-            <p class="ds-price-card__desc">Live ingest at the edge (RTSP / GPU). Indexes and metadata to VideoDB cloud. Originals stay on customer storage.</p>
+            <p class="ds-price-card__desc">Live ingest at the edge. Indexes and metadata to VideoDB cloud. Originals stay on customer storage.</p>
             <ul class="ds-price-card__features">
-              <li><span class="ds-vbar"></span>Sub-second alert latency at site</li>
               <li><span class="ds-vbar"></span>RTSP + GPU at the edge</li>
+              <li><span class="ds-vbar"></span>1,000+ camera fleets</li>
               <li><span class="ds-vbar"></span>Originals on your storage</li>
-              <li><span class="ds-vbar"></span>Best for: industrial, hospitals, large media archives</li>
+              <li><span class="ds-vbar"></span>Negotiated SLA</li>
             </ul>
             <a class="ds-price-card__cta" href="#contact">Scope the rollout</a>
           </article>
@@ -6280,26 +6291,22 @@ a.ds-testimonial-card { cursor: pointer; }
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       SECTION 10 — CLOSING CTA  (dark)
-       Component: organisms/cta-band--bare + section-heading --centered + cta-pair --center
+       SECTION 11 — CLOSING  (dark)
+       Component: section-heading (centered modifier) + cta-pair atoms (no card chrome)
+       Edits: removed the ds-cta-band wrapper; section-heading uses --centered;
+       CTA pair centered via .ds-cta-pair--center modifier.
        ════════════════════════════════════════════════════════════════════ -->
   <section class="ds-section ds-section--dark" id="closing">
     <div class="ds-frame">
       <div>
-        <div class="ds-cta-band ds-cta-band--bare ds-cta-band--dark">
-          <div class="ds-cta-band__inner">
-            <div class="ds-section-heading ds-section-heading--dark ds-section-heading--centered">
-              <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose" style="margin-bottom: 18px;">Build on it</span>
-              <h2 class="ds-cta-band__title">One platform loop. <span style="color: var(--text-on-dark-second);">Many video intelligence products.</span></h2>
-              <p class="ds-cta-band__lead">Start with the SDK, or talk to us about an enterprise architecture review.</p>
-            </div>
-            <div class="ds-cta-band__actions">
-              <div class="ds-cta-pair ds-cta-pair--center">
-                <a class="ds-btn ds-btn--primary" href="#start">Start building <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
-                <a class="ds-btn ds-btn--ghost-dark" href="#contact">Talk to us <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></a>
-              </div>
-            </div>
-          </div>
+        <div class="ds-section-heading ds-section-heading--dark ds-section-heading--centered">
+          <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose" style="margin-bottom: 18px;">Closing</span>
+          <h2 class="ds-section-heading__title">VideoDB turns continuous media<br><span style="color: var(--text-on-dark-second);">into structured context machines can search, remember, and act on.</span></h2>
+          <p class="ds-section-heading__lead">Start building with the SDK, or talk to us if you're building a serious video intelligence product.</p>
+        </div>
+        <div class="ds-cta-pair ds-cta-pair--center">
+          <a class="ds-btn ds-btn--primary" href="#start">Start building <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
+          <a class="ds-btn ds-btn--ghost-dark" href="#contact">Talk to us <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></a>
         </div>
       </div>
     </div>
@@ -6308,8 +6315,10 @@ a.ds-testimonial-card { cursor: pointer; }
 </main>
 
 <!-- ════════════════════════════════════════════════════════════════════
-     FOOTER — Editorial variant (etymology prelude, no eyebrow per default)
+     FOOTER — Editorial variant (etymology prelude + 4 nav cols + status)
      Component: organisms/footer (Variant B — Editorial)
+     Edits: Contact column removed per Gaurav. Email moved into brand-block
+     tagline. 4 cols remain: Platform / Solutions / Developers / Company.
      ════════════════════════════════════════════════════════════════════ -->
 <footer class="ds-footer ds-footer--dark ds-footer--editorial">
   <div class="ds-footer__inner">
@@ -6318,7 +6327,7 @@ a.ds-testimonial-card { cursor: pointer; }
     </div>
     <div class="ds-footer__top">
       <div class="ds-footer__brand-block">
-        <img class="ds-footer__wordmark-img" loading="lazy" decoding="async" src="assets/logos/wordmark-dark.png" alt="VideoDB">
+        <img class="ds-footer__wordmark-img" loading="lazy" decoding="async" src="../assets/logos/wordmark-dark.png" alt="VideoDB">
         <span class="ds-footer__tagline">Data infrastructure for video, built for machines and agents. From Sanskrit <em>vid</em> &mdash; to see, to know. The same root as <em>video</em> and <em>veda</em>.</span>
         <a href="mailto:hello@videodb.io" style="display: inline-block; margin-top: 12px; color: var(--orange-500); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px;">hello@videodb.io</a>
       </div>
@@ -6326,28 +6335,28 @@ a.ds-testimonial-card { cursor: pointer; }
         <div class="ds-footer__nav-col">
           <h3 class="ds-footer__nav-title">Platform</h3>
           <ul class="ds-footer__nav-list">
-            <li><a class="ds-footer__nav-link" href="#primitives">Six primitives</a></li>
-            <li><a class="ds-footer__nav-link" href="#data-model">Data model</a></li>
-            <li><a class="ds-footer__nav-link" href="#architecture">Architecture</a></li>
+            <li><a class="ds-footer__nav-link" href="#platform">Overview</a></li>
+            <li><a class="ds-footer__nav-link" href="#platform">Primitives</a></li>
+            <li><a class="ds-footer__nav-link" href="#platform">Indexes</a></li>
             <li><a class="ds-footer__nav-link" href="#deployment">Deployment</a></li>
           </ul>
         </div>
         <div class="ds-footer__nav-col">
           <h3 class="ds-footer__nav-title">Solutions</h3>
           <ul class="ds-footer__nav-list">
-            <li><a class="ds-footer__nav-link" href="#">Agentic Perception</a></li>
-            <li><a class="ds-footer__nav-link" href="#">Real-time Monitoring</a></li>
-            <li><a class="ds-footer__nav-link" href="#">Programmable Media</a></li>
-            <li><a class="ds-footer__nav-link" href="#">World Model Training Data</a></li>
+            <li><a class="ds-footer__nav-link" href="#solutions">Agentic Perception</a></li>
+            <li><a class="ds-footer__nav-link" href="#solutions">Real-time Monitoring</a></li>
+            <li><a class="ds-footer__nav-link" href="#solutions">Programmable Media</a></li>
+            <li><a class="ds-footer__nav-link" href="#solutions">World Model Training Data</a></li>
           </ul>
         </div>
         <div class="ds-footer__nav-col">
           <h3 class="ds-footer__nav-title">Developers</h3>
           <ul class="ds-footer__nav-list">
-            <li><a class="ds-footer__nav-link" href="#">Overview</a></li>
+            <li><a class="ds-footer__nav-link" href="#developers">Overview</a></li>
             <li><a class="ds-footer__nav-link" href="#docs">Docs</a></li>
             <li><a class="ds-footer__nav-link" href="#docs">Quickstart</a></li>
-            <li><a class="ds-footer__nav-link" href="#">GitHub</a></li>
+            <li><a class="ds-footer__nav-link" href="#github">GitHub</a></li>
           </ul>
         </div>
         <div class="ds-footer__nav-col">
@@ -6355,7 +6364,7 @@ a.ds-testimonial-card { cursor: pointer; }
           <ul class="ds-footer__nav-list">
             <li><a class="ds-footer__nav-link" href="#company">About</a></li>
             <li><a class="ds-footer__nav-link" href="#company">Careers</a></li>
-            <li><a class="ds-footer__nav-link" href="#">Partners</a></li>
+            <li><a class="ds-footer__nav-link" href="#partner">Partners</a></li>
             <li><a class="ds-footer__nav-link" href="#contact">Contact</a></li>
           </ul>
         </div>
@@ -6364,10 +6373,10 @@ a.ds-testimonial-card { cursor: pointer; }
     <div class="ds-footer__bottom">
       <div class="ds-footer__bottom-left">
         <div class="ds-footer__compliance-row" aria-label="Compliance">
-          <img loading="lazy" decoding="async" src="assets/compliance-logos/soc2-logo-dark-bg.png" alt="SOC 2 Type II">
-          <img loading="lazy" decoding="async" src="assets/compliance-logos/gdpr-logo-dark-bg.png" alt="GDPR">
-          <img loading="lazy" decoding="async" src="assets/compliance-logos/hipaa-logo-dark-bg.png" alt="HIPAA">
-          <img loading="lazy" decoding="async" src="assets/compliance-logos/iso-logo-dark-bg.png" alt="ISO 27001">
+          <img loading="lazy" decoding="async" src="../assets/compliance-logos/soc2-logo-dark-bg.png" alt="SOC 2 Type II">
+          <img loading="lazy" decoding="async" src="../assets/compliance-logos/gdpr-logo-dark-bg.png" alt="GDPR">
+          <img loading="lazy" decoding="async" src="../assets/compliance-logos/hipaa-logo-dark-bg.png" alt="HIPAA">
+          <img loading="lazy" decoding="async" src="../assets/compliance-logos/iso-logo-dark-bg.png" alt="ISO 27001">
         </div>
         <span>&copy; Copyright VideoDB 2026. All Rights Reserved.</span>
       </div>
@@ -7226,6 +7235,141 @@ a.ds-testimonial-card { cursor: pointer; }
   window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
   // If DOMContentLoaded already fired (e.g. defer scripts), run immediately
   if (document.readyState !== 'loading') { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     WebGL particle dome — hero ambient background
+     Three.js r128 (loaded with defer in <head>). 12,000-point spherical
+     field, three coupled effects: (1) global scale oscillation (breathing),
+     (2) size-coupled per-point distortion (turbulent when small, calm
+     when large), (3) multi-axis rotation. Falls back to a CSS gradient
+     glow if Three.js or WebGL fails. Respects prefers-reduced-motion.
+     Ported from merged-design-system-cleanup/index.html hero dome init.
+     ════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+  function initHeroDome() {
+    const container = document.getElementById('vh-hero-dome');
+    const heroSection = container && container.closest('section');
+    if (!container || !heroSection) return;
+    if (!window.THREE) {
+      heroSection.classList.add('is-webgl-fallback');
+      return;
+    }
+    try {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w === 0 || h === 0) {
+        // Container not yet measurable — retry after a frame
+        requestAnimationFrame(initHeroDome);
+        return;
+      }
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+      camera.position.z = 50;
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(w, h);
+      container.appendChild(renderer.domElement);
+
+      const count = 12000;
+      const positions = new Float32Array(count * 3);
+      const basePositions = new Float32Array(count * 3);
+      const phases = new Float32Array(count);
+      const radii = new Float32Array(count);
+      for (let i = 0; i < count; i++) {
+        const r = 30;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 0.8 + 0.2);
+        const x = r * Math.sin(phi) * Math.cos(theta) + 22;
+        const y = r * Math.cos(phi) - 20;
+        const z = r * Math.sin(phi) * Math.sin(theta);
+        basePositions[i*3]     = positions[i*3]     = x;
+        basePositions[i*3 + 1] = positions[i*3 + 1] = y;
+        basePositions[i*3 + 2] = positions[i*3 + 2] = z;
+        radii[i] = Math.sqrt(x*x + y*y + z*z);
+        phases[i] = Math.random() * Math.PI * 2;
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: 0.08,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.4,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const startTime = Date.now();
+      const positionAttr = geometry.attributes.position;
+
+      function animate() {
+        if (!reduced) {
+          const t = (Date.now() - startTime) / 1000;
+          // (1) Breathing scale — global oscillation 0.78 → 1.28
+          const scaleBase = 1.03;
+          const scaleAmp = 0.25;
+          const scaleVal = scaleBase + Math.cos(t * 0.39) * scaleAmp;
+          points.scale.set(scaleVal, scaleVal, scaleVal);
+          // (2) Per-point distortion — inverse-coupled to scale
+          const sNorm = (scaleVal - 0.78) / 0.50;
+          const distortionAmp = (1 - sNorm) * 4.0 + 0.4;
+          for (let i = 0; i < count; i++) {
+            const bx = basePositions[i*3];
+            const by = basePositions[i*3 + 1];
+            const bz = basePositions[i*3 + 2];
+            const rad = radii[i];
+            const wave = Math.sin(t * 0.85 + rad * 0.16 + phases[i]) * distortionAmp;
+            const s = (rad + wave) / rad;
+            positions[i*3]     = bx * s;
+            positions[i*3 + 1] = by * s;
+            positions[i*3 + 2] = bz * s;
+          }
+          positionAttr.needsUpdate = true;
+          // (3) Multi-axis rotation
+          const ySpeed = 0.0012 + Math.sin(t * 0.13) * 0.0008;
+          const xSpeed = Math.sin(t * 0.09 + 1.05) * 0.0010;
+          const zSpeed = Math.sin(t * 0.07 + 2.10) * 0.0006;
+          points.rotation.y += ySpeed;
+          points.rotation.x += xSpeed;
+          points.rotation.z += zSpeed;
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        const nw = container.clientWidth, nh = container.clientHeight;
+        if (nw === 0 || nh === 0) return;
+        renderer.setSize(nw, nh);
+        camera.aspect = nw / nh;
+        camera.updateProjectionMatrix();
+      });
+    } catch (err) {
+      console.warn('[homepage] WebGL dome init failed; falling back:', err);
+      heroSection.classList.add('is-webgl-fallback');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', () => {
+      // Three.js loads with defer — wait one tick to ensure window.THREE is defined
+      if (window.THREE) initHeroDome();
+      else window.addEventListener('load', initHeroDome, { once: true });
+    });
+  } else {
+    if (window.THREE) initHeroDome();
+    else window.addEventListener('load', initHeroDome, { once: true });
+  }
 })();
 </script>
 

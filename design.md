@@ -1,12 +1,3 @@
----
-type: spec
-status: canonical
-version: v2.0
-updated: 2026-05-19
-supersedes: design.md (v1, archived), PAGE_BUILDER_PROMPT.md (merged), components.md (merged)
-live-implementation: index.html
----
-
 # VideoDB Design System — Single Source of Truth
 
 ## How to use this file
@@ -38,7 +29,7 @@ VideoDB is a perception layer for AI — data infrastructure for video, built fo
 
 ## 1. Page scaffold (boilerplate)
 
-A complete VideoDB v2 page is six stacked blocks. You write only `<main>`; everything else is shared chrome — copy verbatim from `homepage.html` and update per-page values noted below.
+A complete VideoDB v2 page is six stacked blocks. You write only `<main>`; everything else is shared chrome — copy verbatim from `examples/homepage.html` and update per-page values noted below.
 
 ### Block 1 — Doctype + `<head>`
 
@@ -67,7 +58,7 @@ A complete VideoDB v2 page is six stacked blocks. You write only `<main>`; every
 
 <style>
   /* Inline the full design system CSS here (copied verbatim from
-     homepage.html lines 19-5451 — tokens, atoms, molecules, organisms,
+     examples/homepage.html lines 19-5451 — tokens, atoms, molecules, organisms,
      templates, motion). ~5,400 lines. Do not modify; this is the
      canonical stylesheet for the v2 system.
 
@@ -87,7 +78,7 @@ A complete VideoDB v2 page is six stacked blocks. You write only `<main>`; every
 ```html
 <body>
 <header class="ds-header-nav ds-header-nav--dark" role="banner" style="position: sticky; top: 0; z-index: 50;">
-  <!-- Copy verbatim from homepage.html lines 5460-5532 (organisms/site-header
+  <!-- Copy verbatim from examples/homepage.html lines 5460-5532 (organisms/site-header
        with organisms/nav-dropdown for the Solutions mega-menu) -->
 </header>
 ```
@@ -114,8 +105,8 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 
 ```html
 <footer class="ds-footer ds-footer--dark ds-footer--editorial">
-  <!-- Copy verbatim from homepage.html lines 6056-6127 (Editorial variant)
-       OR from platform.html (Directory variant). Pick based on page intent
+  <!-- Copy verbatim from examples/homepage.html lines 6056-6127 (Editorial variant)
+       OR from examples/platform.html (Directory variant). Pick based on page intent
        — see Footer entry in section 3.3. -->
 </footer>
 ```
@@ -124,7 +115,7 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 
 ```html
 <script>
-  /* Copy verbatim from homepage.html lines 6129-6876 (~750 lines).
+  /* Copy verbatim from examples/homepage.html lines 6129-6876 (~750 lines).
      Contains hash-route activator + initializers for every interactive
      organism. Call signature at boot:
 
@@ -149,7 +140,7 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 
 ```html
 <script>
-  /* Copy verbatim from homepage.html lines 6888-7012 ONLY IF the page uses
+  /* Copy verbatim from examples/homepage.html lines 6888-7012 ONLY IF the page uses
      a hero Particle dome (templates/hero Variant E).
      Initializes a 12,000-point Three.js field with breathing + distortion +
      multi-axis rotation. Falls back to a radial-gradient CSS glow if
@@ -170,7 +161,7 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 - [ ] Three.js script tag present **only** if page uses `ds-particle-dome`
 - [ ] Hero dome init script present **only** if page uses `ds-particle-dome`
 - [ ] Footer variant matches page intent (Directory for IA-heavy pages, Editorial for brand-statement pages)
-- [ ] Inline `<style>` block contains the full canonical CSS (5,400+ lines from homepage.html)
+- [ ] Inline `<style>` block contains the full canonical CSS (5,400+ lines from examples/homepage.html)
 
 ---
 
@@ -2732,7 +2723,7 @@ For pages outside these recipes, combine a Hero variant + 6–10 sections that f
 ### 4.6 Build sequence for any marketing page
 
 1. **Define content first.** Write a Markdown brief — 8–13 sections, each with eyebrow / headline / lead / content / optional CTA. Don't open HTML until copy is locked.
-2. **Scaffold from `homepage.html`.** Copy the file, rename, strip the body sections, keep head + footer + scripts (see section 1 — Page scaffold).
+2. **Scaffold from `examples/homepage.html`.** Copy the file, rename, strip the body sections, keep head + footer + scripts (see section 1 — Page scaffold).
 3. **Build top-down.** Site header → Hero → Section 2 → … → Closing CTA → Pre-footer Socials → Footer.
 4. **Pick dark/light per section** as you go. Lock the first 3 dark; alternate after.
 5. **Pick the right component** for each section — see section 3.
@@ -2887,7 +2878,7 @@ Reach for these when copywriting headlines and body:
 
 ### 7.1 Single-file portability
 
-Every page is a standalone HTML file with the canonical CSS and JS inlined. No build step, no bundler. The canonical CSS lives in `homepage.html` lines 19–5451 (~5,400 lines) — copy verbatim into every new page. One-off page CSS goes in a second `<style>` block after the canonical one.
+Every page is a standalone HTML file with the canonical CSS and JS inlined. No build step, no bundler. The canonical CSS lives in `examples/homepage.html` lines 19–5451 (~5,400 lines) — copy verbatim into every new page. One-off page CSS goes in a second `<style>` block after the canonical one.
 
 ### 7.2 CDN dependencies
 
@@ -2906,8 +2897,10 @@ Every page is a standalone HTML file with the canonical CSS and JS inlined. No b
 videodb-design/
 ├── design.md        # This file — single source of truth
 ├── index.html       # Live implementation — open to look up any component
-├── homepage.html    # Reference marketing page (scaffold to copy)
-├── platform.html    # Reference platform page (scaffold to copy)
+├── examples/        # Generated pages built from the design system
+│   ├── homepage.html
+│   ├── platform.html
+│   └── agentic-perception.html
 ├── assets/
 │   ├── logos/
 │   ├── customer-logos/

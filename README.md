@@ -1,6 +1,6 @@
 # VideoDB — Design System + Marketing Pages
 
-The v2 atomic design system for VideoDB, plus two marketing pages built on it.
+The v2 atomic design system for VideoDB, plus marketing pages built on it.
 
 ## What's in this repo
 
@@ -10,8 +10,10 @@ videodb-design/
 │                           # (scaffold + components + recipes + tokens + principles)
 ├── index.html              # Live implementation — design system docs page
 │                           # (hash-routed previews of every component)
-├── homepage.html           # Marketing homepage built using the system
-├── platform.html           # Platform feature page built using the system
+├── examples/               # Generated pages built from design.md + index.html
+│   ├── homepage.html       # Marketing homepage example
+│   ├── platform.html       # Platform feature page example
+│   └── agentic-perception.html # Agentic perception landing page example
 ├── assets/                 # Logos, customer logos, partner logos, compliance
 │   ├── logos/
 │   ├── customer-logos/
@@ -59,8 +61,9 @@ Vercel auto-detects static HTML and serves the folder as-is. No build command ne
 | Path | Page |
 |---|---|
 | `/` | Design system docs |
-| `/homepage` | Marketing homepage |
-| `/platform` | Platform page |
+| `/examples/homepage` | Marketing homepage example |
+| `/examples/platform` | Platform page example |
+| `/examples/agentic-perception` | Agentic perception example |
 
 The design system's internal navigation uses hash routing (`#atoms/button`, `#organisms/footer`, etc.) — all inside `index.html`.
 
