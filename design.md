@@ -2583,6 +2583,7 @@ Horizontal milestone-bar infographic. Two-tone mission heading at the top + segm
             <div class="ds-timeline-roadmap__label-body">
               <span class="ds-timeline-roadmap__date">Aug 15, 2022</span>
               <span class="ds-timeline-roadmap__milestone">Internal preview</span>
+              <span class="ds-timeline-roadmap__milestone-body">First 100 videos indexed. SE paired in Slack.</span>
             </div>
           </div>
           <div></div>

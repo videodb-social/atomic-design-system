@@ -5050,6 +5050,19 @@ a.ds-testimonial-card { cursor: pointer; }
 }
 .ds-section--dark .ds-timeline-roadmap__milestone { color: var(--text-on-dark); text-decoration-color: var(--border-on-dark-strong); }
 .ds-section--light .ds-timeline-roadmap__milestone { color: var(--text-on-light); text-decoration-color: var(--border-on-light-strong); }
+.ds-timeline-roadmap__milestone-body {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Geist', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-on-light-subtle);
+  letter-spacing: 0;
+}
+.ds-timeline-roadmap--dark .ds-timeline-roadmap__milestone-body,
+.ds-section--dark .ds-timeline-roadmap__milestone-body {
+  color: var(--text-on-dark-subtle);
+}
 
 .ds-timeline-roadmap__bar { height: 32px; }
 .ds-timeline-roadmap__seg { border-radius: 2px; }
@@ -6024,7 +6037,7 @@ a.ds-testimonial-card { cursor: pointer; }
               <div class="ds-timeline-roadmap__label-body">
                 <span class="ds-timeline-roadmap__date">Week 1</span>
                 <span class="ds-timeline-roadmap__milestone">Skill installed.</span>
-                <span style="font-size: 13px; line-height: 1.55; color: var(--text-on-light-muted); font-family: 'Geist', sans-serif;">First 100 videos indexed. SE paired in Slack.</span>
+                <span class="ds-timeline-roadmap__milestone-body">First 100 videos indexed. SE paired in Slack.</span>
               </div>
             </div>
             <div></div>
@@ -6033,7 +6046,7 @@ a.ds-testimonial-card { cursor: pointer; }
               <div class="ds-timeline-roadmap__label-body">
                 <span class="ds-timeline-roadmap__date">Week 3</span>
                 <span class="ds-timeline-roadmap__milestone">Production load test.</span>
-                <span style="font-size: 13px; line-height: 1.55; color: var(--text-on-light-muted); font-family: 'Geist', sans-serif;">10,000+ videos. Benchmark against your previous stack.</span>
+                <span class="ds-timeline-roadmap__milestone-body">10,000+ videos. Benchmark against your previous stack.</span>
               </div>
             </div>
             <div></div>
@@ -6051,7 +6064,7 @@ a.ds-testimonial-card { cursor: pointer; }
               <div class="ds-timeline-roadmap__label-body">
                 <span class="ds-timeline-roadmap__date">Week 2</span>
                 <span class="ds-timeline-roadmap__milestone">Agent loop integrated.</span>
-                <span style="font-size: 13px; line-height: 1.55; color: var(--text-on-light-muted); font-family: 'Geist', sans-serif;">Retrieval, clipping, replay live in your agent's tool layer.</span>
+                <span class="ds-timeline-roadmap__milestone-body">Retrieval, clipping, replay live in your agent's tool layer.</span>
               </div>
             </div>
             <div></div>
@@ -6060,7 +6073,7 @@ a.ds-testimonial-card { cursor: pointer; }
               <div class="ds-timeline-roadmap__label-body">
                 <span class="ds-timeline-roadmap__date">Week 4</span>
                 <span class="ds-timeline-roadmap__milestone">Scale + price.</span>
-                <span style="font-size: 13px; line-height: 1.55; color: var(--text-on-light-muted); font-family: 'Geist', sans-serif;">Storage + ingest + search. Volume tier set.</span>
+                <span class="ds-timeline-roadmap__milestone-body">Storage + ingest + search. Volume tier set.</span>
               </div>
             </div>
           </div>

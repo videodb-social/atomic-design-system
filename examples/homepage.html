@@ -5051,6 +5051,19 @@ a.ds-testimonial-card { cursor: pointer; }
 }
 .ds-section--dark .ds-timeline-roadmap__milestone { color: var(--text-on-dark); text-decoration-color: var(--border-on-dark-strong); }
 .ds-section--light .ds-timeline-roadmap__milestone { color: var(--text-on-light); text-decoration-color: var(--border-on-light-strong); }
+.ds-timeline-roadmap__milestone-body {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Geist', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-on-light-subtle);
+  letter-spacing: 0;
+}
+.ds-timeline-roadmap--dark .ds-timeline-roadmap__milestone-body,
+.ds-section--dark .ds-timeline-roadmap__milestone-body {
+  color: var(--text-on-dark-subtle);
+}
 
 .ds-timeline-roadmap__bar { height: 32px; }
 .ds-timeline-roadmap__seg { border-radius: 2px; }
