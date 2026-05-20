@@ -371,16 +371,16 @@ Pill or card-radius text field. 16px font-size (prevents iOS auto-zoom).
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
-- `--animated` (typewriter type-on, requires `data-ds-typewriter`)
 - `--pill` (9999px radius for inline subscribe forms; default is card radius)
-- States: `is-focused`, `is-error`, `is-buzzing` (200ms shake on invalid submit)
+- States: `is-focused`, `is-error`
+- `[aria-invalid="true"]` — error state. Triggers a 200ms shake animation + applies `--color-error` border. The **canonical form-validation hook** — toggle this attribute via JS when validation fails, remove on successful re-entry.
 
 **HTML:**
 ```html
 <label class="ds-field-label ds-field-label--on-dark">Email</label>
 <input class="ds-input ds-input--dark ds-input--pill" type="email" placeholder="you@company.com">
 
-<input class="ds-input ds-input--light is-error" type="email" value="not-an-email">
+<input class="ds-input ds-input--light" type="email" value="not-an-email" aria-invalid="true">
 <span class="ds-helper ds-helper--on-light is-error">Enter a valid email</span>
 ```
 
@@ -394,6 +394,7 @@ Multi-line input. Card radius, vertical-resize only. Min-height 100px (80px in m
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `[aria-invalid="true"]` — error state. Triggers a 200ms shake animation + applies `--color-error` border. The **canonical form-validation hook** — toggle this attribute via JS when validation fails, remove on successful re-entry.
 
 **HTML:**
 ```html
@@ -411,6 +412,7 @@ Card-radius dropdown with custom chevron caret (inline SVG, `appearance: none` s
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `[aria-invalid="true"]` — error state. Triggers a 200ms shake animation + applies `--color-error` border. The **canonical form-validation hook** — toggle this attribute via JS when validation fails, remove on successful re-entry.
 
 **HTML:**
 ```html
@@ -1264,6 +1266,7 @@ Multi-line code sample with runtime switcher up top, copy button on the right, c
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `--animated` (typewriter type-on, requires `data-ds-typewriter`)
 
 **HTML:**
 ```html
@@ -2898,6 +2901,10 @@ Reach for these when copywriting headlines and body:
 - Don't use Yes/No in compare tables — use the iconify check or em-dash, with real values where possible.
 - Don't competing-CTA: one primary per viewport.
 - Don't required-field asterisks: every visible field is required unless explicitly optional.
+
+### 6.7 Form validation contract
+
+All form fields use `aria-invalid="true"` as the single validation signal. Visual error state and shake animation are bound to this attribute. The corresponding error message lives in a `ds-helper is-error` sibling. Never use ad-hoc `.has-error` classes or inline error styling.
 
 ---
 

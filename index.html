@@ -1138,6 +1138,24 @@ a { color: inherit; text-decoration: none; }
 .ds-textarea--dark::placeholder { color: var(--text-on-dark-subtle); }
 .ds-textarea--light { background: rgba(255, 255, 255, 0.85); color: var(--text-on-light); border-color: var(--border-on-light); }
 .ds-textarea--light::placeholder { color: var(--text-on-light-subtle); }
+.ds-input[aria-invalid="true"],
+.ds-textarea[aria-invalid="true"],
+.ds-select[aria-invalid="true"] {
+  border-color: var(--color-error);
+  animation: ds-input-buzz 200ms var(--ease-ui);
+}
+@keyframes ds-input-buzz {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-3px); }
+  40%      { transform: translateX(3px); }
+  60%      { transform: translateX(-2px); }
+  80%      { transform: translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-input[aria-invalid="true"],
+  .ds-textarea[aria-invalid="true"],
+  .ds-select[aria-invalid="true"] { animation: none; }
+}
 
 /* Loaders */
 .ds-spinner {
@@ -6890,7 +6908,7 @@ a.ds-testimonial-card { cursor: pointer; }
           </div>
           <div>
             <label class="ds-field-label ds-field-label--on-dark" style="margin-bottom: 8px; display: block;">Error</label>
-            <input class="ds-input ds-input--dark ds-input--pill is-error" type="email" value="not-an-email">
+            <input class="ds-input ds-input--dark ds-input--pill" type="email" value="not-an-email" aria-invalid="true">
             <span class="ds-helper ds-helper--on-dark is-error" style="margin-top: 6px; display: block;">Enter a valid email · we don't share addresses</span>
           </div>
         </div>
@@ -6905,7 +6923,7 @@ a.ds-testimonial-card { cursor: pointer; }
           </div>
           <div>
             <label class="ds-field-label ds-field-label--on-light" style="margin-bottom: 8px; display: block;">Error</label>
-            <input class="ds-input ds-input--light ds-input--pill is-error" type="email" value="not-an-email">
+            <input class="ds-input ds-input--light ds-input--pill" type="email" value="not-an-email" aria-invalid="true">
             <span class="ds-helper ds-helper--on-light is-error" style="margin-top: 6px; display: block;">Enter a valid email · we don't share addresses</span>
           </div>
         </div>
@@ -6914,7 +6932,21 @@ a.ds-testimonial-card { cursor: pointer; }
       <h2 id="usage">Usage rules</h2>
       <p><strong>16px font-size minimum.</strong> Under 16px, iOS Safari auto-zooms when the input is focused — visible bug.</p>
       <p><strong>Pill radius for inline forms.</strong> Card radius (12px) for multi-field forms. Both share the same input atom; only the radius modifier differs.</p>
-      <p><strong>Invalid state has a 200ms shake animation.</strong> Triggered once per invalid submission via the <code>is-buzzing</code> class — see <a href="#foundation/motion">Motion / functional</a>.</p>
+      <p><strong>Invalid state uses <code>aria-invalid="true"</code>.</strong> The ARIA attribute is the canonical validation hook. It applies the error border and triggers a 200ms shake animation; remove it when the field becomes valid.</p>
+
+      <h2 id="error-state">Error state</h2>
+      <div class="ds-preview ds-preview--split">
+        <div class="ds-preview__half ds-preview__half--dark" style="flex-direction: column; align-items: stretch; padding: 32px 24px;"><span class="ds-preview__label">on-dark</span>
+          <label class="ds-field-label ds-field-label--on-dark">Email</label>
+          <input class="ds-input ds-input--dark ds-input--pill" type="email" value="not-an-email" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
+          <span class="ds-helper ds-helper--on-dark is-error">Blur the field to replay the invalid shake.</span>
+        </div>
+        <div class="ds-preview__half ds-preview__half--light" style="flex-direction: column; align-items: stretch; padding: 32px 24px;"><span class="ds-preview__label">on-light</span>
+          <label class="ds-field-label ds-field-label--on-light">Email</label>
+          <input class="ds-input ds-input--light ds-input--pill" type="email" value="not-an-email" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
+          <span class="ds-helper ds-helper--on-light is-error">Blur the field to replay the invalid shake.</span>
+        </div>
+      </div>
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#atoms/vbar-bullet"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Vertical bar bullet</span></a>
