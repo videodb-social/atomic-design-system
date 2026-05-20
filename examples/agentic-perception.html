@@ -5435,6 +5435,21 @@ a.ds-testimonial-card { cursor: pointer; }
   background: linear-gradient(to right, var(--orange-500), rgba(var(--orange-rgb), 0.45));
   border-radius: var(--r-control);
 }
+.ds-diagram__connector {
+  stroke: var(--orange-500);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-dasharray: 6 4;
+  stroke-dashoffset: 0;
+  animation: ds-stream-flow 2.4s linear infinite;
+}
+.ds-diagram__connector--reverse { animation-name: ds-stream-flow-rev; }
+.ds-diagram__connector--on-light { stroke: var(--orange-600); }
+@keyframes ds-stream-flow { to { stroke-dashoffset: -200; } }
+@keyframes ds-stream-flow-rev { to { stroke-dashoffset: 200; } }
+@media (prefers-reduced-motion: reduce) {
+  .ds-diagram__connector { animation: none; stroke-dasharray: none; }
+}
 
 /* Empty state (for stubbed pages) */
 .ds-empty {

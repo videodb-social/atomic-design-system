@@ -2595,6 +2595,24 @@ Composable diagram primitive — no chart library required. Each card carries a 
 
 **Use when:** Postmortems, performance comparisons, capacity diagrams, technical data-narrative content. Two cards side-by-side is the sweet spot. Tick labels: max 3 words, two per card. Not for marketing pages — reads as engineering.
 
+**Animated SVG connector:**
+```html
+<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Static structural lines stay un-classed -->
+  <line x1="80" y1="100" x2="200" y2="100" stroke="var(--border-on-dark-strong)" stroke-width="1"/>
+
+  <!-- The ONE flowing connector — focal element -->
+  <path class="ds-diagram__connector" d="M 200 100 L 320 100"/>
+
+  <!-- For reversed flow (e.g. response paths): -->
+  <!-- <path class="ds-diagram__connector ds-diagram__connector--reverse" d="..."/> -->
+</svg>
+```
+
+**Usage rules:**
+
+> **One flowing connector per section.** Animating every connector turns the diagram into a busy Christmas tree and erases the focal moment. Pick the single most important data path and animate it; leave structural connectors static.
+
 ---
 
 #### Roadmap timeline (Template)
