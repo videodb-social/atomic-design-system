@@ -44,6 +44,22 @@ python3 -m http.server 8080
 # → http://localhost:8080/
 ```
 
+## Review mode — point-and-click feedback
+
+The design system docs page ships with an optional review harness (in `scripts/ui-review-flow/`) for leaving Figma-style pin comments on any component. Useful for back-and-forth design feedback before a PR, or for collaborators to flag bugs without leaving the page.
+
+**To leave feedback:**
+
+1. Open the docs page with `?review=1` on the URL — e.g. `http://localhost:8080/?review=1` for local, or `https://<deployed-url>/?review=1` for staging.
+2. Click any element. A pin drops with a comment panel — type your note, paste screenshots with Cmd/Ctrl+V, add reference URLs. Save.
+3. Repeat for every piece of feedback. Pin colours: orange (open), blue (needs review — set after an AI response comes back), grey (resolved).
+4. Click **Submit feedback** in the sidebar. The browser picks a folder once (remembered via IndexedDB) and writes `feedback-bundle-LATEST.json` + extracts attachments to `<folder>/attachments/<comment-id>/`. Share that folder with your collaborator / AI agent.
+5. When responses come back as `response-bundle-LATEST.json`, click **Load Claude responses…** in the sidebar — pin statuses flip to needs-review with replies attached.
+
+**Pages without `?review=1` are unaffected.** The conditional loader in `index.html` short-circuits before fetching any harness files — production users pay 0 KB.
+
+See `scripts/ui-review-flow/README.md` for the full harness reference (file structure, auto-tagging notes, how to adopt the bundle on another project).
+
 ## Deploy to Vercel
 
 Push this folder to GitHub, then connect the repo to Vercel:
