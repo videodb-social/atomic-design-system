@@ -664,6 +664,7 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 .ds-btn__spinner {
+  display: none;
   width: 14px;
   height: 14px;
   border: 1.5px solid currentColor;
@@ -672,57 +673,56 @@ a { color: inherit; text-decoration: none; }
   animation: ds-btn-spin 720ms linear infinite;
   flex-shrink: 0;
 }
+.ds-btn[aria-busy="true"] .ds-btn__spinner { display: inline-block; }
 @keyframes ds-btn-spin { to { transform: rotate(360deg); } }
 .ds-btn--success-on-submit {
-  animation: ds-sent-bounce 400ms var(--ease-spring);
+  animation: bk-sent-bounce 400ms var(--ease-spring);
   pointer-events: none;
 }
-.ds-btn--success-on-submit .ds-btn__label,
 .ds-btn--success-on-submit .ds-btn__icon-arrow {
-  animation: ds-sent-ink 200ms var(--ease-ui) forwards;
+  animation: bk-sent-ink 200ms var(--ease-ui) forwards;
 }
-.ds-btn--success-on-submit .ds-btn__icon-check {
-  display: inline-flex;
-  animation: ds-sent-check-bounce 360ms var(--ease-spring) 200ms both;
-}
-.ds-btn--success-on-submit .ds-btn__icon-check svg,
-.ds-btn--success-on-submit .ds-btn__icon-check iconify-icon {
-  animation: ds-sent-clip-grow 280ms var(--ease-out) 280ms both;
-}
+.ds-btn.ds-btn--success-on-submit .ds-btn__icon-arrow { display: none; }
 .ds-btn .ds-btn__icon-check {
   display: none;
   align-items: center;
   justify-content: center;
 }
-@keyframes ds-sent-bounce {
+.ds-btn.ds-btn--success-on-submit .ds-btn__icon-check {
+  display: inline-flex;
+  opacity: 1;
+  animation: sent-check-bounce 360ms var(--ease-spring) 200ms both;
+}
+.ds-btn.ds-btn--success-on-submit .ds-btn__icon-check iconify-icon {
+  display: block;
+  animation: sent-clip-grow 280ms var(--ease-out) 280ms both;
+}
+@keyframes bk-sent-bounce {
   0%   { transform: scale(1); }
   40%  { transform: scale(0.94); }
   100% { transform: scale(1); }
 }
-@keyframes ds-sent-ink {
+@keyframes bk-sent-ink {
   to { opacity: 0; transform: translateY(-4px); }
 }
-@keyframes ds-sent-check-bounce {
+@keyframes sent-check-bounce {
   0%   { opacity: 0; transform: scale(0.6); }
   60%  { opacity: 1; transform: scale(1.1); }
   100% { opacity: 1; transform: scale(1); }
 }
-@keyframes ds-sent-clip-grow {
+@keyframes sent-clip-grow {
   from { clip-path: inset(0 100% 0 0); }
   to   { clip-path: inset(0 0 0 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .ds-btn__spinner { animation-duration: 1600ms; }
   .ds-btn--success-on-submit,
-  .ds-btn--success-on-submit .ds-btn__label,
   .ds-btn--success-on-submit .ds-btn__icon-arrow,
   .ds-btn--success-on-submit .ds-btn__icon-check,
-  .ds-btn--success-on-submit .ds-btn__icon-check svg,
   .ds-btn--success-on-submit .ds-btn__icon-check iconify-icon {
     animation: none;
   }
   .ds-btn--success-on-submit .ds-btn__icon-check { display: inline-flex; }
-  .ds-btn--success-on-submit .ds-btn__label,
   .ds-btn--success-on-submit .ds-btn__icon-arrow { opacity: 0; }
 }
 
@@ -976,11 +976,19 @@ a { color: inherit; text-decoration: none; }
 .ds-pill-status--dark { background: var(--grey-700); color: white; border-color: var(--grey-700); }
 .ds-pill-status--light { background: rgba(0, 0, 0, 0.04); color: var(--text-on-light); border-color: var(--border-on-light-strong); }
 .ds-pill-status--orange { background: rgba(242, 78, 30, 0.10); color: var(--orange-500); border-color: rgba(242, 78, 30, 0.40); }
+.ds-pill-status--unset { background: rgba(255, 255, 255, 0.04); color: var(--text-on-dark-subtle); border-color: var(--border-on-dark); }
+.ds-pill-status--ready { background: rgba(242, 78, 30, 0.10); color: var(--orange-500); border-color: rgba(242, 78, 30, 0.40); }
+.ds-pill-status--saving { background: rgba(255, 255, 255, 0.06); color: var(--text-on-dark); border-color: var(--border-on-dark-strong); }
+.ds-section--light .ds-pill-status--unset { background: rgba(0, 0, 0, 0.04); color: var(--text-on-light-subtle); border-color: var(--border-on-light); }
+.ds-section--light .ds-pill-status--saving { background: rgba(0, 0, 0, 0.05); color: var(--text-on-light); border-color: var(--border-on-light-strong); }
 .ds-pill-status__dot {
   width: 6px; height: 6px; border-radius: 9999px;
   background: var(--orange-500);
   flex-shrink: 0;
 }
+.ds-pill-status--unset .ds-pill-status__dot { background: currentColor; opacity: 0.45; }
+.ds-pill-status--ready .ds-pill-status__dot { background: currentColor; }
+.ds-pill-status--saving .ds-pill-status__dot { background: currentColor; animation: ds-status-pulse 1s ease-in-out infinite; }
 
 /* Tag chip — mono uppercase chip */
 .ds-tag-chip {
@@ -1083,7 +1091,6 @@ a { color: inherit; text-decoration: none; }
 .ds-input--light { background: rgba(255, 255, 255, 0.85); color: var(--text-on-light); border-color: var(--border-on-light); }
 .ds-input--light::placeholder { color: var(--text-on-light-subtle); }
 .ds-input:focus-visible { outline: 2px solid var(--orange-400); outline-offset: 2px; border-color: var(--orange-400); }
-.ds-input.is-error { border-color: var(--color-error) !important; }
 .ds-input.is-focused { outline: 2px solid var(--orange-400); outline-offset: 2px; border-color: var(--orange-400); }
 
 /* Field label */
@@ -1191,7 +1198,7 @@ a { color: inherit; text-decoration: none; }
 .ds-textarea[aria-invalid="true"],
 .ds-select[aria-invalid="true"] {
   border-color: var(--color-error);
-  animation: ds-input-buzz 200ms var(--ease-ui);
+  animation: ds-input-buzz 120ms var(--ease-ui);
 }
 @keyframes ds-input-buzz {
   0%, 100% { transform: translateX(0); }
@@ -1262,7 +1269,8 @@ a { color: inherit; text-decoration: none; }
   50% { opacity: 0.4; transform: scale(0.7); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ds-status-pulse__dot { animation: none; }
+  .ds-status-pulse__dot,
+  .ds-pill-status--saving .ds-pill-status__dot { animation: none; }
 }
 
 .ds-skeleton {
@@ -5467,12 +5475,12 @@ a.ds-testimonial-card { cursor: pointer; }
   fill: none;
   stroke-dasharray: 6 4;
   stroke-dashoffset: 0;
-  animation: ds-stream-flow 2.4s linear infinite;
+  animation: stream-flow 2.4s linear infinite;
 }
-.ds-diagram__connector--reverse { animation-name: ds-stream-flow-rev; }
+.ds-diagram__connector--reverse { animation-name: stream-flow-rev; }
 .ds-diagram__connector--on-light { stroke: var(--orange-600); }
-@keyframes ds-stream-flow { to { stroke-dashoffset: -200; } }
-@keyframes ds-stream-flow-rev { to { stroke-dashoffset: 200; } }
+@keyframes stream-flow { to { stroke-dashoffset: -200; } }
+@keyframes stream-flow-rev { to { stroke-dashoffset: 200; } }
 @media (prefers-reduced-motion: reduce) {
   .ds-diagram__connector {
     animation: none;
@@ -6123,17 +6131,19 @@ a.ds-testimonial-card { cursor: pointer; }
       </div>
 
       <h2 id="success-on-submit">Success on submit</h2>
-      <p>Use the modifier after a successful submit. The label and arrow fade while the check icon reveals; reduced motion skips directly to the final check state.</p>
+      <p>Use for form submits that need inline confirmation. The demo hook runs the full sequence: <code>Sending</code> + spinner, then <code>Thank you</code> + check icon, then reset to the original label. Production code should trigger the success step only after the request resolves.</p>
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark"><span class="ds-preview__label">on-dark</span>
-          <button class="ds-btn ds-btn--primary" type="button" onclick="this.classList.add('ds-btn--success-on-submit'); setTimeout(() => this.classList.remove('ds-btn--success-on-submit'), 1500);">
+          <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit>
+            <span class="ds-btn__spinner" aria-hidden="true"></span>
             <span class="ds-btn__label">Subscribe</span>
             <iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
             <span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span>
           </button>
         </div>
         <div class="ds-preview__half ds-preview__half--light"><span class="ds-preview__label">on-light</span>
-          <button class="ds-btn ds-btn--primary" type="button" onclick="this.classList.add('ds-btn--success-on-submit'); setTimeout(() => this.classList.remove('ds-btn--success-on-submit'), 1500);">
+          <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit>
+            <span class="ds-btn__spinner" aria-hidden="true"></span>
             <span class="ds-btn__label">Subscribe</span>
             <iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
             <span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span>
@@ -6272,7 +6282,7 @@ a.ds-testimonial-card { cursor: pointer; }
               </div>
               <div class="ds-modal__actions">
                 <button class="ds-btn ds-btn--ghost-charcoal" type="button">Cancel</button>
-                <button class="ds-btn ds-btn--primary" type="button">Submit</button>
+                <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit><span class="ds-btn__spinner" aria-hidden="true"></span><span class="ds-btn__label">Submit</span><iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon><span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span></button>
               </div>
             </article>
           </div>
@@ -6298,7 +6308,7 @@ a.ds-testimonial-card { cursor: pointer; }
               </div>
               <div class="ds-modal__actions">
                 <button class="ds-btn ds-btn--ghost-light" type="button">Cancel</button>
-                <button class="ds-btn ds-btn--primary" type="button">Submit</button>
+                <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit><span class="ds-btn__spinner" aria-hidden="true"></span><span class="ds-btn__label">Submit</span><iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon><span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span></button>
               </div>
             </article>
           </div>
@@ -6776,14 +6786,18 @@ a.ds-testimonial-card { cursor: pointer; }
       <h2 id="variants">Variants</h2>
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark"><span class="ds-preview__label">on-dark</span>
-          <button class="ds-pill-tab ds-pill-tab--dark is-selected">All</button>
-          <button class="ds-pill-tab ds-pill-tab--dark">Ingest</button>
-          <button class="ds-pill-tab ds-pill-tab--dark">Search</button>
+          <div role="tablist" aria-label="Content filters">
+            <button class="ds-pill-tab ds-pill-tab--dark is-selected" role="tab" aria-selected="true">All</button>
+            <button class="ds-pill-tab ds-pill-tab--dark" role="tab" aria-selected="false">Ingest</button>
+            <button class="ds-pill-tab ds-pill-tab--dark" role="tab" aria-selected="false">Search</button>
+          </div>
         </div>
         <div class="ds-preview__half ds-preview__half--light"><span class="ds-preview__label">on-light</span>
-          <button class="ds-pill-tab ds-pill-tab--light is-selected">npx</button>
-          <button class="ds-pill-tab ds-pill-tab--light">pip</button>
-          <button class="ds-pill-tab ds-pill-tab--light">typescript</button>
+          <div role="tablist" aria-label="Runtime filters">
+            <button class="ds-pill-tab ds-pill-tab--light is-selected" role="tab" aria-selected="true">npx</button>
+            <button class="ds-pill-tab ds-pill-tab--light" role="tab" aria-selected="false">pip</button>
+            <button class="ds-pill-tab ds-pill-tab--light" role="tab" aria-selected="false">typescript</button>
+          </div>
         </div>
       </div>
 
@@ -6847,9 +6861,25 @@ a.ds-testimonial-card { cursor: pointer; }
         </div>
       </div>
 
+      <h2 id="save-states">Save states</h2>
+      <p>Use these semantic modifiers for compact editor / form save indicators. They describe the state in text first; colour and motion only reinforce it.</p>
+      <div class="ds-preview ds-preview--split">
+        <div class="ds-preview__half ds-preview__half--dark ds-section--dark" style="flex-direction: column; align-items: flex-start; gap: 12px;"><span class="ds-preview__label">on-dark</span>
+          <span class="ds-pill-status ds-pill-status--unset"><span class="ds-pill-status__dot"></span>Unset</span>
+          <span class="ds-pill-status ds-pill-status--ready"><span class="ds-pill-status__dot"></span>Ready to save</span>
+          <span class="ds-pill-status ds-pill-status--saving"><span class="ds-pill-status__dot"></span>Saving</span>
+        </div>
+        <div class="ds-preview__half ds-preview__half--light ds-section--light" style="flex-direction: column; align-items: flex-start; gap: 12px;"><span class="ds-preview__label">on-light</span>
+          <span class="ds-pill-status ds-pill-status--unset"><span class="ds-pill-status__dot"></span>Unset</span>
+          <span class="ds-pill-status ds-pill-status--ready"><span class="ds-pill-status__dot"></span>Ready to save</span>
+          <span class="ds-pill-status ds-pill-status--saving"><span class="ds-pill-status__dot"></span>Saving</span>
+        </div>
+      </div>
+
       <h2 id="usage">Usage rules</h2>
       <p><strong>Leading orange dot</strong> is the signature for live / status indicators. The dot stays orange regardless of pill variant — it's the "this is a status" semantic.</p>
       <p><strong>Orange variant</strong> is reserved for "Recommended" tier markers and similar focal labels. Use sparingly.</p>
+      <p><strong>Save-state modifiers</strong> are <code>ds-pill-status--unset</code>, <code>ds-pill-status--ready</code>, and <code>ds-pill-status--saving</code>. Use them for local save state only; don't use them for uptime, release, or pricing labels.</p>
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#atoms/tag-chip"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Tag chip</span></a>
@@ -6981,21 +7011,12 @@ a.ds-testimonial-card { cursor: pointer; }
       <h1>Input</h1>
       <p class="ds-page__lead">Pill or card-radius text field. 16px font-size (avoids iOS auto-zoom on focus). Three states — default, focused, error. Pairs naturally with a primary button to form a subscribe / search / auth composition.</p>
 
-      <h2 id="states">States</h2>
+      <h2 id="states">Default state</h2>
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark" style="flex-direction: column; align-items: stretch; gap: 20px; padding: 32px 24px;"><span class="ds-preview__label">on-dark</span>
           <div>
             <label class="ds-field-label ds-field-label--on-dark" style="margin-bottom: 8px; display: block;">Default</label>
             <input class="ds-input ds-input--dark ds-input--pill" type="email" placeholder="you@company.com">
-          </div>
-          <div>
-            <label class="ds-field-label ds-field-label--on-dark" style="margin-bottom: 8px; display: block;">Focused</label>
-            <input class="ds-input ds-input--dark ds-input--pill is-focused" type="email" value="agent@videodb.io">
-          </div>
-          <div>
-            <label class="ds-field-label ds-field-label--on-dark" style="margin-bottom: 8px; display: block;">Error</label>
-            <input class="ds-input ds-input--dark ds-input--pill" type="email" value="not-an-email" aria-invalid="true">
-            <span class="ds-helper ds-helper--on-dark is-error" style="margin-top: 6px; display: block;">Enter a valid email · we don't share addresses</span>
           </div>
         </div>
         <div class="ds-preview__half ds-preview__half--light" style="flex-direction: column; align-items: stretch; gap: 20px; padding: 32px 24px;"><span class="ds-preview__label">on-light</span>
@@ -7003,22 +7024,32 @@ a.ds-testimonial-card { cursor: pointer; }
             <label class="ds-field-label ds-field-label--on-light" style="margin-bottom: 8px; display: block;">Default</label>
             <input class="ds-input ds-input--light ds-input--pill" type="email" placeholder="you@company.com">
           </div>
-          <div>
-            <label class="ds-field-label ds-field-label--on-light" style="margin-bottom: 8px; display: block;">Focused</label>
-            <input class="ds-input ds-input--light ds-input--pill is-focused" type="email" value="agent@videodb.io">
-          </div>
-          <div>
-            <label class="ds-field-label ds-field-label--on-light" style="margin-bottom: 8px; display: block;">Error</label>
-            <input class="ds-input ds-input--light ds-input--pill" type="email" value="not-an-email" aria-invalid="true">
-            <span class="ds-helper ds-helper--on-light is-error" style="margin-top: 6px; display: block;">Enter a valid email · we don't share addresses</span>
-          </div>
+        </div>
+      </div>
+
+      <h2 id="focused-state">Focused state</h2>
+      <div class="ds-preview ds-preview--split">
+        <div class="ds-preview__half ds-preview__half--dark" style="flex-direction: column; align-items: stretch; padding: 32px 24px;"><span class="ds-preview__label">on-dark</span>
+          <label class="ds-field-label ds-field-label--on-dark">Email</label>
+          <input class="ds-input ds-input--dark ds-input--pill is-focused" type="email" value="agent@videodb.io">
+        </div>
+        <div class="ds-preview__half ds-preview__half--light" style="flex-direction: column; align-items: stretch; padding: 32px 24px;"><span class="ds-preview__label">on-light</span>
+          <label class="ds-field-label ds-field-label--on-light">Email</label>
+          <input class="ds-input ds-input--light ds-input--pill is-focused" type="email" value="agent@videodb.io">
         </div>
       </div>
 
       <h2 id="usage">Usage rules</h2>
       <p><strong>16px font-size minimum.</strong> Under 16px, iOS Safari auto-zooms when the input is focused — visible bug.</p>
       <p><strong>Pill radius for inline forms.</strong> Card radius (12px) for multi-field forms. Both share the same input atom; only the radius modifier differs.</p>
-      <p><strong>Invalid state uses <code>aria-invalid="true"</code>.</strong> The ARIA attribute is the canonical validation hook. It applies the error border and triggers a 200ms shake animation; remove it when the field becomes valid.</p>
+      <p><strong>Three states.</strong> Default, focused, and error each get their own preview. Error uses <code>aria-invalid="true"</code>, helper text, and the shake animation.</p>
+      <p><strong>Invalid state uses <code>aria-invalid="true"</code>.</strong> The ARIA attribute is the canonical validation hook. It applies the error border and triggers a 120ms horizontal shake; remove it when the field becomes valid.</p>
+
+      <h2 id="form-validation-contract">Form validation contract</h2>
+      <p>Use <code>aria-invalid="true"</code> as the only field-level validation signal for <code>.ds-input</code>, <code>.ds-textarea</code>, and <code>.ds-select</code>. Put the human-readable message in a sibling <code>.ds-helper.is-error</code>. Do not add ad-hoc <code>.has-error</code> classes or inline red borders.</p>
+
+      <h2 id="focus-halo">Focus halo</h2>
+      <p>Keyboard focus uses the global <code>:focus-visible</code> orange halo. Inputs also set the border to orange. Static docs use <code>.is-focused</code> only to preview the focused visual without requiring keyboard interaction.</p>
 
       <h2 id="error-state">Error state</h2>
       <div class="ds-preview ds-preview--split">
@@ -7235,23 +7266,23 @@ a.ds-testimonial-card { cursor: pointer; }
       </div>
 
       <h2 id="error">Error · validation</h2>
-      <p>Same primitive with <code>is-error</code> — color flips to <code>--color-error</code> and the associated input picks up an error border. Use on submit-fail or live-validation; never to scold the user for in-progress input.</p>
+      <p>Same primitive with <code>aria-invalid="true"</code> on the input and <code>is-error</code> on the helper — the field gets the error border + shake, while helper text turns <code>--color-error</code>. Use on submit-fail or live-validation; never to scold the user for in-progress input.</p>
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark" style="flex-direction: column; align-items: stretch; gap: 8px;"><span class="ds-preview__label">on-dark</span>
           <label class="ds-field-label ds-field-label--on-dark">Email</label>
-          <input class="ds-input ds-input--dark is-error" type="email" value="not-an-email">
+          <input class="ds-input ds-input--dark" type="email" value="not-an-email" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
           <span class="ds-helper ds-helper--on-dark is-error">Enter a valid email · we don't share addresses</span>
         </div>
         <div class="ds-preview__half ds-preview__half--light" style="flex-direction: column; align-items: stretch; gap: 8px;"><span class="ds-preview__label">on-light</span>
           <label class="ds-field-label ds-field-label--on-light">Email</label>
-          <input class="ds-input ds-input--light is-error" type="email" value="not-an-email">
+          <input class="ds-input ds-input--light" type="email" value="not-an-email" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
           <span class="ds-helper ds-helper--on-light is-error">Enter a valid email · we don't share addresses</span>
         </div>
       </div>
 
       <h2 id="usage">Usage rules</h2>
       <p><strong>Use for guidance, not requirement.</strong> Required-field asterisks are forbidden — every visible field is required unless explicitly marked optional.</p>
-      <p><strong>Error helper is red.</strong> When <code>is-error</code> applies, helper text turns <code>--color-error</code> + the associated input border too.</p>
+      <p><strong>Error helper is red.</strong> Use <code>is-error</code> on helper text only; use <code>aria-invalid="true"</code> on the associated input for the same border and 120ms shake used by Atom/Input.</p>
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#atoms/textarea"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Textarea</span></a>
@@ -7373,21 +7404,21 @@ a.ds-testimonial-card { cursor: pointer; }
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark" style="gap: 16px; padding: 32px 24px;"><span class="ds-preview__label">on-dark</span>
           <div class="ds-stat ds-stat--dark" style="flex: 1;">
-            <span class="ds-stat__value">2.4M</span>
+            <span class="ds-stat__value" data-ds-count-up>2.4M</span>
             <span class="ds-stat__label">Hours indexed</span>
           </div>
           <div class="ds-stat ds-stat--dark" style="flex: 1;">
-            <span class="ds-stat__value">10×</span>
+            <span class="ds-stat__value" data-ds-count-up>10×</span>
             <span class="ds-stat__label">Faster than blob storage</span>
           </div>
         </div>
         <div class="ds-preview__half ds-preview__half--light" style="gap: 16px; padding: 32px 24px;"><span class="ds-preview__label">on-light</span>
           <div class="ds-stat ds-stat--light" style="flex: 1;">
-            <span class="ds-stat__value">2.4M</span>
+            <span class="ds-stat__value" data-ds-count-up>2.4M</span>
             <span class="ds-stat__label">Hours indexed</span>
           </div>
           <div class="ds-stat ds-stat--light" style="flex: 1;">
-            <span class="ds-stat__value">10×</span>
+            <span class="ds-stat__value" data-ds-count-up>10×</span>
             <span class="ds-stat__label">Faster than blob storage</span>
           </div>
         </div>
@@ -7398,13 +7429,13 @@ a.ds-testimonial-card { cursor: pointer; }
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark" style="padding: 32px 24px;"><span class="ds-preview__label">on-dark</span>
           <div class="ds-stat ds-stat--dark" style="min-width: 200px;">
-            <span class="ds-stat__value ds-stat__value--orange">99.99%</span>
+            <span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>99.99%</span>
             <span class="ds-stat__label">Indexing uptime</span>
           </div>
         </div>
         <div class="ds-preview__half ds-preview__half--light" style="padding: 32px 24px;"><span class="ds-preview__label">on-light</span>
           <div class="ds-stat ds-stat--light" style="min-width: 200px;">
-            <span class="ds-stat__value ds-stat__value--orange">99.99%</span>
+            <span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>99.99%</span>
             <span class="ds-stat__label">Indexing uptime</span>
           </div>
         </div>
@@ -7412,6 +7443,7 @@ a.ds-testimonial-card { cursor: pointer; }
 
       <h2 id="usage">Usage rules</h2>
       <p><strong>Use tabular-nums.</strong> The atom enforces <code>font-variant-numeric: tabular-nums</code> so digits have equal advance width — critical for stat strips where animated counters need to land cleanly.</p>
+      <p><strong>Count-up is opt-in.</strong> Add <code>data-ds-count-up</code> to <code>.ds-stat__value</code> when the number should animate once on viewport entry. The parser preserves suffixes and formatting like <code>2.4M</code>, <code>99.99%</code>, <code>3,400+</code>, and <code>10×</code>.</p>
       <p><strong>Three to five per row.</strong> Below three, use inline copy. Above five, the eye starts skipping numbers.</p>
       <p><strong>Label stays short.</strong> Three to five words. The label is the unit / context for the number — not a marketing sentence.</p>
 
@@ -7582,16 +7614,16 @@ a.ds-testimonial-card { cursor: pointer; }
       </div>
 
       <h2 id="error">Error state</h2>
-      <p>Failed validation. Input picks up the red border; helper text turns red and explains the fix.</p>
+      <p>Failed validation. Input uses <code>aria-invalid="true"</code> for the red border + shake; helper text turns red and explains the fix.</p>
       <div class="ds-preview ds-preview--split">
         <div class="ds-preview__half ds-preview__half--dark" style="flex-direction: column; align-items: stretch; gap: 8px;"><span class="ds-preview__label">on-dark</span>
           <label class="ds-field-label ds-field-label--on-dark">Workspace URL</label>
-          <input class="ds-input ds-input--dark is-error" type="text" value="ACME!">
+          <input class="ds-input ds-input--dark" type="text" value="ACME!" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
           <span class="ds-helper ds-helper--on-dark is-error">Lowercase letters and dashes only — strip caps and the bang</span>
         </div>
         <div class="ds-preview__half ds-preview__half--light" style="flex-direction: column; align-items: stretch; gap: 8px;"><span class="ds-preview__label">on-light</span>
           <label class="ds-field-label ds-field-label--on-light">Workspace URL</label>
-          <input class="ds-input ds-input--light is-error" type="text" value="ACME!">
+          <input class="ds-input ds-input--light" type="text" value="ACME!" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
           <span class="ds-helper ds-helper--on-light is-error">Lowercase letters and dashes only — strip caps and the bang</span>
         </div>
       </div>
@@ -7620,7 +7652,7 @@ a.ds-testimonial-card { cursor: pointer; }
           <label class="ds-field-label ds-field-label--on-dark">Your email</label>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <input class="ds-input ds-input--dark ds-input--pill" type="email" placeholder="you@company.com" style="flex: 1; min-width: 220px;">
-            <button class="ds-btn ds-btn--primary" type="button">Subscribe <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></button>
+            <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit><span class="ds-btn__spinner" aria-hidden="true"></span><span class="ds-btn__label">Subscribe</span><iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon><span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span></button>
           </div>
           <span class="ds-helper ds-helper--on-dark">Useful signal only · no spam · unsubscribe anytime</span>
         </div>
@@ -7628,7 +7660,7 @@ a.ds-testimonial-card { cursor: pointer; }
           <label class="ds-field-label ds-field-label--on-light">Your email</label>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <input class="ds-input ds-input--light ds-input--pill" type="email" placeholder="you@company.com" style="flex: 1; min-width: 220px;">
-            <button class="ds-btn ds-btn--primary" type="button">Subscribe <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></button>
+            <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit><span class="ds-btn__spinner" aria-hidden="true"></span><span class="ds-btn__label">Subscribe</span><iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon><span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span></button>
           </div>
           <span class="ds-helper ds-helper--on-light">Useful signal only · no spam · unsubscribe anytime</span>
         </div>
@@ -7637,7 +7669,7 @@ a.ds-testimonial-card { cursor: pointer; }
       <h2 id="usage">Usage rules</h2>
       <p><strong>Single field only.</strong> Subscribe band captures one email. If you need name + email or other fields, switch to a multi-field form inside a card.</p>
       <p><strong>Helper carries trust copy.</strong> "No spam", "unsubscribe anytime", or "weekly only" — the helper is where conversion friction is removed.</p>
-      <p><strong>Disable submit on click.</strong> After Subscribe is clicked, swap to the button's <a href="#atoms/button">Loading state</a> so the user can't double-submit.</p>
+      <p><strong>Confirm successful submits.</strong> Click moves through <code>Sending</code>, then <code>Thank you</code> with <code>ds-btn--success-on-submit</code>, then resets to the original label.</p>
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#molecules/form-field"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Form field</span></a>
@@ -7656,15 +7688,15 @@ a.ds-testimonial-card { cursor: pointer; }
         <div class="ds-preview__half ds-preview__half--dark"><span class="ds-preview__label">on-dark</span>
           <div class="ds-mode-toggle ds-mode-toggle--dark ds-mode-toggle--equal" role="group" aria-label="View mode" style="--ds-slider-w: 82px; --ds-slider-x: 4px;">
             <span class="ds-mode-toggle__slider"></span>
-            <button class="ds-mode-toggle__btn is-active" type="button"><iconify-icon icon="solar:list-linear" width="14" height="14"></iconify-icon> List</button>
-            <button class="ds-mode-toggle__btn" type="button"><iconify-icon icon="solar:widget-2-linear" width="14" height="14"></iconify-icon> Grid</button>
+            <button class="ds-mode-toggle__btn is-active" type="button" aria-pressed="true"><iconify-icon icon="solar:list-linear" width="14" height="14"></iconify-icon> List</button>
+            <button class="ds-mode-toggle__btn" type="button" aria-pressed="false"><iconify-icon icon="solar:widget-2-linear" width="14" height="14"></iconify-icon> Grid</button>
           </div>
         </div>
         <div class="ds-preview__half ds-preview__half--light"><span class="ds-preview__label">on-light</span>
           <div class="ds-mode-toggle ds-mode-toggle--light ds-mode-toggle--equal" role="group" aria-label="View mode" style="--ds-slider-w: 82px; --ds-slider-x: 4px;">
             <span class="ds-mode-toggle__slider"></span>
-            <button class="ds-mode-toggle__btn is-active" type="button"><iconify-icon icon="solar:list-linear" width="14" height="14"></iconify-icon> List</button>
-            <button class="ds-mode-toggle__btn" type="button"><iconify-icon icon="solar:widget-2-linear" width="14" height="14"></iconify-icon> Grid</button>
+            <button class="ds-mode-toggle__btn is-active" type="button" aria-pressed="true"><iconify-icon icon="solar:list-linear" width="14" height="14"></iconify-icon> List</button>
+            <button class="ds-mode-toggle__btn" type="button" aria-pressed="false"><iconify-icon icon="solar:widget-2-linear" width="14" height="14"></iconify-icon> Grid</button>
           </div>
         </div>
       </div>
@@ -7756,7 +7788,7 @@ a.ds-testimonial-card { cursor: pointer; }
 
       <h2 id="usage">Usage rules</h2>
       <p><strong>Place absolute top-right of the section.</strong> The toggle is chrome for that one section, not a global control. <code>position: absolute; top: 24px; right: 24px</code> is the canonical placement.</p>
-      <p><strong>Fire on <code>mousedown</code>, not <code>click</code>.</strong> The flip should feel instant. Click waits for mouse-up — mousedown removes that delay (~50ms saved on every flip).</p>
+      <p><strong>Activate on <code>click</code>.</strong> Click keeps mouse, touch, keyboard, and assistive tech paths aligned while the button pair updates <code>is-active</code> and <code>aria-pressed</code>.</p>
       <p><strong>Disable transitions during flip.</strong> Add a <code>.is-flipping</code> class to the section that suppresses all CSS transitions for one frame, so the colors swap atomically and don't crossfade through invalid intermediate states.</p>
 
       <div class="ds-pagination">
@@ -8210,7 +8242,7 @@ a.ds-testimonial-card { cursor: pointer; }
             <div class="ds-dispatch-card__form">
               <label class="ds-field-label ds-field-label--on-dark">Subscribe</label>
               <input class="ds-input ds-input--dark ds-input--pill" type="email" placeholder="you@company.com">
-              <button class="ds-btn ds-btn--primary" type="button">Get the dispatch</button>
+              <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit><span class="ds-btn__spinner" aria-hidden="true"></span><span class="ds-btn__label">Get the dispatch</span><iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon><span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span></button>
             </div>
           </article>
         </div>
@@ -8224,7 +8256,7 @@ a.ds-testimonial-card { cursor: pointer; }
             <div class="ds-dispatch-card__form">
               <label class="ds-field-label ds-field-label--on-light">Subscribe</label>
               <input class="ds-input ds-input--light ds-input--pill" type="email" placeholder="you@company.com">
-              <button class="ds-btn ds-btn--primary" type="button">Get the dispatch</button>
+              <button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit><span class="ds-btn__spinner" aria-hidden="true"></span><span class="ds-btn__label">Get the dispatch</span><iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon><span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span></button>
             </div>
           </article>
         </div>
@@ -8810,7 +8842,7 @@ a.ds-testimonial-card { cursor: pointer; }
       </div>
 
       <h2 id="usage">Usage rules</h2>
-      <p><strong>Active state from scroll-spy.</strong> Use IntersectionObserver with rootMargin <code>-15% 0px -70% 0px</code> so the active section is the one currently in the upper-middle of the viewport. The same pattern as this docs site's right-rail TOC.</p>
+      <p><strong>Active state from click, focus, or scroll-spy.</strong> Demo links update <code>is-active</code> and <code>aria-current</code> on click/focus. In production, use IntersectionObserver with rootMargin <code>-15% 0px -70% 0px</code> so the active section is the one currently in the upper-middle of the viewport.</p>
       <p><strong>One link per article H2.</strong> H3 subsections don't get their own TOC entries — they'd make the rail too dense to scan. If a section is so long it needs subdivision, break it into multiple H2s instead.</p>
       <p><strong>Always carries <code>aria-label="On this page"</code>.</strong> Screen-reader users land on the nav landmark and immediately know it's the article's local TOC, not the site nav.</p>
 
@@ -8873,17 +8905,74 @@ videodb query "shot 12 · skyline · golden hour"</pre>
 
       <h2 id="usage">Usage rules</h2>
       <p><strong>Dark is the canonical surface.</strong> Code reads as code with a syntax-friendly dark background; the light variant exists only for inline embeds where the article context demands it.</p>
-      <p><strong>Status bar is optional.</strong> Use it for live runtime indicators ("Live · 120ms · v2.4.0") or omit when the code is static documentation. The pulsing orange dot reuses the <a href="#atoms/loaders">Status pulse</a> primitive.</p>
+      <p><strong>Status bar is optional.</strong> Use metrics status for live runtime indicators (<code>Live · 120ms · v2.4.0</code>). Use filename status for quickstarts and file-oriented examples (<code>quickstart.sh</code>). The ready dot reuses the <a href="#atoms/loaders">Status pulse</a> primitive.</p>
       <p><strong>Tab pills always lead with the most-popular runtime.</strong> npx for JS, pip for Python, react for framework switchers — the option a new visitor most likely already has installed.</p>
       <p><strong>Copy button swaps to "Copied" for 1.2s on success.</strong> JS toggles the label and color so the user gets feedback without a separate toast.</p>
 
-      <h2 id="animated">Animated</h2>
-      <div class="ds-preview ds-preview--dark" style="padding: 40px 32px;">
-        <div class="ds-code-block ds-code-block--dark ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300" style="width: 100%; max-width: 720px;">
-          <pre class="ds-code-block__body ds-code-block__code">npx skills add video-db/skills</pre>
+      <h2 id="animated">Variant B · Animated</h2>
+      <div class="ds-preview ds-preview--split ds-preview--stacked">
+        <div class="ds-preview__half ds-preview__half--dark" style="padding: 40px 32px;"><span class="ds-preview__label">on-dark</span>
+          <div class="ds-code-block ds-code-block--dark ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300" style="width: 100%;">
+            <div class="ds-code-block__head">
+              <div role="tablist" aria-label="Runtime">
+                <div class="ds-code-tab-pills ds-code-tab-pills--dark">
+                  <button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">npx</button>
+                  <button class="ds-code-tab-pills__btn" role="tab" aria-selected="false">pip</button>
+                  <button class="ds-code-tab-pills__btn" role="tab" aria-selected="false">typescript</button>
+                </div>
+              </div>
+              <button class="ds-code-block__copy" type="button">Copy</button>
+            </div>
+            <pre class="ds-code-block__body">npx videodb init my-project
+cd my-project &amp;&amp; npm install
+videodb index ./samples/clip.mp4
+
+# Query a moment by spoken word + visual object
+videodb query "shot 12 · skyline · golden hour"</pre>
+            <div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">Live · 120ms · v2.4.0</span></div>
+          </div>
+        </div>
+        <div class="ds-preview__half ds-preview__half--light" style="padding: 40px 32px;"><span class="ds-preview__label">on-light</span>
+          <div class="ds-code-block ds-code-block--light ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300" style="width: 100%;">
+            <div class="ds-code-block__head">
+              <div role="tablist" aria-label="Runtime">
+                <div class="ds-code-tab-pills ds-code-tab-pills--light">
+                  <button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">npx</button>
+                  <button class="ds-code-tab-pills__btn" role="tab" aria-selected="false">pip</button>
+                  <button class="ds-code-tab-pills__btn" role="tab" aria-selected="false">typescript</button>
+                </div>
+              </div>
+              <button class="ds-code-block__copy" type="button">Copy</button>
+            </div>
+            <pre class="ds-code-block__body">npx videodb init my-project
+cd my-project &amp;&amp; npm install
+videodb index ./samples/clip.mp4
+
+# Query a moment by spoken word + visual object
+videodb query "shot 12 · skyline · golden hour"</pre>
+            <div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">Live · 120ms · v2.4.0</span></div>
+          </div>
         </div>
       </div>
       <p><strong>Viewport-triggered type-on.</strong> Add <code>data-ds-typewriter</code> to the block and tune speed with <code>data-ds-typewriter-delay</code> and <code>data-ds-typewriter-start</code>. Reduced motion skips to the final text with a static cursor.</p>
+
+      <h2 id="status-variants">Status variants</h2>
+      <p>The bottom status bar supports two content patterns: runtime metrics for live snippets, and filename + ready dot for static quickstart files.</p>
+      <div class="ds-preview ds-preview--split ds-preview--stacked">
+        <div class="ds-preview__half ds-preview__half--dark" style="padding: 32px;"><span class="ds-preview__label">metrics</span>
+          <div class="ds-code-block ds-code-block--dark" style="width: 100%;">
+            <pre class="ds-code-block__body">videodb query "shot 12 · skyline · golden hour"</pre>
+            <div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">Live · 120ms · v2.4.0</span></div>
+          </div>
+        </div>
+        <div class="ds-preview__half ds-preview__half--dark" style="padding: 32px;"><span class="ds-preview__label">filename</span>
+          <div class="ds-code-block ds-code-block--dark" style="width: 100%;">
+            <pre class="ds-code-block__body">#!/usr/bin/env bash
+videodb index ./samples/clip.mp4</pre>
+            <div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">quickstart.sh</span></div>
+          </div>
+        </div>
+      </div>
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#organisms/editorial-primitives"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Editorial primitives</span></a>
@@ -10792,9 +10881,9 @@ for match in result:
             <div class="ds-cta-band__inner">
               <h2 class="ds-cta-band__title">Built for production from day one.</h2>
               <div class="ds-cta-band__stat-row">
-                <div class="ds-stat ds-stat--dark"><span class="ds-stat__value ds-stat__value--orange">4.2B</span><span class="ds-stat__label">queries served</span></div>
-                <div class="ds-stat ds-stat--dark"><span class="ds-stat__value">99.99%</span><span class="ds-stat__label">SLA uptime</span></div>
-                <div class="ds-stat ds-stat--dark"><span class="ds-stat__value">3,400+</span><span class="ds-stat__label">developers</span></div>
+                <div class="ds-stat ds-stat--dark"><span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>4.2B</span><span class="ds-stat__label">queries served</span></div>
+                <div class="ds-stat ds-stat--dark"><span class="ds-stat__value" data-ds-count-up>99.99%</span><span class="ds-stat__label">SLA uptime</span></div>
+                <div class="ds-stat ds-stat--dark"><span class="ds-stat__value" data-ds-count-up>3,400+</span><span class="ds-stat__label">developers</span></div>
               </div>
               <div class="ds-cta-band__actions">
                 <div class="ds-cta-pair">
@@ -11432,7 +11521,7 @@ for match in result:
                       <a class="ds-btn ds-btn--primary" href="#">Try the playground <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
                     </div>
                     <div class="ds-hero__code-wrap">
-                      <div class="ds-code-block ds-code-block--dark">
+                      <div class="ds-code-block ds-code-block--dark ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300">
                         <div class="ds-code-block__head">
                           <div role="tablist" aria-label="Runtime">
                             <div class="ds-code-tab-pills ds-code-tab-pills--dark">
@@ -11467,7 +11556,7 @@ director.compose(["ingest", "index", "search"])</pre>
                       <a class="ds-btn ds-btn--primary" href="#">Try the playground <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></a>
                     </div>
                     <div class="ds-hero__code-wrap">
-                      <div class="ds-code-block ds-code-block--light">
+                      <div class="ds-code-block ds-code-block--light ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300">
                         <div class="ds-code-block__head">
                           <div role="tablist" aria-label="Runtime">
                             <div class="ds-code-tab-pills ds-code-tab-pills--light">
@@ -12809,13 +12898,13 @@ print(result.timestamps)</pre>
         <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Single animated data flow connector" style="width: 100%; max-width: 640px; height: auto;">
           <rect x="34" y="58" width="92" height="54" rx="12" fill="var(--charcoal)" stroke="var(--border-on-dark-strong)"/>
           <rect x="274" y="58" width="92" height="54" rx="12" fill="var(--charcoal)" stroke="var(--border-on-dark-strong)"/>
-          <line x1="126" y1="85" x2="200" y2="85" stroke="var(--border-on-dark-strong)" stroke-width="1"/>
-          <path class="ds-diagram__connector" d="M 200 85 L 274 85"/>
+          <path class="ds-diagram__connector" d="M 126 85 L 274 85"/>
           <text x="80" y="91" text-anchor="middle" fill="var(--text-on-dark)" font-family="JetBrains Mono" font-size="11" letter-spacing="1.4">INGEST</text>
           <text x="320" y="91" text-anchor="middle" fill="var(--text-on-dark)" font-family="JetBrains Mono" font-size="11" letter-spacing="1.4">INDEX</text>
         </svg>
       </div>
       <p><strong>One flowing connector per section.</strong> Animate the single focal data path; leave structural connectors static so the diagram reads as signal, not ornament.</p>
+      <p><strong>Implementation.</strong> Apply <code>ds-diagram__connector</code> to one SVG <code>&lt;path&gt;</code>. It uses <code>stroke-dasharray</code> plus the <code>stream-flow</code> keyframe to animate <code>stroke-dashoffset</code>. Add <code>ds-diagram__connector--reverse</code> to use <code>stream-flow-rev</code> for response paths.</p>
 
       <h2 id="usage">Usage rules</h2>
       <p><strong>Two cards is the sweet spot.</strong> Side-by-side compare reads cleanly. One card alone feels lonely; three+ cards on a row compress the rows too tight to scan.</p>
@@ -13209,6 +13298,9 @@ print(result.timestamps)</pre>
     if (activePage && typeof initScrollReveals === 'function') {
       initScrollReveals(activePage);
     }
+    if (activePage && typeof initCountUpStats === 'function') {
+      initCountUpStats(activePage);
+    }
   }
 
   function buildToc(pageName) {
@@ -13289,6 +13381,51 @@ print(result.timestamps)</pre>
     });
   });
 
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.ds-code-block__copy');
+    if (!btn) return;
+    const block = btn.closest('.ds-code-block');
+    const codeEl = block && (block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body'));
+    if (!codeEl) return;
+    const text = block.dataset.dsTypewriterText || codeEl.textContent.trim();
+    const original = btn.textContent;
+    const showCopied = () => {
+      btn.textContent = 'Copied';
+      setTimeout(() => { btn.textContent = original; }, 1200);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(showCopied).catch(showCopied);
+    else showCopied();
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-ds-success-submit]');
+    if (!btn) return;
+    const label = btn.querySelector('.ds-btn__label');
+    if (!label || btn.getAttribute('aria-busy') === 'true') return;
+    if (!btn.querySelector('.ds-btn__icon-check')) {
+      btn.insertAdjacentHTML('beforeend', '<span class="ds-btn__icon-check" aria-hidden="true"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span>');
+    }
+    const original = btn.dataset.dsSuccessLabel || label.textContent.trim();
+    btn.dataset.dsSuccessLabel = original;
+    clearTimeout(btn._dsSuccessTimer);
+    clearTimeout(btn._dsResetTimer);
+    btn.classList.remove('ds-btn--success-on-submit');
+    btn.setAttribute('aria-busy', 'true');
+    btn.disabled = true;
+    label.textContent = btn.dataset.dsLoadingLabel || 'Sending';
+    btn._dsSuccessTimer = setTimeout(() => {
+      btn.removeAttribute('aria-busy');
+      btn.disabled = false;
+      label.textContent = btn.dataset.dsDoneLabel || 'Thank you';
+      void btn.offsetWidth;
+      btn.classList.add('ds-btn--success-on-submit');
+      btn._dsResetTimer = setTimeout(() => {
+        btn.classList.remove('ds-btn--success-on-submit');
+        label.textContent = original;
+      }, 1500);
+    }, 700);
+  });
+
   // ──── Dot-loader engine — 7×7 grid, frame-by-frame ───────────────────────
   // Ported from merged-design-system-cleanup. Each frame is a list of indices
   // (0–48) for which dots are .is-active that frame. Three frame sets:
@@ -13332,6 +13469,7 @@ print(result.timestamps)</pre>
       if (!codeEl) return;
 
       const fullText = codeEl.textContent;
+      block.dataset.dsTypewriterText = fullText;
       const charDelay = parseInt(block.dataset.dsTypewriterDelay, 10) || 40;
       const startDelay = parseInt(block.dataset.dsTypewriterStart, 10) || 300;
 
@@ -13593,6 +13731,116 @@ print(result.timestamps)</pre>
         else if (e.key === 'ArrowLeft') next = arr[(i - 1 + arr.length) % arr.length];
         else if (e.key === 'Home') next = arr[0];
         else if (e.key === 'End') next = arr[arr.length - 1];
+        if (next) { next.focus(); e.preventDefault(); }
+      });
+      group.dataset.dsBooted = '1';
+    });
+
+    document.querySelectorAll('.ds-pill-tab').forEach(trigger => {
+      const group = trigger.closest('[role="tablist"]') || trigger.parentElement;
+      if (!group || group.dataset.dsPillTabsBooted === '1') return;
+      const triggers = Array.from(group.querySelectorAll('.ds-pill-tab'));
+      function activate(target) {
+        triggers.forEach(t => {
+          const isActive = t === target;
+          t.classList.toggle('is-selected', isActive);
+          t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+      }
+      triggers.forEach(t => t.addEventListener('click', () => activate(t)));
+      group.addEventListener('keydown', e => {
+        const i = triggers.indexOf(document.activeElement);
+        if (i === -1) return;
+        let next = null;
+        if (e.key === 'ArrowRight') next = triggers[(i + 1) % triggers.length];
+        else if (e.key === 'ArrowLeft') next = triggers[(i - 1 + triggers.length) % triggers.length];
+        else if (e.key === 'Home') next = triggers[0];
+        else if (e.key === 'End') next = triggers[triggers.length - 1];
+        if (next) { next.focus(); e.preventDefault(); }
+      });
+      group.dataset.dsPillTabsBooted = '1';
+    });
+
+    document.querySelectorAll('.ds-mode-toggle, .ds-surface-toggle').forEach(group => {
+      if (group.dataset.dsToggleBooted === '1') return;
+      const triggers = Array.from(group.querySelectorAll('.ds-mode-toggle__btn, .ds-surface-toggle__btn'));
+      function moveModeSlider(target) {
+        if (!group.classList.contains('ds-mode-toggle')) return;
+        const groupRect = group.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        if (!targetRect.width) return;
+        group.style.setProperty('--ds-slider-w', targetRect.width + 'px');
+        group.style.setProperty('--ds-slider-x', (targetRect.left - groupRect.left) + 'px');
+      }
+      function activate(target) {
+        triggers.forEach(t => {
+          const isActive = t === target;
+          t.classList.toggle('is-active', isActive);
+          t.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        moveModeSlider(target);
+      }
+      const active = triggers.find(t => t.classList.contains('is-active')) || triggers[0];
+      if (active) activate(active);
+      triggers.forEach(t => t.addEventListener('click', () => activate(t)));
+      group.dataset.dsToggleBooted = '1';
+    });
+
+    document.querySelectorAll('.ds-article-toc').forEach(toc => {
+      if (toc.dataset.dsArticleTocBooted === '1') return;
+      const links = Array.from(toc.querySelectorAll('.ds-article-toc__link'));
+      function activate(target) {
+        links.forEach(link => {
+          const isActive = link === target;
+          link.classList.toggle('is-active', isActive);
+          if (isActive) link.setAttribute('aria-current', 'true');
+          else link.removeAttribute('aria-current');
+        });
+      }
+      links.forEach(link => {
+        link.addEventListener('click', e => {
+          if (link.getAttribute('href') === '#') e.preventDefault();
+          activate(link);
+        });
+        link.addEventListener('focus', () => activate(link));
+      });
+      toc.dataset.dsArticleTocBooted = '1';
+    });
+
+    const CODE_TAB_SNIPPETS = {
+      npx: 'npx videodb init my-project\ncd my-project && npm install\nvideodb index ./samples/clip.mp4\n\n# Query a moment by spoken word + visual object\nvideodb query "shot 12 · skyline · golden hour"',
+      pip: 'pip install videodb\n\npython - <<\'PY\'\nfrom videodb import connect\n\nconn = connect()\nvideo = conn.upload("./samples/clip.mp4")\nvideo.index_spoken_words()\n\nprint(video.search("shot 12 · skyline · golden hour"))\nPY',
+      typescript: 'import { connect } from "videodb";\n\nconst conn = await connect();\nconst video = await conn.upload("./samples/clip.mp4");\nawait video.indexSpokenWords();\n\nconst results = await video.search("shot 12 · skyline · golden hour");\nconsole.log(results);',
+      python: 'from videodb import connect, Director\n\ndirector = Director(connect())\ndirector.compose(["ingest", "index", "search"])'
+    };
+
+    document.querySelectorAll('.ds-code-tab-pills').forEach(group => {
+      if (group.dataset.dsBooted === '1') return;
+      const triggers = Array.from(group.querySelectorAll('.ds-code-tab-pills__btn'));
+      const block = group.closest('.ds-code-block');
+      const body = block && (block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body'));
+      if (body && !body.dataset.dsDefaultCode) body.dataset.dsDefaultCode = body.textContent;
+      function activate(trigger) {
+        triggers.forEach(t => {
+          const isActive = t === trigger;
+          t.classList.toggle('is-selected', isActive);
+          t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        if (body) {
+          const key = trigger.textContent.trim().toLowerCase();
+          body.textContent = trigger.dataset.code || CODE_TAB_SNIPPETS[key] || body.dataset.dsDefaultCode;
+          if (block) block.dataset.dsTypewriterText = body.textContent;
+        }
+      }
+      triggers.forEach(t => t.addEventListener('click', () => activate(t)));
+      group.addEventListener('keydown', e => {
+        const i = triggers.indexOf(document.activeElement);
+        if (i === -1) return;
+        let next = null;
+        if (e.key === 'ArrowRight') next = triggers[(i + 1) % triggers.length];
+        else if (e.key === 'ArrowLeft') next = triggers[(i - 1 + triggers.length) % triggers.length];
+        else if (e.key === 'Home') next = triggers[0];
+        else if (e.key === 'End') next = triggers[triggers.length - 1];
         if (next) { next.focus(); e.preventDefault(); }
       });
       group.dataset.dsBooted = '1';
@@ -13929,6 +14177,82 @@ print(result.timestamps)</pre>
     });
   }
 
+  // ──── Stat count-up — viewport-triggered numeric reveal ──────────────────
+  // Opt-in via `[data-ds-count-up]` on `.ds-stat__value`. The parser preserves
+  // prefixes, suffixes, decimal precision, and comma grouping so values like
+  // `2.4M`, `99.99%`, `3,400+`, and `10×` land in their original format.
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let _countUpIO = null;
+  function parseCountUpValue(text) {
+    const match = String(text).trim().match(/^([^0-9+-]*)([-+]?\d[\d,]*(?:\.\d+)?)(.*)$/);
+    if (!match) return null;
+    const rawNumber = match[2];
+    const decimals = rawNumber.includes('.') ? rawNumber.split('.')[1].length : 0;
+    return {
+      prefix: match[1],
+      target: parseFloat(rawNumber.replace(/,/g, '')),
+      suffix: match[3],
+      decimals,
+      useCommas: rawNumber.includes(',')
+    };
+  }
+  function formatCountUpValue(value, config) {
+    let number = value.toFixed(config.decimals);
+    if (config.useCommas) {
+      const parts = number.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      number = parts.join('.');
+    }
+    return config.prefix + number + config.suffix;
+  }
+  function animateCountUp(el) {
+    if (el.dataset.dsCountUpDone === '1') return;
+    const finalText = el.dataset.dsCountUpFinal || el.textContent.trim();
+    el.dataset.dsCountUpFinal = finalText;
+    const config = parseCountUpValue(finalText);
+    el.dataset.dsCountUpDone = '1';
+    if (!config || !Number.isFinite(config.target) || prefersReducedMotion) {
+      el.textContent = finalText;
+      return;
+    }
+    const duration = parseInt(el.dataset.dsCountUpDuration || '1000', 10);
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = formatCountUpValue(config.target * eased, config);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = finalText;
+    }
+    el.textContent = formatCountUpValue(0, config);
+    requestAnimationFrame(tick);
+  }
+  function getCountUpIO() {
+    if (_countUpIO || !('IntersectionObserver' in window)) return _countUpIO;
+    _countUpIO = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        animateCountUp(entry.target);
+        _countUpIO.unobserve(entry.target);
+      });
+    }, { threshold: 0.35, rootMargin: '0px 0px -8% 0px' });
+    return _countUpIO;
+  }
+  function initCountUpStats(root) {
+    root = root || document;
+    const scope = root === document ? (document.querySelector('.ds-page.is-active') || document) : root;
+    const values = scope.querySelectorAll('[data-ds-count-up]');
+    if (!values.length) return;
+    const io = getCountUpIO();
+    values.forEach(value => {
+      if (value.dataset.dsCountUpBooted === '1' || value.dataset.dsCountUpDone === '1') return;
+      value.dataset.dsCountUpBooted = '1';
+      value.dataset.dsCountUpFinal = value.textContent.trim();
+      if (!io) animateCountUp(value);
+      else io.observe(value);
+    });
+  }
+
   // ──── Mobile drawer — open/close, focus trap, scroll lock, accordion ────
   // Each `[data-ds-mobile-drawer]` is a dialog panel. Triggers carry
   // `[data-ds-mobile-drawer-open]` with `aria-controls` pointing at the drawer
@@ -14033,9 +14357,9 @@ print(result.timestamps)</pre>
 
   // ──── Boot ────────────────────────────────────────────────────────────────
   window.addEventListener('hashchange', () => activatePage(parseHash()));
-  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
+  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); initCountUpStats(); });
   // If DOMContentLoaded already fired (e.g. defer scripts), run immediately
-  if (document.readyState !== 'loading') { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
+  if (document.readyState !== 'loading') { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); initCountUpStats(); }
 })();
 </script>
 
