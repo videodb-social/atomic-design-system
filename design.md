@@ -16,9 +16,10 @@ VideoDB is a perception layer for AI — data infrastructure for video, built fo
    - [3.1 Atoms (17)](#31-atoms-17)
    - [3.2 Molecules (12)](#32-molecules-12)
    - [3.3 Organisms (37)](#33-organisms-37)
-   - [3.4 Motion (1)](#34-motion-1)
-   - [3.5 Illustration (1)](#35-illustration-1)
-   - [3.6 Templates (13)](#36-templates-13)
+   - [3.4 Motion (2 components + 2 examples + 2 authoring methods)](#34-motion-2-components--2-examples--2-authoring-methods)
+   - [3.5 Data Viz (7)](#35-data-viz-7)
+   - [3.6 Illustration (1)](#36-illustration-1)
+   - [3.7 Templates (13)](#37-templates-13)
 4. [Page recipes](#4-page-recipes)
 5. [Brand tokens (foundation reference)](#5-brand-tokens-foundation-reference)
 6. [Voice, tone & principles (compressed)](#6-voice-tone--principles-compressed)
@@ -2118,9 +2119,29 @@ Site footer. Two variants — **Directory** (4-column nav grid + legal strip + c
 
 ---
 
-### 3.4 Motion (1)
+### 3.4 Motion (2 components + 2 examples + 2 authoring methods)
 
-#### ds-particle-dome (Motion)
+A first-class component family for motion-bearing content. Organised in four sub-groups: **Atoms** (shared vocabulary primitives for any motion piece), **Components** (reusable, drop-anywhere), **Interactive illustrations** (live SVG+CSS+JS, ≤5 KB per piece — authored via the *Interactions guide*), **Pre-rendered animations** (Hyperframes MP4 organisms — authored via the *Hyperframes guide*). Every entry honours `prefers-reduced-motion: reduce` and auto-pauses when offscreen.
+
+Two terms are used throughout this section and Data Viz:
+- **Animated** — motion happens autonomously (loop, time-based, scroll-revealed). The user does not drive it.
+- **Interactive** — motion responds to user input (hover, click, focus). The user drives it. Some pieces are both (auto-cycle when idle, hover overrides).
+
+#### Motion atoms — vocabulary (Motion · Atoms)
+
+Shared primitives every Motion organism and Data Viz diagram in the system composes from. Documented as a single page (`#motion/atoms`) so the vocabulary stays explicit:
+
+- **Connector line** — hairline SVG `<path>` (1.5 px, white-22% on dark / black-22% on light). Always axis-aligned. L-bends are three axis-aligned segments — horizontal → vertical → horizontal. Never diagonal. Solid stroke is the default; dotted (`stroke-dasharray: 3 4`) signals a pending / optional / derived relationship — one dotted edge per diagram max.
+- **Connector arrow** — uniform 12 × 10 polygon at every connector terminus. Always at terminus, never mid-path (mid-path arrowheads imply two-way flow, not sanctioned).
+- **Packet token** — 7 px orange circle with 6 px glow, centred via `transform: translate(-50%, -50%)`. Traverses connector paths with axis-aligned motion only (no diagonal interpolation between waypoints). Multiple packets on one path stagger their begin times. Fade in over first 10 % of cycle, fade out over last 12 % so they never touch the source-box edge nor the arrowhead.
+- **Node container** — hairline `<rect>` (1 px border, 4 px radius) with JBM 9 px uppercase eyebrow + Geist 14 px label. Vertical padding balanced (~18 px top / ~17 px bottom in a 60 px rect). Two variants: default (neutral hairline) and focal (1.5 px orange border + 5 % orange fill). **One focal node per diagram.**
+- **Grid frame texture** — 12 × 12 px radial-gradient dot pattern (`rgba(255,255,255,0.07) 1px, transparent 1px`). Texture for thumbnail / preview containers — used in Timeline scrubber thumbnails. If more textures emerge (cross-hatch, grain, stipple), promote to a top-level Patterns & textures library section.
+
+**Compose, don't reinvent.** New Motion organisms reach for these atoms before inventing primitives. Orange fills appear only on Packets (always) and on the Focal node (one per diagram) — never on connectors, arrows, or default nodes.
+
+---
+
+#### ds-particle-dome (Motion · Component)
 
 The brand-signature ambient animation. 15,000-particle (production) or 5,000-particle (preview) hemispherical point cloud that **breathes** — size oscillates with inverse-coupled per-vertex distortion, plus multi-axis rotation. Renders to WebGL via Three.js (r128, ~150 KB gzipped, dynamically loaded on first appearance, cached after). Dark-only at v1. Respects `prefers-reduced-motion: reduce` (holds first frame). Auto-pauses when offscreen via IntersectionObserver.
 
@@ -2138,7 +2159,257 @@ The brand-signature ambient animation. 15,000-particle (production) or 5,000-par
 
 ---
 
-### 3.5 Illustration (1)
+#### ds-motion-clip (Motion · Component, "Motion wrapper")
+
+Reusable `<figure>` + `<video>` wrapper for any pre-rendered MP4 motion organism. Composes a video element with the system's autoplay contract (`autoplay muted loop playsinline preload="metadata"`), surface variants (`--dark` / `--light`), reduced-motion gate (pause at first frame), IntersectionObserver pause when offscreen, graceful fallback on failed load. Aspect ratio locked at 16:9 to match the canonical 1920×1080 render canvas. Every Hyperframes-rendered example in this section composes this wrapper — the wrapper is the atomic primitive; each MP4 is content placed inside it.
+
+**Variants/modifiers:**
+- `--dark` / `--light` surface modifier (border + fallback fill)
+- `data-ds-motion-clip` (boots reduced-motion gate + offscreen pause)
+- `[data-ds-motion-failed]` (set on video error — triggers poster / solid-fill fallback)
+
+**HTML:**
+```html
+<figure class="ds-motion-clip ds-motion-clip--dark" data-ds-motion-clip>
+  <video class="ds-motion-clip__video"
+         src="assets/motion/<slug>.mp4"
+         poster="assets/motion/<slug>.poster.jpg"
+         width="1920" height="1080"
+         autoplay muted loop playsinline preload="metadata"
+         aria-label="<one-sentence description of the composition>"></video>
+  <figcaption class="ds-motion-clip__caption">Pre-rendered MP4 · 1920×1080 · 12s loop</figcaption>
+</figure>
+```
+
+**Use when:** Embedding any Hyperframes-rendered motion organism on a consuming page. Width 720–960 px on desktop reads cleanly. One motion clip per fold. `aria-label` required — describes what the composition shows. `preload="metadata"` defers body bytes until first visible-paint. 0 KB JS at runtime on the consuming page — Hyperframes is build-time.
+
+---
+
+#### Interactive illustrations — Interactions guide (Motion · Authoring method)
+
+Documentation page (`#motion/live-illustrations-guide`) — the live SVG / CSS / JS authoring method for motion organisms that respond to user input. Composition ships inline (≤ 5 KB CSS + HTML + JS combined), runs at runtime, no external animation library at v0.1 (vanilla CSS transitions + small JS loops). Auto-cycle when idle + interactive override on hover / click / focus. Hover always wins; cycle pauses on user engagement, resumes on mouse-leave. Composes Motion atoms (connector / arrow / packet / node / grid-frame) where applicable. Class prefix `ds-<slug>__<part>` + `data-ds-<slug>` boot hook. See Timeline scrubber below for the canonical instance.
+
+#### Timeline scrubber (Motion · Example, interactive)
+
+A live SVG/CSS illustration of natural-language search across a video timeline. Auto-cycles through 6 timestamped moments when idle; **hover any thumbnail to override and scrub to that moment**; mouse-leave resumes the cycle. Search bar types out `person wearing a safety vest` character-by-character on first viewport entry. 13 monthly data points (well, 6 thumbnails) wired via `data-i` indices on the markup. ≤ 6 KB inline. No external animation library.
+
+**HTML structure** (abridged — see `#motion/timeline-scrubber`):
+```html
+<div class="ds-scrubber" data-ds-scrubber>
+  <div class="ds-scrubber__search">…typed query + blink cursor…</div>
+  <div class="ds-scrubber__strip">
+    <div class="ds-scrubber__meta">Timeline · <data>6 moments found</data></div>
+    <div class="ds-scrubber__track">…6 dots…</div>
+  </div>
+  <div class="ds-scrubber__thumbs">
+    <button class="ds-scrubber__thumb" data-i="0">…</button>
+    …×5 more…
+  </div>
+</div>
+```
+
+**Use when:** Inline in product-page sections explaining natural-language search. Width 720–1080 px on desktop; thumbnail grid collapses to 2-col below 480 px. Hover responsiveness is the point — don't strip it. One per fold.
+
+---
+
+#### Pre-rendered animations — Hyperframes guide (Motion · Authoring method)
+
+Documentation page (`#motion/hyperframes-guide`) — the build-time HTML+GSAP→MP4 authoring method via [Hyperframes](https://github.com/heygen-com/hyperframes). Use when the brief calls for sustained narrative motion (10+ s), multi-zone packet flows, deterministic timing that survives across browsers, or 0 KB runtime JS. Project structure: `hyperframes/<slug>/` with `index.html` + `brand-tokens.css` + `meta.json` + `package.json` (`npm run dev / lint / render`). Composition contract: 1920×1080 canvas, 30 fps, 12 s seamless loop, H.264 codec, encoded size ≤ 5 MB. Render command: `npm run render` (wraps `npx hyperframes render` + copy to stable filename). Output lands at `assets/motion/<slug>.mp4` in this repo, embedded via the Motion wrapper.
+
+**Key design principle:** axis-aligned packet motion — GSAP keyframes change `left` OR `top` between consecutive waypoints, never both. Diagonal interpolation cuts across L-bend geometry and breaks "packet rides the wire."
+
+#### Ingestion pipeline (Motion · Example, pre-rendered)
+
+First Hyperframes example. 12-second MP4 organism. Brief: *Upload from anywhere. Normalize formats with built-in transcoding. Stream globally in seconds, then index, search, and automate.* Five multi-format video sources funnel into a single H.264 transcoder, then fan out to three downstream actions (index frames, search semantics, automate workflows). Orange packet dots traverse axis-aligned L-bend connector lines on continuous cycles. Footer caption sets the brief verbatim. Embedded via the Motion wrapper.
+
+**Asset:** `assets/motion/ingestion-pipeline.mp4` (~370 KB, H.264, 1920×1080, 12 s loop).
+
+**Source:** `hyperframes/v08-02-ingestion-pipeline/` in the main project repo. Render via `npm run render` from the composition folder.
+
+**Use when:** Inline in product-page sections explaining ingestion. Width 720–960 px on desktop. Not a hero. Caption it. Don't trim or stop mid-cycle — the composition is paced for 12 s.
+
+---
+
+### 3.5 Data Viz (7)
+
+Quantitative narrative components — stats, charts, diagrams. Every entry ships in dark + light surface variants, every entry honours `prefers-reduced-motion: reduce` and pauses when offscreen, every label / tick is **≥ 11 px** (locked floor). Greys on non-focal elements are deliberately recessive so the orange focal accent wins the eye: bars + columns sit at 28 % alpha on dark / 22 % alpha on light. Count-up animations on numeric values are forbidden — static values land harder; only structural elements (bar fills, line stroke-draw, jackpot-style before→after roll) animate on entrance.
+
+#### ds-stats (Data Viz, "Stats")
+
+Quantitative anchors for narrative claims. Each cell carries a display-scale value + JBM uppercase label. Two layout variants: **row** (3–4 stats across, hero / under-heading rhythm) and **column** (3 stats stacked, side-panel rhythm). Both ship in dark + light. Stagger entrance on viewport reveal (80 ms per cell, 500 ms total, one-shot via `data-ds-stats-reveal`); subtle hover lift on each cell (background tints 2–3 % of surface contrast, value scales 1.02). No hairline border between cells — cells sit on transparent background.
+
+**Variants/modifiers:**
+- `--row` (default 3–4 cells horizontal flex) / `--column` (3 cells vertical grid)
+- `--dark` / `--light` surface modifier
+- `data-ds-stats-reveal` (boots stagger entrance)
+
+**HTML:**
+```html
+<div class="ds-stats ds-stats--row ds-stats--dark" data-ds-stats-reveal>
+  <div class="ds-stats__cell">
+    <div class="ds-stats__value">240<span class="ds-stats__unit">ms</span></div>
+    <div class="ds-stats__label">P95 query latency</div>
+  </div>
+  <!-- …repeat ×2–3 more… -->
+</div>
+```
+
+**Use when:** Row variant under section headings (4-up for hero scale-pitch). Column variant as a 220 px side panel beside body copy. Don't animate count-up — values land static.
+
+---
+
+#### ds-callout-metric (Data Viz, "Callout metric")
+
+A single quantitative claim sized as a section-level moment. Orange left bar + display-scale value + body clause + JBM uppercase provenance note. 5-beat **staged reveal** on viewport entry: 0 ms orange bar draws top→bottom (350 ms) → 350 ms container background tints in → 600 ms value fades + lifts → 850 ms body text fades + lifts → 1050 ms source microcopy fades + lifts. Total ~1.45 s.
+
+**HTML:**
+```html
+<div class="ds-callout-metric ds-callout-metric--dark" data-ds-callout-reveal>
+  <div class="ds-callout-metric__value">240<span class="ds-callout-metric__unit">ms</span></div>
+  <div class="ds-callout-metric__body">P95 query latency across 2.4M hours of indexed video.</div>
+  <div class="ds-callout-metric__note">SOURCE · /benchmarks/p95-latency</div>
+</div>
+```
+
+**Use when:** Interrupting long-form narrative with a measured fact. One per fold. Provenance note required — without it the number reads as marketing. Body clause caps at two lines.
+
+---
+
+#### ds-compare-stat (Data Viz, "Before / after")
+
+Two-cell layout showing a measured delta. Before metric on the left in muted type, arrow + percent change in the middle, after metric on the right in orange. On viewport reveal, the after value rolls from the before number to the target with **jackpot animation** — ease-out cubic over 1.4 s, digits formatted with commas, suffix preserved.
+
+**HTML:**
+```html
+<div class="ds-compare-stat ds-compare-stat--dark" data-ds-compare-reveal>
+  <div class="ds-compare-stat__before">
+    <div class="ds-compare-stat__label">BEFORE · v1 retrieval</div>
+    <div class="ds-compare-stat__value">1,840<span class="ds-compare-stat__unit">ms</span></div>
+  </div>
+  <div class="ds-compare-stat__delta">
+    <svg width="64" height="16">…arrow polyline…</svg>
+    <div class="ds-compare-stat__pct">−87%</div>
+  </div>
+  <div class="ds-compare-stat__after">
+    <div class="ds-compare-stat__label">AFTER · v2 multimodal</div>
+    <div class="ds-compare-stat__value">
+      <span data-ds-jackpot data-from="1840" data-to="240" data-suffix="ms">1,840<span class="ds-compare-stat__unit">ms</span></span>
+    </div>
+  </div>
+</div>
+```
+
+**Use when:** Showing improvement deltas — lower-is-better metrics (latency, cost, error) use negative percent; higher-is-better (recall, throughput) uses positive. Same unit on both sides; never mix units.
+
+---
+
+#### ds-bar-chart (Data Viz, "Bar chart")
+
+Horizontal bars for comparing labelled categories on a single quantitative axis. JBM uppercase axis labels, hairline gridlines, focal-row orange (one per chart — typically the VideoDB row), other rows in white-28% / black-22%. Bars scroll-reveal from 0 → target width on viewport entry (700 ms ease-out, 80 ms stagger per row). Hover any row: row background tints 3 %, bar brightness +15 %, focal rows get an orange glow shadow.
+
+**Variants/modifiers:**
+- `--dark` / `--light` surface modifier
+- `__bar--focal` cell modifier — orange fill (one per chart)
+- `data-ds-reveal-bars` (boots scroll-reveal stagger)
+
+**HTML:**
+```html
+<div class="ds-bar-chart ds-bar-chart--dark" data-ds-reveal-bars>
+  <div class="ds-bar-chart__title">Index-to-query latency · lower is better</div>
+  <div class="ds-bar-chart__row">
+    <div class="ds-bar-chart__label">VideoDB</div>
+    <div class="ds-bar-chart__track"><div class="ds-bar-chart__bar ds-bar-chart__bar--focal" style="width: 14%"></div></div>
+    <div class="ds-bar-chart__value">240 ms</div>
+  </div>
+  <!-- …repeat ×N more… -->
+  <div class="ds-bar-chart__axis">0 ms<span></span>1,760 ms</div>
+</div>
+```
+
+**Use when:** Unordered category comparison (typically vs competitors). Label widths cap at 25 % — long labels truncate with ellipsis. For ordered sequences, use Column chart.
+
+---
+
+#### ds-column-chart (Data Viz, "Column chart")
+
+Vertical columns for time-series or ordered categorical data. Same chrome as bar chart — mono labels, hairline gridlines, focal-column orange. Scroll-reveal grows columns 0 → target height (700 ms ease-out, 60 ms stagger). Hover any column: column lifts 3 px, brightness +15 %, focal columns get the orange glow.
+
+**HTML:**
+```html
+<div class="ds-column-chart ds-column-chart--dark" data-ds-reveal-columns>
+  <div class="ds-column-chart__title">Queries / month · 2025 — 2026</div>
+  <div class="ds-column-chart__plot">
+    <div class="ds-column-chart__col">
+      <div class="ds-column-chart__bar" style="height: 24%"></div>
+      <div class="ds-column-chart__x">Sep</div>
+    </div>
+    <!-- …repeat ×7 more, last column gets __bar--focal… -->
+  </div>
+</div>
+```
+
+**Use when:** Time-series (months, quarters) or ranked categorical sequences. Latest / focal column highlights in orange.
+
+---
+
+#### ds-trend-line (Data Viz, "Trend line")
+
+SVG line + area chart for smoothly-varying time-series. 1.5 px orange stroke, optional 22 % orange area fill, JBM uppercase x-axis. ViewBox 760×240 with 20 px inset (end dot has breathing room, no clipping). Scroll-reveal stroke-draws the line over 1200 ms, area fades in, end-dot pops.
+
+**Hover interaction:** 13 data points wired via invisible hit-area buttons. Hover (or focus via keyboard) → vertical dashed guideline + orange active dot with glow + floating tooltip (`MAY '25 / 4.2k ops/hr`). Mouse-leave clears state. Each hit-area has aria-label for screen-reader accessibility.
+
+**HTML structure** (abridged — see `#dataviz/trend-line`):
+```html
+<div class="ds-trend-line ds-trend-line--dark" data-ds-reveal-trend data-ds-trend-hover>
+  <div class="ds-trend-line__title">Embedding throughput · ops / hour</div>
+  <div class="ds-trend-line__plot">
+    <svg viewBox="0 0 760 240">
+      <line class="ds-trend-line__gridline" …/>
+      <path class="ds-trend-line__area" …/>
+      <path class="ds-trend-line__line" …/>
+      <line class="ds-trend-line__guide" data-ds-trend-guide/>
+      <circle class="ds-trend-line__active-dot" data-ds-trend-active-dot/>
+    </svg>
+    <div class="ds-trend-line__tooltip" data-ds-trend-tooltip>…month + value…</div>
+    <div class="ds-trend-line__hit-row" data-ds-trend-hit-row>
+      <button data-i="0" data-month="May '25" data-value="4.2k ops/hr" data-x="20" data-y="190"></button>
+      <!-- …×12 more… -->
+    </div>
+  </div>
+  <div class="ds-trend-line__axis">May '25 / Aug / Nov / Feb '26 / May '26</div>
+</div>
+```
+
+**Use when:** Direction-of-travel claims — growth curves, latency trends, accuracy over training runs. Single line per chart at v0.1; multi-series is a separate composition.
+
+---
+
+#### ds-arch-flow (Data Viz, "Architecture flow")
+
+Live SVG system architecture diagram — boxes connected by labelled edges with continuous packet flow tokens traversing each connection via `<animateMotion>`. Reads as a system schematic. Distinct from `motion/ingestion-pipeline` — that's a pre-rendered narrative MP4; this is runtime-interactive (resizes, replays).
+
+**Z-order** matters: paths + arrows (bottom) → packet tokens with opacity fade in/out (middle) → solid-fill node containers (top). Packets disappear behind nodes; arrows terminate 12 px before each box edge with uniform 12 × 10 polygons; node text baselines balanced (~18 top / ~17 bottom inside the rect). One focal node (orange border + tinted fill) per diagram.
+
+**HTML structure** (abridged):
+```html
+<div class="ds-arch-flow ds-arch-flow--dark">
+  <svg viewBox="0 0 720 360">
+    <!-- Layer 1: connector lines + arrowheads -->
+    <g stroke="rgba(255,255,255,0.28)" stroke-width="1.2">…paths…</g>
+    <g fill="rgba(255,255,255,0.55)">…arrowhead polygons…</g>
+    <!-- Layer 2: packet tokens (animateMotion + opacity fade) -->
+    <g>…<circle><animateMotion><mpath/></animateMotion><animate attributeName="opacity"/></circle>…</g>
+    <!-- Layer 3: nodes (solid fill on top) -->
+    <g><rect fill="var(--neutral-dark)" …/>…eyebrow + label…</g>
+  </svg>
+</div>
+```
+
+**Use when:** Showing system topology with continuous data flow — agent integrations, ingestion paths, pipeline overview. Cap at 6 nodes / 8 edges (above that, edges become hard to read at typical column widths). Compose from Motion atoms (Connector / Arrow / Packet / Node container) — don't invent new primitives.
+
+---
+
+### 3.6 Illustration (1)
 
 #### ascii-illustration (Illustration)
 
@@ -2180,7 +2451,7 @@ Per-cell appearance and flip times re-randomise on every replay; the dissolve pa
 
 ---
 
-### 3.6 Templates (13)
+### 3.7 Templates (13)
 
 #### Section structure (Template)
 

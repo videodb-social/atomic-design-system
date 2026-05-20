@@ -27,7 +27,7 @@ History and build decisions live in `01_website/archive/` — `2026-05-19-design
 
 ## Building a new page
 
-Paste `design.md` into your AI agent's context (Claude, ChatGPT, Cursor, etc.) along with the page brief. design.md is the single source of truth for the v2 system — it covers page scaffold boilerplate, universal conventions, every component's HTML anatomy (17 atoms / 12 molecules / 37 organisms / 1 motion / 1 illustration / 13 templates), page recipes, brand tokens, and voice principles in one file.
+Paste `design.md` into your AI agent's context (Claude, ChatGPT, Cursor, etc.) along with the page brief. design.md is the single source of truth for the v2 system — it covers page scaffold boilerplate, universal conventions, every component's HTML anatomy (17 atoms / 12 molecules / 37 organisms / Motion family / 7 Data Viz / 1 illustration / 13 templates), page recipes, brand tokens, and voice principles in one file.
 
 `index.html` remains the canonical live implementation — open it in a browser for visual previews and to copy real shipping HTML if anything in `design.md` conflicts with what ships.
 
@@ -89,7 +89,8 @@ The design system's internal navigation uses hash routing (`#atoms/button`, `#or
 - **17 Atoms** — buttons, inputs, badges, eyebrows, vbars, dot loaders, status pulses, status pills
 - **12 Molecules** — form fields, section headings, CTA pairs, code tabs, stat blocks, subscribe band
 - **37 Organisms** (9 subgroups) — cards (feature / content / pricing / logo / social / etc.), tickers, modals, footer (Directory + Editorial variants), site header, mobile drawer, code blocks
-- **1 Motion** — Particle dome (Three.js, lazy-loaded)
+- **Motion** — 2 components (Particle dome, Motion wrapper) + 2 examples (Timeline scrubber, Ingestion pipeline) + 2 authoring methods (Interactions guide, Hyperframes guide), plus a shared atom vocabulary (connectors, arrows, packet tokens, node containers, grid-frame texture)
+- **7 Data Viz** — Stats (row + column), Callout metric, Before/after compare, Bar chart, Column chart, Trend line, Architecture flow — all dark + light, all with scroll-reveal entrance + hover interactions, ≥ 11 px label floor
 - **1 Illustration** — ASCII pixel-to-binary morph (scroll-triggered, vanilla canvas, honours `prefers-reduced-motion`)
 - **13 Templates** — Section structure, Hero composition (5 variants incl. animated), Problem/Solution, Article shell, Lifecycle grid, Platform overview, Feature grid, Industries grid, Use case row, Sync compare, Diagrams, Roadmap timeline, Pre-footer Socials
 
