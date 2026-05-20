@@ -5735,6 +5735,74 @@ a.ds-testimonial-card { cursor: pointer; }
   .ds-mobile-drawer.is-open .ds-mobile-drawer__scrim { opacity: 1; }
   .ds-mobile-drawer.is-open .ds-mobile-drawer__panel { transform: translateX(0); }
 }
+
+/* ════════ Illustration / ASCII ════════════════════════════════════════ */
+.ds-ascii-stage {
+  background: #0A0A0A;
+  border-radius: 12px;
+  padding: 48px 24px;
+  display: grid;
+  place-items: center;
+  margin: 24px 0 32px;
+  overflow: hidden;
+}
+.ds-ascii-stage canvas {
+  display: block;
+  max-width: min(640px, 80vmin);
+  max-height: 80vmin;
+  height: auto;
+  width: 100%;
+}
+.ds-ascii-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 22px;
+  border: 1px solid var(--border-on-dark, rgba(255,255,255,0.08));
+  border-radius: 10px;
+  margin: 16px 0 24px;
+  background: rgba(255,255,255,0.02);
+}
+.ds-ascii-controls__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-on-dark-second, rgba(245,245,247,0.72));
+}
+.ds-ascii-controls__option input[type="radio"] {
+  margin: 0;
+  accent-color: var(--orange-500, #F24E1E);
+}
+.ds-ascii-controls__option code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--orange-500, #F24E1E);
+  background: rgba(242,78,30,0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.ds-ascii-controls__replay {
+  align-self: flex-start;
+  margin-top: 4px;
+  background: transparent;
+  color: var(--orange-500, #F24E1E);
+  border: 1px solid var(--orange-500, #F24E1E);
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 150ms, color 150ms;
+}
+.ds-ascii-controls__replay:hover {
+  background: var(--orange-500, #F24E1E);
+  color: #0A0A0A;
+}
 </style>
 </head>
 <body>
@@ -5868,6 +5936,11 @@ a.ds-testimonial-card { cursor: pointer; }
     <div class="ds-sidebar__group">
       <span class="ds-sidebar__group-label">Motion</span>
       <a class="ds-sidebar__link" href="#motion/particle-dome">Particle dome</a>
+    </div>
+
+    <div class="ds-sidebar__group">
+      <span class="ds-sidebar__group-label">Illustration</span>
+      <a class="ds-sidebar__link" href="#illustration/ascii">ASCII</a>
     </div>
 
     <div class="ds-sidebar__group">
@@ -10374,6 +10447,59 @@ for match in result:
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#organisms/footer"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Footer</span></a>
+        <a class="ds-pagination__link ds-pagination__link--next" href="#illustration/ascii"><span class="ds-pagination__label">Next</span><span class="ds-pagination__title">ASCII →</span></a>
+      </div>
+    </section>
+
+    <!-- ━━━ Illustration / ASCII ━━━ -->
+    <section data-page="illustration/ascii" class="ds-page">
+      <div class="ds-page__breadcrumb">Illustration <span>/</span> ASCII</div>
+      <h1>ASCII</h1>
+      <p class="ds-page__lead">Source images rendered as animated ASCII illustrations — chunky pixel blocks resolving into binary digits on scroll-into-view. The metaphor mirrors what VideoDB does to a frame at runtime: pixels become the binary representation that agents read. JetBrains Mono throughout, near-white characters on dark, scroll-triggered, honours <code>prefers-reduced-motion: reduce</code>.</p>
+
+      <h2 id="example">Example</h2>
+      <p>The animation plays a multi-stage build-up — coarse 30-col blocks dissolve in one cell at a time, then snap through 60-col and 120-col grids, then morph cell-by-cell to binary digits. Per-cell timings are re-randomised on every replay, so the dissolve pattern is never the same twice.</p>
+      <div class="ds-ascii-stage">
+        <div class="ascii-illustration"
+             data-src="assets/illustrations/sources/hand-processed.png"
+             data-resolution="120"
+             data-color="#F5F5F7"
+             data-background="#0A0A0A"
+             data-font-size="12"
+             data-replay="always">
+          <canvas></canvas>
+        </div>
+      </div>
+
+      <h2 id="replay">Replay behaviour</h2>
+      <p>Two modes, configurable via the <code>data-replay</code> attribute. Default is <code>always</code> — the animation replays every time the section enters the viewport. Switch to <code>once</code> for a one-shot intro that holds the binary state after the first play. Toggle below to see the live difference; press <em>Replay now</em> to trigger immediately.</p>
+      <div class="ds-ascii-controls" role="radiogroup" aria-label="Replay mode" data-ascii-controls>
+        <label class="ds-ascii-controls__option">
+          <input type="radio" name="ascii-replay" value="always" checked>
+          <span><code>always</code> — replay on every viewport entry (default)</span>
+        </label>
+        <label class="ds-ascii-controls__option">
+          <input type="radio" name="ascii-replay" value="once">
+          <span><code>once</code> — play first time only, hold binary state after</span>
+        </label>
+        <button type="button" class="ds-ascii-controls__replay" data-ascii-replay-trigger>Replay now</button>
+      </div>
+
+      <h2 id="usage">Usage rules</h2>
+      <p><strong>Source image is a real file on disk.</strong> The renderer samples a preprocessed PNG via an offscreen canvas. The preprocessing step (composite onto white, auto-invert, edge flood-fill, autocrop, autocontrast, unsharp, posterise to 4 levels) lives in the <code>ascii-converter</code> skill — don't author with photographic images directly, let the skill preprocess first.</p>
+      <p><strong>JetBrains Mono only.</strong> The character grid relies on monospace metrics. Other fonts will misalign the cells; the renderer waits for the JBM font to load before measuring cell width.</p>
+      <p><strong>Dark backdrop is the default.</strong> Near-white characters (<code>#F5F5F7</code>) on near-black (<code>#0A0A0A</code>) is the canonical pairing. A light-surface variant would need a different colour treatment and isn't shipped at v1.</p>
+      <p><strong>Per-cell timings re-randomise on every replay.</strong> The dissolve order isn't memorised — each playback's pattern is different, which keeps repeated views from feeling mechanical.</p>
+      <p><strong>Reduced-motion: skip the animation.</strong> Users with <code>prefers-reduced-motion: reduce</code> see the final binary state immediately, with no morph or dissolve. The illustration is still legible; the motion isn't.</p>
+      <p><strong>Pauses when offscreen.</strong> IntersectionObserver halts the animation as soon as the element leaves the viewport and re-triggers on re-entry (subject to the replay mode).</p>
+
+      <h2 id="performance">Performance notes</h2>
+      <p><strong>Three resolution levels precomputed at load.</strong> For a 120-col fine resolution that's ~8,400 fine cells + ~2,100 mid + ~525 coarse ≈ 11,000 cells total. Negligible memory; one canvas per illustration.</p>
+      <p><strong>Animation runs at <code>requestAnimationFrame</code>.</strong> CPU spikes during the morph (full fine grid), settles to zero in the held-binary state. No render loop when idle.</p>
+      <p><strong>Asset size depends on the source.</strong> Preprocessed PNGs land at ~50 KB for a 1024×1024 four-level image. The runtime itself is ~6 KB inlined in this page.</p>
+
+      <div class="ds-pagination">
+        <a class="ds-pagination__link" href="#motion/particle-dome"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Particle dome</span></a>
         <a class="ds-pagination__link ds-pagination__link--next" href="#templates/section-structure"><span class="ds-pagination__label">Next</span><span class="ds-pagination__title">Section structure →</span></a>
       </div>
     </section>
@@ -11439,7 +11565,7 @@ for match in result:
       <p><strong>Section padding is 96px top/bottom.</strong> All sections breathe the same. Don't override per-section unless the design intent specifically requires a tighter or looser cadence (e.g. a single-line closing band might warrant 64px).</p>
 
       <div class="ds-pagination">
-        <a class="ds-pagination__link" href="#motion/particle-dome"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Particle dome</span></a>
+        <a class="ds-pagination__link" href="#illustration/ascii"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← ASCII</span></a>
         <a class="ds-pagination__link ds-pagination__link--next" href="#templates/hero"><span class="ds-pagination__label">Next</span><span class="ds-pagination__title">Hero composition →</span></a>
       </div>
     </section>
@@ -14360,6 +14486,241 @@ print(result.timestamps)</pre>
   window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); initCountUpStats(); });
   // If DOMContentLoaded already fired (e.g. defer scripts), run immediately
   if (document.readyState !== 'loading') { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); initCountUpStats(); }
+})();
+
+
+// ──── ASCII illustration renderer ─────────────────────────────────────────
+// Auto-wires .ascii-illustration[data-src] elements.
+// Plays coarse → mid → fine → morph on scroll-into-view.
+// Honours prefers-reduced-motion: reduce — skips animation, paints binary state.
+// ─────────────────────────────────────────────────────────────────────────
+(function () {
+  'use strict';
+
+  const CHARSETS = { blocks: ' ░▒▓█', binary: ' 01' };
+  const DURATIONS = { coarse: 500, mid: 250, fine: 200, morph: 900 };
+  const SCALES = [4, 2, 1];
+  const FONT_FAMILY = '"JetBrains Mono", ui-monospace, monospace';
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function hexWithAlpha(hex, a) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
+  async function setupIllustration(root) {
+    let canvas = root.querySelector('canvas');
+    if (!canvas) { canvas = document.createElement('canvas'); root.appendChild(canvas); }
+    const ctx = canvas.getContext('2d');
+    const src = root.dataset.src;
+    if (!src) throw new Error('ascii-illustration: missing data-src');
+
+    const fineResolution = parseInt(root.dataset.resolution || '120', 10);
+    const color          = root.dataset.color || '#F5F5F7';
+    const background     = root.dataset.background || '#0A0A0A';
+    const fineFontSize   = parseInt(root.dataset.fontSize || '12', 10);
+
+    if (document.fonts && document.fonts.load) {
+      try { await document.fonts.load(fineFontSize + 'px "JetBrains Mono"'); } catch (_) {}
+    }
+
+    const img = new Image();
+    img.src = src;
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+
+    ctx.font = fineFontSize + 'px ' + FONT_FAMILY;
+    const fineCellW = ctx.measureText('0').width;
+    const fineCellH = fineFontSize;
+    const sourceAspect = img.naturalHeight / img.naturalWidth;
+    const cellAspect = fineCellW / fineCellH;
+    const fineRows = Math.max(1, Math.round(fineResolution * sourceAspect * cellAspect));
+
+    canvas.width  = Math.round(fineResolution * fineCellW);
+    canvas.height = Math.round(fineRows * fineCellH);
+
+    const blocks = CHARSETS.blocks;
+    const binary = CHARSETS.binary;
+
+    const levels = SCALES.map(function (scale) {
+      const cols = Math.max(2, Math.round(fineResolution / scale));
+      const rows = Math.max(1, Math.round(fineRows / scale));
+      const cellW = canvas.width / cols;
+      const cellH = canvas.height / rows;
+      const fontSize = Math.max(6, Math.round(cellH));
+
+      const off = document.createElement('canvas');
+      off.width = cols; off.height = rows;
+      const offCtx = off.getContext('2d');
+      offCtx.drawImage(img, 0, 0, cols, rows);
+      const data = offCtx.getImageData(0, 0, cols, rows).data;
+
+      const cells = [];
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const i = (y * cols + x) * 4;
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+          const t = (255 - brightness) / 255;
+          const bIdx = Math.min(blocks.length - 1, Math.round(t * (blocks.length - 1)));
+          const nIdx = Math.min(binary.length - 1, Math.round(t * (binary.length - 1)));
+          cells.push({
+            px: x * cellW, py: y * cellH,
+            blocksChar: blocks[bIdx],
+            binaryChar: binary[nIdx],
+            alpha: t,
+            appearTime: Math.random(),
+            flipTime: Math.random(),
+          });
+        }
+      }
+      return { cols: cols, rows: rows, cellW: cellW, cellH: cellH, fontSize: fontSize, cells: cells };
+    });
+
+    const COARSE = 0, MID = 1, FINE = 2;
+
+    function drawCells(level, phase, t) {
+      ctx.font = level.fontSize + 'px ' + FONT_FAMILY;
+      ctx.textBaseline = 'top';
+      for (let i = 0; i < level.cells.length; i++) {
+        const cell = level.cells[i];
+        let ch;
+        if (phase === 'fadeIn') {
+          if (t < cell.appearTime) continue;
+          ch = cell.blocksChar;
+        } else if (phase === 'show') {
+          ch = cell.blocksChar;
+        } else if (phase === 'morph') {
+          ch = t >= cell.flipTime ? cell.binaryChar : cell.blocksChar;
+        } else {
+          ch = cell.binaryChar;
+        }
+        if (ch === ' ' || cell.alpha < 0.02) continue;
+        ctx.fillStyle = hexWithAlpha(color, cell.alpha);
+        ctx.fillText(ch, cell.px, cell.py);
+      }
+    }
+
+    function clearCanvas() {
+      ctx.fillStyle = background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    let rafId = null;
+    function stop() { if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
+
+    function play() {
+      stop();
+      if (reducedMotion) {
+        clearCanvas();
+        drawCells(levels[FINE], 'done', 1);
+        return;
+      }
+      for (let li = 0; li < levels.length; li++) {
+        const cs = levels[li].cells;
+        for (let ci = 0; ci < cs.length; ci++) {
+          cs[ci].appearTime = Math.random();
+          cs[ci].flipTime   = Math.random();
+        }
+      }
+      const start = performance.now();
+      const D = DURATIONS;
+      function frame(now) {
+        const elapsed = now - start;
+        clearCanvas();
+        if (elapsed < D.coarse) {
+          drawCells(levels[COARSE], 'fadeIn', elapsed / D.coarse);
+          rafId = requestAnimationFrame(frame);
+        } else if (elapsed < D.coarse + D.mid) {
+          drawCells(levels[MID], 'show', 0);
+          rafId = requestAnimationFrame(frame);
+        } else if (elapsed < D.coarse + D.mid + D.fine) {
+          drawCells(levels[FINE], 'show', 0);
+          rafId = requestAnimationFrame(frame);
+        } else if (elapsed < D.coarse + D.mid + D.fine + D.morph) {
+          const t = (elapsed - D.coarse - D.mid - D.fine) / D.morph;
+          drawCells(levels[FINE], 'morph', t);
+          rafId = requestAnimationFrame(frame);
+        } else {
+          drawCells(levels[FINE], 'done', 1);
+          rafId = null;
+        }
+      }
+      rafId = requestAnimationFrame(frame);
+    }
+
+    clearCanvas();
+    return { play: play, stop: stop };
+  }
+
+  function attach(root) {
+    setupIllustration(root).then(function (api) {
+      let hasPlayed = false;
+      const obs = new IntersectionObserver(function (entries) {
+        for (let i = 0; i < entries.length; i++) {
+          const e = entries[i];
+          if (!e.isIntersecting) continue;
+          const mode = (root.dataset.replay || 'always').toLowerCase();
+          if (mode === 'once' && hasPlayed) continue;
+          api.play();
+          hasPlayed = true;
+        }
+      }, { threshold: 0.3 });
+      obs.observe(root);
+      root._asciiPlay = api.play;
+      root._asciiStop = api.stop;
+    }).catch(function (err) {
+      console.error('[ascii-illustration] setup failed:', err);
+    });
+  }
+
+  function autoInit() {
+    const els = document.querySelectorAll('.ascii-illustration[data-src]:not([data-ascii-initialized])');
+    for (let i = 0; i < els.length; i++) {
+      els[i].setAttribute('data-ascii-initialized', '1');
+      attach(els[i]);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInit);
+  } else {
+    autoInit();
+  }
+
+  window.AsciiIllustration = {
+    autoInit: autoInit,
+    attach: function (el) { el.setAttribute('data-ascii-initialized', '1'); attach(el); }
+  };
+
+  function wireControls() {
+    const blocks = document.querySelectorAll('[data-ascii-controls]');
+    blocks.forEach(function (controls) {
+      const section = controls.closest('.ds-page');
+      const target = section ? section.querySelector('.ascii-illustration') : null;
+      if (!target) return;
+      controls.querySelectorAll('input[type="radio"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+          if (input.checked) {
+            target.dataset.replay = input.value;
+            if (typeof target._asciiPlay === 'function') target._asciiPlay();
+          }
+        });
+      });
+      const trigger = controls.querySelector('[data-ascii-replay-trigger]');
+      if (trigger) {
+        trigger.addEventListener('click', function () {
+          if (typeof target._asciiPlay === 'function') target._asciiPlay();
+        });
+      }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireControls);
+  } else {
+    wireControls();
+  }
 })();
 </script>
 
