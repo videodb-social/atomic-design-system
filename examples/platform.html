@@ -2541,6 +2541,28 @@ a { color: inherit; text-decoration: none; }
 }
 .ds-code-block--dark .ds-code-block__body { color: var(--text-on-dark); }
 .ds-code-block--light .ds-code-block__body { color: var(--text-on-light); }
+/* Animated code block — typewriter type-on */
+.ds-code-block--animated .ds-code-block__code,
+.ds-code-block--animated .ds-code-block__body {
+  position: relative;
+  white-space: pre-wrap;
+}
+.ds-code-block__cursor {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  background: var(--orange-500);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: ds-cursor-blink 1s steps(2, end) infinite;
+}
+@keyframes ds-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-code-block__cursor { animation: none; opacity: 1; }
+}
 /* Status bar — composes `.ds-eyebrow ds-eyebrow--xs` for the mono cadence;
    only the layout (flex row + padding + border-top) is organism-specific. */
 .ds-code-block__status {
@@ -6599,6 +6621,55 @@ a.ds-testimonial-card { cursor: pointer; }
       [24]
     ]
   };
+  function initAnimatedCodeBlocks() {
+    const blocks = document.querySelectorAll('[data-ds-typewriter]');
+    if (!blocks.length) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    blocks.forEach(block => {
+      if (block.dataset.dsTypewriterBooted) return;
+      block.dataset.dsTypewriterBooted = 'true';
+
+      const codeEl = block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body');
+      if (!codeEl) return;
+
+      const fullText = codeEl.textContent;
+      const charDelay = parseInt(block.dataset.dsTypewriterDelay, 10) || 40;
+      const startDelay = parseInt(block.dataset.dsTypewriterStart, 10) || 300;
+
+      const cursor = document.createElement('span');
+      cursor.className = 'ds-code-block__cursor';
+
+      if (reduced) {
+        codeEl.textContent = fullText;
+        codeEl.appendChild(cursor);
+        return;
+      }
+
+      codeEl.textContent = '';
+      codeEl.appendChild(cursor);
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(block);
+
+          setTimeout(() => {
+            let i = 0;
+            const tick = () => {
+              if (i >= fullText.length) return;
+              cursor.insertAdjacentText('beforebegin', fullText.charAt(i));
+              i++;
+              setTimeout(tick, charDelay);
+            };
+            tick();
+          }, startDelay);
+        });
+      }, { threshold: 0.4 });
+
+      io.observe(block);
+    });
+  }
   function initDotLoaders() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelectorAll('.ds-dot-loader').forEach(loader => {
@@ -7257,9 +7328,9 @@ a.ds-testimonial-card { cursor: pointer; }
     });
   }
 
-  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
+  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
   // If DOMContentLoaded already fired (e.g. defer scripts), run immediately
-  if (document.readyState !== 'loading') { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
+  if (document.readyState !== 'loading') { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
 })();
 </script>
 

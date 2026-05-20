@@ -2540,6 +2540,28 @@ a { color: inherit; text-decoration: none; }
 }
 .ds-code-block--dark .ds-code-block__body { color: var(--text-on-dark); }
 .ds-code-block--light .ds-code-block__body { color: var(--text-on-light); }
+/* Animated code block — typewriter type-on */
+.ds-code-block--animated .ds-code-block__code,
+.ds-code-block--animated .ds-code-block__body {
+  position: relative;
+  white-space: pre-wrap;
+}
+.ds-code-block__cursor {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  background: var(--orange-500);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: ds-cursor-blink 1s steps(2, end) infinite;
+}
+@keyframes ds-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-code-block__cursor { animation: none; opacity: 1; }
+}
 /* Status bar — composes `.ds-eyebrow ds-eyebrow--xs` for the mono cadence;
    only the layout (flex row + padding + border-top) is organism-specific. */
 .ds-code-block__status {
@@ -8737,6 +8759,14 @@ videodb query "shot 12 · skyline · golden hour"</pre>
       <p><strong>Tab pills always lead with the most-popular runtime.</strong> npx for JS, pip for Python, react for framework switchers — the option a new visitor most likely already has installed.</p>
       <p><strong>Copy button swaps to "Copied" for 1.2s on success.</strong> JS toggles the label and color so the user gets feedback without a separate toast.</p>
 
+      <h2 id="animated">Animated</h2>
+      <div class="ds-preview ds-preview--dark" style="padding: 40px 32px;">
+        <div class="ds-code-block ds-code-block--dark ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300" style="width: 100%; max-width: 720px;">
+          <pre class="ds-code-block__body ds-code-block__code">npx skills add video-db/skills</pre>
+        </div>
+      </div>
+      <p><strong>Viewport-triggered type-on.</strong> Add <code>data-ds-typewriter</code> to the block and tune speed with <code>data-ds-typewriter-delay</code> and <code>data-ds-typewriter-start</code>. Reduced motion skips to the final text with a static cursor.</p>
+
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#organisms/editorial-primitives"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">← Editorial primitives</span></a>
         <a class="ds-pagination__link ds-pagination__link--next" href="#organisms/code-annotation"><span class="ds-pagination__label">Next</span><span class="ds-pagination__title">Code annotation chips →</span></a>
@@ -13158,6 +13188,55 @@ print(result.timestamps)</pre>
       [24]
     ]
   };
+  function initAnimatedCodeBlocks() {
+    const blocks = document.querySelectorAll('[data-ds-typewriter]');
+    if (!blocks.length) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    blocks.forEach(block => {
+      if (block.dataset.dsTypewriterBooted) return;
+      block.dataset.dsTypewriterBooted = 'true';
+
+      const codeEl = block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body');
+      if (!codeEl) return;
+
+      const fullText = codeEl.textContent;
+      const charDelay = parseInt(block.dataset.dsTypewriterDelay, 10) || 40;
+      const startDelay = parseInt(block.dataset.dsTypewriterStart, 10) || 300;
+
+      const cursor = document.createElement('span');
+      cursor.className = 'ds-code-block__cursor';
+
+      if (reduced) {
+        codeEl.textContent = fullText;
+        codeEl.appendChild(cursor);
+        return;
+      }
+
+      codeEl.textContent = '';
+      codeEl.appendChild(cursor);
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(block);
+
+          setTimeout(() => {
+            let i = 0;
+            const tick = () => {
+              if (i >= fullText.length) return;
+              cursor.insertAdjacentText('beforebegin', fullText.charAt(i));
+              i++;
+              setTimeout(tick, charDelay);
+            };
+            tick();
+          }, startDelay);
+        });
+      }, { threshold: 0.4 });
+
+      io.observe(block);
+    });
+  }
   function initDotLoaders() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelectorAll('.ds-dot-loader').forEach(loader => {
@@ -13823,9 +13902,9 @@ print(result.timestamps)</pre>
 
   // ──── Boot ────────────────────────────────────────────────────────────────
   window.addEventListener('hashchange', () => activatePage(parseHash()));
-  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
+  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
   // If DOMContentLoaded already fired (e.g. defer scripts), run immediately
-  if (document.readyState !== 'loading') { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
+  if (document.readyState !== 'loading') { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
 })();
 </script>
 

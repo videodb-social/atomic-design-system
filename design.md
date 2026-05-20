@@ -371,6 +371,7 @@ Pill or card-radius text field. 16px font-size (prevents iOS auto-zoom).
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `--animated` (typewriter type-on, requires `data-ds-typewriter`)
 - `--pill` (9999px radius for inline subscribe forms; default is card radius)
 - States: `is-focused`, `is-error`, `is-buzzing` (200ms shake on invalid submit)
 
@@ -1286,6 +1287,21 @@ videodb query "shot 12 · skyline · golden hour"</pre>
 ```
 
 **Use when:** Quickstart pages, hero (Variant B — Centered with code), use-case row, anywhere multi-line SDK calls show. Status bar optional. Copy button swaps to "Copied" for 1.2s on success.
+
+**Animated variant:**
+```html
+<div class="ds-code-block ds-code-block--dark ds-code-block--animated"
+     data-ds-typewriter
+     data-ds-typewriter-delay="40"
+     data-ds-typewriter-start="300">
+  <pre class="ds-code-block__code">npx skills add video-db/skills</pre>
+</div>
+```
+
+- `data-ds-typewriter-delay` — ms per character (default 40)
+- `data-ds-typewriter-start` — ms delay before typing begins (default 300)
+- Triggers on viewport entry (IntersectionObserver, threshold 0.4)
+- Honors `prefers-reduced-motion: reduce` by rendering the final text with a static cursor.
 
 ---
 
