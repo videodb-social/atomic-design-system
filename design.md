@@ -259,6 +259,7 @@ Pill-shaped action button. 44px min touch target, 9999px radius.
 - `--ghost-charcoal` (in-card on dark surfaces; softer than ghost-dark)
 - `--sm` (compact, used in site header)
 - `--icon` (40×40 square, requires `aria-label`)
+- `--success-on-submit` (1.4s submit confirmation: button bounce, label/arrow fade, check reveal)
 - States: `disabled`, `aria-busy="true"` with `<span class="ds-btn__spinner">` for loading
 
 **HTML:**
@@ -267,6 +268,14 @@ Pill-shaped action button. 44px min touch target, 9999px radius.
 <button class="ds-btn ds-btn--ghost-dark">Read docs <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></button>
 <button class="ds-btn ds-btn--ghost-charcoal">Choose plan</button>
 <button class="ds-btn ds-btn--ghost-dark ds-btn--icon" aria-label="Next"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></button>
+
+<button class="ds-btn ds-btn--primary" type="submit">
+  <span class="ds-btn__label">Subscribe</span>
+  <iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
+  <span class="ds-btn__icon-check">
+    <iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon>
+  </span>
+</button>
 ```
 
 **Use when:** Primary CTAs in heroes and closing bands. Always pair primary + ghost via `.ds-cta-pair`. Never two primaries in one viewport.
@@ -2905,6 +2914,18 @@ Reach for these when copywriting headlines and body:
 ### 6.7 Form validation contract
 
 All form fields use `aria-invalid="true"` as the single validation signal. Visual error state and shake animation are bound to this attribute. The corresponding error message lives in a `ds-helper is-error` sibling. Never use ad-hoc `.has-error` classes or inline error styling.
+
+### 6.8 Form success recipe
+
+On successful form submit, add `ds-btn--success-on-submit` to the submit button, then remove it after the confirmation moment completes:
+
+```js
+btn.classList.add('ds-btn--success-on-submit');
+setTimeout(() => {
+  btn.classList.remove('ds-btn--success-on-submit');
+  // Then either reset form or transition to next state
+}, 1500);
+```
 
 ---
 

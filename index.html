@@ -673,8 +673,57 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
 }
 @keyframes ds-btn-spin { to { transform: rotate(360deg); } }
+.ds-btn--success-on-submit {
+  animation: ds-sent-bounce 400ms var(--ease-spring);
+  pointer-events: none;
+}
+.ds-btn--success-on-submit .ds-btn__label,
+.ds-btn--success-on-submit .ds-btn__icon-arrow {
+  animation: ds-sent-ink 200ms var(--ease-ui) forwards;
+}
+.ds-btn--success-on-submit .ds-btn__icon-check {
+  display: inline-flex;
+  animation: ds-sent-check-bounce 360ms var(--ease-spring) 200ms both;
+}
+.ds-btn--success-on-submit .ds-btn__icon-check svg,
+.ds-btn--success-on-submit .ds-btn__icon-check iconify-icon {
+  animation: ds-sent-clip-grow 280ms var(--ease-out) 280ms both;
+}
+.ds-btn .ds-btn__icon-check {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+@keyframes ds-sent-bounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+@keyframes ds-sent-ink {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes ds-sent-check-bounce {
+  0%   { opacity: 0; transform: scale(0.6); }
+  60%  { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes ds-sent-clip-grow {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
 @media (prefers-reduced-motion: reduce) {
   .ds-btn__spinner { animation-duration: 1600ms; }
+  .ds-btn--success-on-submit,
+  .ds-btn--success-on-submit .ds-btn__label,
+  .ds-btn--success-on-submit .ds-btn__icon-arrow,
+  .ds-btn--success-on-submit .ds-btn__icon-check,
+  .ds-btn--success-on-submit .ds-btn__icon-check svg,
+  .ds-btn--success-on-submit .ds-btn__icon-check iconify-icon {
+    animation: none;
+  }
+  .ds-btn--success-on-submit .ds-btn__icon-check { display: inline-flex; }
+  .ds-btn--success-on-submit .ds-btn__label,
+  .ds-btn--success-on-submit .ds-btn__icon-arrow { opacity: 0; }
 }
 
 /* Arrow-circle CTA — editorial link with orange circle holding an arrow */
@@ -6052,6 +6101,25 @@ a.ds-testimonial-card { cursor: pointer; }
         </div>
         <div class="ds-preview__half ds-preview__half--light"><span class="ds-preview__label">on-light</span>
           <button class="ds-btn ds-btn--primary" aria-busy="true" disabled><span class="ds-btn__spinner" aria-hidden="true"></span> Sending</button>
+        </div>
+      </div>
+
+      <h2 id="success-on-submit">Success on submit</h2>
+      <p>Use the modifier after a successful submit. The label and arrow fade while the check icon reveals; reduced motion skips directly to the final check state.</p>
+      <div class="ds-preview ds-preview--split">
+        <div class="ds-preview__half ds-preview__half--dark"><span class="ds-preview__label">on-dark</span>
+          <button class="ds-btn ds-btn--primary" type="button" onclick="this.classList.add('ds-btn--success-on-submit'); setTimeout(() => this.classList.remove('ds-btn--success-on-submit'), 1500);">
+            <span class="ds-btn__label">Subscribe</span>
+            <iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
+            <span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span>
+          </button>
+        </div>
+        <div class="ds-preview__half ds-preview__half--light"><span class="ds-preview__label">on-light</span>
+          <button class="ds-btn ds-btn--primary" type="button" onclick="this.classList.add('ds-btn--success-on-submit'); setTimeout(() => this.classList.remove('ds-btn--success-on-submit'), 1500);">
+            <span class="ds-btn__label">Subscribe</span>
+            <iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
+            <span class="ds-btn__icon-check"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span>
+          </button>
         </div>
       </div>
 
