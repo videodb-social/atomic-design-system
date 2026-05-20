@@ -1593,6 +1593,19 @@ a { color: inherit; text-decoration: none; }
   gap: 10px;
   margin-top: auto;
 }
+.ds-content-card__attribution {
+  display: block;
+  margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-subtle);
+}
+.ds-content-card--light .ds-content-card__attribution {
+  color: var(--text-on-light-subtle);
+}
 
 /* Dispatch card — newsletter / announcement card. Two-column on desktop:
    content left, subscribe form right. Hero-weight composition. */
@@ -5958,44 +5971,32 @@ a.ds-testimonial-card { cursor: pointer; }
           <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark" data-ds-reveal data-ds-reveal-delay="0">
             <h3 class="ds-content-card__title">Pair-programmer agents</h3>
             <p class="ds-content-card__lead">Continuous screen perception, replayable. Full context &mdash; terminal, runtime, tabs.</p>
-            <div class="ds-content-card__meta">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">github.com/video-db/pair-programmer</span>
-            </div>
+            <span class="ds-content-card__attribution">github.com/video-db/pair-programmer</span>
           </article>
           <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark" data-ds-reveal data-ds-reveal-delay="80">
             <h3 class="ds-content-card__title">Meeting &amp; call agents</h3>
             <p class="ds-content-card__lead">Capture without bots. Decision moments and action items with playable evidence.</p>
-            <div class="ds-content-card__meta">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">Powering Docket &middot; call.md</span>
-            </div>
+            <span class="ds-content-card__attribution">Powering Docket &middot; call.md</span>
           </article>
           <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark" data-ds-reveal data-ds-reveal-delay="160">
             <h3 class="ds-content-card__title">Agentic streams</h3>
             <p class="ds-content-card__lead">Live agent feeds with stream-in / stream-out perception.</p>
-            <div class="ds-content-card__meta">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">github.com/video-db/agentic-streams</span>
-            </div>
+            <span class="ds-content-card__attribution">github.com/video-db/agentic-streams</span>
           </article>
           <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark" data-ds-reveal data-ds-reveal-delay="240">
             <h3 class="ds-content-card__title">Generative video</h3>
             <p class="ds-content-card__lead">Bloom: research &rarr; script &rarr; assemble &rarr; publish. End-to-end.</p>
-            <div class="ds-content-card__meta">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">github.com/video-db/bloom</span>
-            </div>
+            <span class="ds-content-card__attribution">github.com/video-db/bloom</span>
           </article>
           <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
             <h3 class="ds-content-card__title">Workflow agents</h3>
             <p class="ds-content-card__lead">Drop VideoDB into a no-code flow. Index, search, clip, deliver.</p>
-            <div class="ds-content-card__meta">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">n8n &middot; Zapier &middot; custom</span>
-            </div>
+            <span class="ds-content-card__attribution">n8n &middot; Zapier &middot; custom</span>
           </article>
           <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
             <h3 class="ds-content-card__title">AI SDR &amp; knowledge</h3>
             <p class="ds-content-card__lead">Video memory as a first-class agent tool.</p>
-            <div class="ds-content-card__meta">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-dark-subtle);">Powering Wisdocity &middot; mixiopro &middot; muzology</span>
-            </div>
+            <span class="ds-content-card__attribution">Powering Wisdocity &middot; mixiopro &middot; muzology</span>
           </article>
         </div>
       </div>

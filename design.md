@@ -856,6 +856,7 @@ Single-column research / labs / notes card. Eyebrow + title + lead + meta row, w
   <span class="ds-eyebrow">Research · Note</span>
   <h3 class="ds-content-card__title">Multimodal embedding alignment</h3>
   <p class="ds-content-card__lead">How we keep CLIP, Whisper, and our internal scene-graph embeddings in the same semantic space so a single query can hit all indexes at once.</p>
+  <span class="ds-content-card__attribution">github.com/video-db/pair-programmer</span>
   <div class="ds-content-card__meta">
     <span class="ds-tag-chip ds-tag-chip--dark">python</span>
     <span class="ds-tag-chip ds-tag-chip--dark">embeddings</span>
@@ -864,7 +865,7 @@ Single-column research / labs / notes card. Eyebrow + title + lead + meta row, w
 </article>
 ```
 
-**Use when:** 3-up grids on index pages. Meta row always pinned to bottom via `margin-top: auto`. 2–4 tags max.
+**Use when:** 3-up grids on index pages. Meta row always pinned to bottom via `margin-top: auto`. 2–4 tags max. Use `__attribution` for source / credit / 'powering' lines. Use `__meta` for category tag-chips. Both can coexist.
 
 ---
 
