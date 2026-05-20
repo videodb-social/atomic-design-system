@@ -58,8 +58,8 @@ A complete VideoDB v2 page is six stacked blocks. You write only `<main>`; every
 
 <style>
   /* Inline the full design system CSS here (copied verbatim from
-     examples/homepage.html lines 19-5451 — tokens, atoms, molecules, organisms,
-     templates, motion). ~5,400 lines. Do not modify; this is the
+     the canonical stylesheet block in examples/homepage.html — tokens,
+     atoms, molecules, organisms, templates, motion). Do not modify; this is the
      canonical stylesheet for the v2 system.
 
      For brand-new pages that introduce one-off layout CSS, add a
@@ -78,7 +78,7 @@ A complete VideoDB v2 page is six stacked blocks. You write only `<main>`; every
 ```html
 <body>
 <header class="ds-header-nav ds-header-nav--dark" role="banner" style="position: sticky; top: 0; z-index: 50;">
-  <!-- Copy verbatim from examples/homepage.html lines 5460-5532 (organisms/site-header
+  <!-- Copy verbatim from the site-header block in examples/homepage.html
        with organisms/nav-dropdown for the Solutions mega-menu) -->
 </header>
 ```
@@ -105,7 +105,7 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 
 ```html
 <footer class="ds-footer ds-footer--dark ds-footer--editorial">
-  <!-- Copy verbatim from examples/homepage.html lines 6056-6127 (Editorial variant)
+  <!-- Copy verbatim from the footer block in examples/homepage.html (Editorial variant)
        OR from examples/platform.html (Directory variant). Pick based on page intent
        — see Footer entry in section 3.3. -->
 </footer>
@@ -115,7 +115,7 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 
 ```html
 <script>
-  /* Copy verbatim from examples/homepage.html lines 6129-6876 (~750 lines).
+  /* Copy verbatim from the system init script in examples/homepage.html.
      Contains hash-route activator + initializers for every interactive
      organism. Call signature at boot:
 
@@ -140,7 +140,7 @@ Update menu items only if your page introduces new top-level nav (rare). For a s
 
 ```html
 <script>
-  /* Copy verbatim from examples/homepage.html lines 6888-7012 ONLY IF the page uses
+  /* Copy verbatim from the hero Particle dome script in examples/homepage.html ONLY IF the page uses
      a hero Particle dome (templates/hero Variant E).
      Initializes a 12,000-point Three.js field with breathing + distortion +
      multi-axis rotation. Falls back to a radial-gradient CSS glow if
@@ -259,6 +259,7 @@ Pill-shaped action button. 44px min touch target, 9999px radius.
 - `--ghost-charcoal` (in-card on dark surfaces; softer than ghost-dark)
 - `--sm` (compact, used in site header)
 - `--icon` (40×40 square, requires `aria-label`)
+- `--success-on-submit` (submit confirmation: `Sending` + spinner, then `Thank you` + check, then reset)
 - States: `disabled`, `aria-busy="true"` with `<span class="ds-btn__spinner">` for loading
 
 **HTML:**
@@ -267,6 +268,15 @@ Pill-shaped action button. 44px min touch target, 9999px radius.
 <button class="ds-btn ds-btn--ghost-dark">Read docs <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></button>
 <button class="ds-btn ds-btn--ghost-charcoal">Choose plan</button>
 <button class="ds-btn ds-btn--ghost-dark ds-btn--icon" aria-label="Next"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></button>
+
+<button class="ds-btn ds-btn--primary" type="button" data-ds-success-submit>
+  <span class="ds-btn__spinner" aria-hidden="true"></span>
+  <span class="ds-btn__label">Subscribe</span>
+  <iconify-icon class="ds-btn__icon-arrow" icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
+  <span class="ds-btn__icon-check">
+    <iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon>
+  </span>
+</button>
 ```
 
 **Use when:** Primary CTAs in heroes and closing bands. Always pair primary + ghost via `.ds-cta-pair`. Never two primaries in one viewport.
@@ -372,18 +382,21 @@ Pill or card-radius text field. 16px font-size (prevents iOS auto-zoom).
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
 - `--pill` (9999px radius for inline subscribe forms; default is card radius)
-- States: `is-focused`, `is-error`, `is-buzzing` (200ms shake on invalid submit)
+- States: default, `is-focused`, and `[aria-invalid="true"]`
+- `[aria-invalid="true"]` — error state. Triggers a 120ms shake animation + applies `--color-error` border. The **canonical form-validation hook** — toggle this attribute via JS when validation fails, remove on successful re-entry.
 
 **HTML:**
 ```html
 <label class="ds-field-label ds-field-label--on-dark">Email</label>
 <input class="ds-input ds-input--dark ds-input--pill" type="email" placeholder="you@company.com">
 
-<input class="ds-input ds-input--light is-error" type="email" value="not-an-email">
+<input class="ds-input ds-input--light" type="email" value="not-an-email" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
 <span class="ds-helper ds-helper--on-light is-error">Enter a valid email</span>
 ```
 
 **Use when:** Subscribe bands (pill radius), form modals + multi-field forms (card radius). Always paired with a `.ds-field-label` above.
+
+**Docs rule:** Show default, focused, and error as separate states. Error needs `aria-invalid="true"`, helper text, and the shake animation.
 
 ---
 
@@ -393,6 +406,7 @@ Multi-line input. Card radius, vertical-resize only. Min-height 100px (80px in m
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `[aria-invalid="true"]` — error state. Triggers a 120ms shake animation + applies `--color-error` border. The **canonical form-validation hook** — toggle this attribute via JS when validation fails, remove on successful re-entry.
 
 **HTML:**
 ```html
@@ -410,6 +424,7 @@ Card-radius dropdown with custom chevron caret (inline SVG, `appearance: none` s
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `[aria-invalid="true"]` — error state. Triggers a 120ms shake animation + applies `--color-error` border. The **canonical form-validation hook** — toggle this attribute via JS when validation fails, remove on successful re-entry.
 
 **HTML:**
 ```html
@@ -488,8 +503,12 @@ Dot-pattern punched-through badge. Section ID marker (e.g. `N/01`, `V/02`). Text
 **HTML:**
 ```html
 <span class="ds-helper ds-helper--on-dark">We'll send a one-time confirmation</span>
+
+<input class="ds-input ds-input--dark" type="email" value="not-an-email" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
 <span class="ds-helper ds-helper--on-dark is-error">Enter a valid email · we don't share addresses</span>
 ```
+
+**Behavior:** Error state is split across the field and helper: `aria-invalid="true"` on the associated input applies the same error border + 120ms shake as Atom/Input; `is-error` on `.ds-helper` only turns the message red.
 
 **Use when:** Below an input for hint / constraint / validation. Don't use for required-field asterisks — every visible field is required unless explicitly optional.
 
@@ -553,14 +572,20 @@ Card-footer indicator. Pill radius with a leading dot — orange by default (the
 
 **Variants/modifiers:**
 - `--dark` / `--light` / `--orange` (full-orange "Recommended" variant)
+- Save-state modifiers: `--unset` / `--ready` / `--saving`
 
 **HTML:**
 ```html
 <span class="ds-pill-status ds-pill-status--dark"><span class="ds-pill-status__dot"></span>Live · v2.4.0</span>
 <span class="ds-pill-status ds-pill-status--orange"><span class="ds-pill-status__dot" style="background: currentColor;"></span>Recommended</span>
+
+<!-- Multi-state save indicator -->
+<span class="ds-pill-status ds-pill-status--unset"><span class="ds-pill-status__dot"></span>Unset</span>
+<span class="ds-pill-status ds-pill-status--ready"><span class="ds-pill-status__dot"></span>Ready to save</span>
+<span class="ds-pill-status ds-pill-status--saving"><span class="ds-pill-status__dot"></span>Saving</span>
 ```
 
-**Use when:** Hero release pill, card-footer status, compare-card bottom. Orange variant reserved for focal "Recommended" tier markers — use sparingly.
+**Use when:** Hero release pill, card-footer status, compare-card bottom. Orange variant reserved for focal "Recommended" tier markers — use sparingly. Save-state modifiers are for compact editor / form save indicators only; the label must carry the state, not colour alone.
 
 ---
 
@@ -594,18 +619,21 @@ Big mono numeral + uppercase mono label. The metric primitive — 3–4 of these
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
 - `.ds-stat__value--orange` (focal-stat highlight — use sparingly)
+- `data-ds-count-up` on `.ds-stat__value` (viewport-triggered digit animation)
 
 **HTML:**
 ```html
 <div class="ds-stat ds-stat--dark">
-  <span class="ds-stat__value">2.4M</span>
+  <span class="ds-stat__value" data-ds-count-up>2.4M</span>
   <span class="ds-stat__label">Hours indexed</span>
 </div>
 <div class="ds-stat ds-stat--dark">
-  <span class="ds-stat__value ds-stat__value--orange">99.99%</span>
+  <span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>99.99%</span>
   <span class="ds-stat__label">Indexing uptime</span>
 </div>
 ```
+
+**Behavior:** `data-ds-count-up` animates once on viewport entry via IntersectionObserver. The parser preserves prefixes, suffixes, decimal precision, and comma grouping, so `2.4M`, `99.99%`, `3,400+`, and `10×` land in their original format. `prefers-reduced-motion: reduce` renders the final value immediately.
 
 **Use when:** 3–5 per row in stat strips inside Hero (Variant C — Big stats) or above closing CTA bands. Label stays under 5 words.
 
@@ -680,7 +708,16 @@ Field label + Input + optional helper text, stacked vertically. The atomic unit 
   <input class="ds-input ds-input--dark" type="text" placeholder="acme">
   <span class="ds-helper ds-helper--on-dark">Lowercase letters and dashes only · 3–32 chars</span>
 </div>
+
+<!-- Error state: same validation contract as Atom/Input -->
+<div style="display: flex; flex-direction: column; gap: 8px;">
+  <label class="ds-field-label ds-field-label--on-dark">Workspace URL</label>
+  <input class="ds-input ds-input--dark" type="text" value="ACME!" aria-invalid="true" onfocus="this.removeAttribute('aria-invalid')" onblur="this.setAttribute('aria-invalid','true')">
+  <span class="ds-helper ds-helper--on-dark is-error">Lowercase letters and dashes only — strip caps and the bang</span>
+</div>
 ```
+
+**Error behavior:** Use `aria-invalid="true"` on the field for the shared error border + 120ms shake. Use `.ds-helper.is-error` only for the red explanatory message.
 
 **Use when:** Every form. Label is mandatory — placeholder isn't a label. Required-field asterisks are forbidden (every visible field is required unless explicitly noted optional).
 
@@ -725,10 +762,12 @@ Binary control with a sliding pill indicator. JS reads each button's `offsetWidt
 ```html
 <div class="ds-mode-toggle ds-mode-toggle--dark ds-mode-toggle--equal" role="group" aria-label="View mode" style="--ds-slider-w: 82px; --ds-slider-x: 4px;">
   <span class="ds-mode-toggle__slider"></span>
-  <button class="ds-mode-toggle__btn is-active" type="button"><iconify-icon icon="solar:list-linear" width="14" height="14"></iconify-icon> List</button>
-  <button class="ds-mode-toggle__btn" type="button"><iconify-icon icon="solar:widget-2-linear" width="14" height="14"></iconify-icon> Grid</button>
+  <button class="ds-mode-toggle__btn is-active" type="button" aria-pressed="true"><iconify-icon icon="solar:list-linear" width="14" height="14"></iconify-icon> List</button>
+  <button class="ds-mode-toggle__btn" type="button" aria-pressed="false"><iconify-icon icon="solar:widget-2-linear" width="14" height="14"></iconify-icon> Grid</button>
 </div>
 ```
+
+**Behavior:** Click sets `.is-active`, updates `aria-pressed`, and moves the slider by updating `--ds-slider-w` / `--ds-slider-x` from the clicked button geometry.
 
 **Use when:** Binary view switches — list/grid, monthly/annual, light/dark. Three+ options → switch to `.ds-pill-tab` tablist.
 
@@ -750,7 +789,9 @@ Sun / moon button pair that flips a section's surface between dark and light. 32
 </div>
 ```
 
-**Use when:** Top-right of a section that supports surface flipping. Position absolute. Fires on `mousedown`, not `click`, to feel instant.
+**Behavior:** Click sets `.is-active` on the chosen surface button and keeps `aria-pressed` in sync across the pair.
+
+**Use when:** Top-right of a section that supports surface flipping. Position absolute. Use click activation so mouse, touch, keyboard, and assistive tech paths stay aligned.
 
 ---
 
@@ -817,9 +858,11 @@ Pattern: use the `.ds-bracket` atom as a header unit — bracket label on the le
 
 #### Cards (8)
 
+**Feature anchor vs feature tile** — `ds-feature-card` is the magazine-style hero anchor (one per section). For repeating grid tiles, see `ds-feature-tile` in Section 3.5.
+
 ##### ds-feature-card (Organism)
 
-Magazine-style hero anchor card. 5/7 split — art region left, copy right. The lead card on a Labs / Blog / Research index where one piece dominates. Below 720px stacks (art on top).
+Magazine-style hero anchor card — single-lead-story layout with a 5/7 art + body split. NOT for grid layouts — use `ds-feature-tile` for grids. The lead card on a Labs / Blog / Research index where one piece dominates. Below 720px stacks (art on top).
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
@@ -837,7 +880,7 @@ Magazine-style hero anchor card. 5/7 split — art region left, copy right. The 
 </article>
 ```
 
-**Use when:** One per index page — for the lead story only. Subsequent stories use the Content card grid.
+**Use when:** Use for ONE focal card per section, typically a hero or section opener. For 2×2 / 3×2 grids of small icon+title+body tiles, use `ds-feature-tile` (Section 3.5 Templates → Feature grid). Subsequent stories use the Content card grid.
 
 ---
 
@@ -854,6 +897,7 @@ Single-column research / labs / notes card. Eyebrow + title + lead + meta row, w
   <span class="ds-eyebrow">Research · Note</span>
   <h3 class="ds-content-card__title">Multimodal embedding alignment</h3>
   <p class="ds-content-card__lead">How we keep CLIP, Whisper, and our internal scene-graph embeddings in the same semantic space so a single query can hit all indexes at once.</p>
+  <span class="ds-content-card__attribution">github.com/video-db/pair-programmer</span>
   <div class="ds-content-card__meta">
     <span class="ds-tag-chip ds-tag-chip--dark">python</span>
     <span class="ds-tag-chip ds-tag-chip--dark">embeddings</span>
@@ -862,7 +906,7 @@ Single-column research / labs / notes card. Eyebrow + title + lead + meta row, w
 </article>
 ```
 
-**Use when:** 3-up grids on index pages. Meta row always pinned to bottom via `margin-top: auto`. 2–4 tags max.
+**Use when:** 3-up grids on index pages. Meta row always pinned to bottom via `margin-top: auto`. 2–4 tags max. Use `__attribution` for source / credit / 'powering' lines. Use `__meta` for category tag-chips. Both can coexist.
 
 ---
 
@@ -1147,7 +1191,7 @@ Display heading + lead + byline + optional tag list. The first surface on any ar
 
 ##### ds-article-toc (Organism)
 
-Right-rail sticky navigation for long-form articles. Vertical list of section anchors with 1px left border that thickens to 2px orange + 2px right-nudge on the active link. Scroll-spy via IntersectionObserver in production.
+Right-rail sticky navigation for long-form articles. Vertical list of section anchors with 1px left border that thickens to 2px orange + 2px right-nudge on the active link. Click/focus updates active state for previews; scroll-spy via IntersectionObserver owns the same state in production.
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
@@ -1162,6 +1206,8 @@ Right-rail sticky navigation for long-form articles. Vertical list of section an
   <a class="ds-article-toc__link" href="#">What we changed</a>
 </nav>
 ```
+
+**Behavior:** Click or focus sets `.is-active` on the chosen link and moves `aria-current="true"` to that link. Demo links with `href="#"` prevent the default top-of-page jump; production links should point at real H2 anchors.
 
 **Use when:** Article-shell template, sticky right rail. One link per H2 (no H3 entries — keeps the rail scannable).
 
@@ -1260,6 +1306,7 @@ Multi-line code sample with runtime switcher up top, copy button on the right, c
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
+- `--animated` (typewriter type-on, requires `data-ds-typewriter`)
 
 **HTML:**
 ```html
@@ -1282,7 +1329,31 @@ videodb query "shot 12 · skyline · golden hour"</pre>
 </div>
 ```
 
-**Use when:** Quickstart pages, hero (Variant B — Centered with code), use-case row, anywhere multi-line SDK calls show. Status bar optional. Copy button swaps to "Copied" for 1.2s on success.
+**Status variants:**
+```html
+<!-- Metrics variant — live runtime / latency / version -->
+<div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">Live · 120ms · v2.4.0</span></div>
+
+<!-- Filename variant — static quickstart / file-oriented snippet -->
+<div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">quickstart.sh</span></div>
+```
+
+**Use when:** Quickstart pages, hero (Variant B — Centered with code), use-case row, anywhere multi-line SDK calls show. Status bar optional: use metrics status for live runtime signals, filename status for quickstarts and file-oriented examples. Copy button swaps to "Copied" for 1.2s on success.
+
+**Animated variant:**
+```html
+<div class="ds-code-block ds-code-block--dark ds-code-block--animated"
+     data-ds-typewriter
+     data-ds-typewriter-delay="40"
+     data-ds-typewriter-start="300">
+  <pre class="ds-code-block__code">npx skills add video-db/skills</pre>
+</div>
+```
+
+- `data-ds-typewriter-delay` — ms per character (default 40)
+- `data-ds-typewriter-start` — ms delay before typing begins (default 300)
+- Triggers on viewport entry (IntersectionObserver, threshold 0.4)
+- Honors `prefers-reduced-motion: reduce` by rendering the final text with a static cursor.
 
 ---
 
@@ -1297,7 +1368,7 @@ Orange-tinted chips pinned next to specific lines of a Code block. Used to call 
 ```html
 <div class="ds-code-annotation ds-code-annotation--dark">
   <div class="ds-code-block ds-code-block--dark">
-    <div class="ds-code-block__head"><div role="tablist"><div class="ds-code-tab-pills ds-code-tab-pills--dark"><button class="ds-code-tab-pills__btn is-selected" role="tab">python</button></div></div><button class="ds-code-block__copy">Copy</button></div>
+    <div class="ds-code-block__head"><div role="tablist" aria-label="Runtime"><div class="ds-code-tab-pills ds-code-tab-pills--dark"><button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">python</button></div></div><button class="ds-code-block__copy">Copy</button></div>
     <pre class="ds-code-block__body">collection = videodb.connect()
 video = collection.upload(url)
 
@@ -1721,9 +1792,9 @@ The "Get started" band that closes every marketing page. Display heading + lead 
   <div class="ds-cta-band__inner">
     <h2 class="ds-cta-band__title">Built for production from day one.</h2>
     <div class="ds-cta-band__stat-row">
-      <div class="ds-stat ds-stat--dark"><span class="ds-stat__value ds-stat__value--orange">4.2B</span><span class="ds-stat__label">queries served</span></div>
-      <div class="ds-stat ds-stat--dark"><span class="ds-stat__value">99.99%</span><span class="ds-stat__label">SLA uptime</span></div>
-      <div class="ds-stat ds-stat--dark"><span class="ds-stat__value">3,400+</span><span class="ds-stat__label">developers</span></div>
+<div class="ds-stat ds-stat--dark"><span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>4.2B</span><span class="ds-stat__label">queries served</span></div>
+<div class="ds-stat ds-stat--dark"><span class="ds-stat__value" data-ds-count-up>99.99%</span><span class="ds-stat__label">SLA uptime</span></div>
+<div class="ds-stat ds-stat--dark"><span class="ds-stat__value" data-ds-count-up>3,400+</span><span class="ds-stat__label">developers</span></div>
     </div>
     <div class="ds-cta-band__actions"><div class="ds-cta-pair"><a class="ds-btn ds-btn--primary" href="#">Get API key</a><a class="ds-btn ds-btn--ghost-dark" href="#">See pricing</a></div></div>
   </div>
@@ -2347,7 +2418,14 @@ Sequential-primitive grid. 6 cards, each numbered + titled + briefly described. 
 
 #### Feature grid (Template)
 
+Uses `ds-feature-tile` (small icon + title + body), NOT `ds-feature-card` (which is the hero anchor — see Section 3.3).
+
 3-column grid of feature tiles. Each tile composes a subtle icon tile + title + one-line claim. Two variants: **Left-aligned** (default — content stacks left, for security / value-prop lists) and **Centered** (icon + text centered, for trust-page symmetrical grids).
+
+**Variants/modifiers:**
+- `--center` (centered tile composition)
+- `--2col` (strict 2-column on desktop, 1-column ≤768px)
+- `--3col` (strict 3-column on desktop, 1-column ≤768px)
 
 **HTML (Left-aligned variant A):**
 ```html
@@ -2449,7 +2527,7 @@ Two-column "here's the use case, here's the 5-line code that solves it" section.
           <div style="margin-top: 32px;"><a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#">Read the build log <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></span></a></div>
         </div>
         <div class="ds-code-block ds-code-block--dark">
-          <div class="ds-code-block__head"><div role="tablist"><div class="ds-code-tab-pills ds-code-tab-pills--dark"><button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">python</button></div></div><button class="ds-code-block__copy">Copy</button></div>
+          <div class="ds-code-block__head"><div role="tablist" aria-label="Runtime"><div class="ds-code-tab-pills ds-code-tab-pills--dark"><button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">python</button></div></div><button class="ds-code-block__copy">Copy</button></div>
           <pre class="ds-code-block__body">import videodb
 
 conn  = videodb.connect()
@@ -2557,6 +2635,38 @@ Composable diagram primitive — no chart library required. Each card carries a 
 
 **Use when:** Postmortems, performance comparisons, capacity diagrams, technical data-narrative content. Two cards side-by-side is the sweet spot. Tick labels: max 3 words, two per card. Not for marketing pages — reads as engineering.
 
+**Animated SVG connector:**
+```html
+<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Static structural lines stay un-classed -->
+  <line x1="80" y1="100" x2="200" y2="100" stroke="var(--border-on-dark-strong)" stroke-width="1"/>
+
+  <!-- The ONE flowing connector — focal element -->
+  <path class="ds-diagram__connector" d="M 200 100 L 320 100"/>
+
+  <!-- For reversed flow (e.g. response paths): -->
+  <!-- <path class="ds-diagram__connector ds-diagram__connector--reverse" d="..."/> -->
+</svg>
+```
+
+```css
+.ds-diagram__connector {
+  stroke: var(--orange-500);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-dasharray: 6 4;
+  stroke-dashoffset: 0;
+  animation: stream-flow 2.4s linear infinite;
+}
+.ds-diagram__connector--reverse { animation-name: stream-flow-rev; }
+@keyframes stream-flow { to { stroke-dashoffset: -200; } }
+@keyframes stream-flow-rev { to { stroke-dashoffset: 200; } }
+```
+
+**Usage rules:**
+
+> **One flowing connector per section.** Animating every connector turns the diagram into a busy Christmas tree and erases the focal moment. Pick the single most important data path and animate it; leave structural connectors static.
+
 ---
 
 #### Roadmap timeline (Template)
@@ -2579,6 +2689,7 @@ Horizontal milestone-bar infographic. Two-tone mission heading at the top + segm
             <div class="ds-timeline-roadmap__label-body">
               <span class="ds-timeline-roadmap__date">Aug 15, 2022</span>
               <span class="ds-timeline-roadmap__milestone">Internal preview</span>
+              <span class="ds-timeline-roadmap__milestone-body">First 100 videos indexed. SE paired in Slack.</span>
             </div>
           </div>
           <div></div>
@@ -2872,13 +2983,39 @@ Reach for these when copywriting headlines and body:
 - Don't competing-CTA: one primary per viewport.
 - Don't required-field asterisks: every visible field is required unless explicitly optional.
 
+### 6.7 Form validation contract
+
+All form fields use `aria-invalid="true"` as the single validation signal. Visual error state and shake animation are bound to this attribute. The corresponding error message lives in a `ds-helper is-error` sibling. Never use ad-hoc `.has-error` classes or inline error styling.
+
+### 6.8 Form success recipe
+
+On successful form submit, show loading first, then add `ds-btn--success-on-submit` for the confirmation moment, then reset to the original label:
+
+```js
+btn.setAttribute('aria-busy', 'true');
+btn.disabled = true;
+label.textContent = 'Sending';
+
+// After the request succeeds:
+btn.removeAttribute('aria-busy');
+btn.disabled = false;
+label.textContent = 'Thank you';
+btn.classList.add('ds-btn--success-on-submit');
+setTimeout(() => {
+  btn.classList.remove('ds-btn--success-on-submit');
+  label.textContent = originalLabel;
+}, 1500);
+```
+
 ---
 
 ## 7. Build & deploy
 
 ### 7.1 Single-file portability
 
-Every page is a standalone HTML file with the canonical CSS and JS inlined. No build step, no bundler. The canonical CSS lives in `examples/homepage.html` lines 19–5451 (~5,400 lines) — copy verbatim into every new page. One-off page CSS goes in a second `<style>` block after the canonical one.
+Every page is a standalone HTML file with the canonical CSS and JS inlined. No build step, no bundler. The canonical CSS lives in the first large `<style>` block of `examples/homepage.html` — copy verbatim into every new page. One-off page CSS goes in a second `<style>` block after the canonical one.
+
+Exception: `404.html` is a deploy-target error page, not a full content page. It may use a minimal self-contained token subset and page-specific CSS as long as it preserves the VideoDB type, dark surface, orange CTA, focus-visible state, and reduced-motion guard.
 
 ### 7.2 CDN dependencies
 

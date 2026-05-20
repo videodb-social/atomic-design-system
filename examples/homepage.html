@@ -665,6 +665,7 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 .ds-btn__spinner {
+  display: none;
   width: 14px;
   height: 14px;
   border: 1.5px solid currentColor;
@@ -673,9 +674,29 @@ a { color: inherit; text-decoration: none; }
   animation: ds-btn-spin 720ms linear infinite;
   flex-shrink: 0;
 }
+.ds-btn[aria-busy="true"] .ds-btn__spinner { display: inline-block; }
 @keyframes ds-btn-spin { to { transform: rotate(360deg); } }
+.ds-btn--success-on-submit {
+  animation: bk-sent-bounce 400ms var(--ease-spring);
+  pointer-events: none;
+}
+.ds-btn--success-on-submit .ds-btn__icon-arrow { animation: bk-sent-ink 200ms var(--ease-ui) forwards; }
+.ds-btn.ds-btn--success-on-submit .ds-btn__icon-arrow { display: none; }
+.ds-btn .ds-btn__icon-check { display: none; align-items: center; justify-content: center; }
+.ds-btn.ds-btn--success-on-submit .ds-btn__icon-check { display: inline-flex; opacity: 1; animation: sent-check-bounce 360ms var(--ease-spring) 200ms both; }
+.ds-btn.ds-btn--success-on-submit .ds-btn__icon-check iconify-icon { display: block; animation: sent-clip-grow 280ms var(--ease-out) 280ms both; }
+@keyframes bk-sent-bounce { 0% { transform: scale(1); } 40% { transform: scale(0.94); } 100% { transform: scale(1); } }
+@keyframes bk-sent-ink { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes sent-check-bounce { 0% { opacity: 0; transform: scale(0.6); } 60% { opacity: 1; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes sent-clip-grow { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @media (prefers-reduced-motion: reduce) {
   .ds-btn__spinner { animation-duration: 1600ms; }
+  .ds-btn--success-on-submit,
+  .ds-btn--success-on-submit .ds-btn__icon-arrow,
+  .ds-btn--success-on-submit .ds-btn__icon-check,
+  .ds-btn--success-on-submit .ds-btn__icon-check iconify-icon { animation: none; }
+  .ds-btn--success-on-submit .ds-btn__icon-check { display: inline-flex; }
+  .ds-btn--success-on-submit .ds-btn__icon-arrow { opacity: 0; }
 }
 
 /* Arrow-circle CTA — editorial link with orange circle holding an arrow */
@@ -928,11 +949,19 @@ a { color: inherit; text-decoration: none; }
 .ds-pill-status--dark { background: var(--grey-700); color: white; border-color: var(--grey-700); }
 .ds-pill-status--light { background: rgba(0, 0, 0, 0.04); color: var(--text-on-light); border-color: var(--border-on-light-strong); }
 .ds-pill-status--orange { background: rgba(242, 78, 30, 0.10); color: var(--orange-500); border-color: rgba(242, 78, 30, 0.40); }
+.ds-pill-status--unset { background: rgba(255, 255, 255, 0.04); color: var(--text-on-dark-subtle); border-color: var(--border-on-dark); }
+.ds-pill-status--ready { background: rgba(242, 78, 30, 0.10); color: var(--orange-500); border-color: rgba(242, 78, 30, 0.40); }
+.ds-pill-status--saving { background: rgba(255, 255, 255, 0.06); color: var(--text-on-dark); border-color: var(--border-on-dark-strong); }
+.ds-section--light .ds-pill-status--unset { background: rgba(0, 0, 0, 0.04); color: var(--text-on-light-subtle); border-color: var(--border-on-light); }
+.ds-section--light .ds-pill-status--saving { background: rgba(0, 0, 0, 0.05); color: var(--text-on-light); border-color: var(--border-on-light-strong); }
 .ds-pill-status__dot {
   width: 6px; height: 6px; border-radius: 9999px;
   background: var(--orange-500);
   flex-shrink: 0;
 }
+.ds-pill-status--unset .ds-pill-status__dot { background: currentColor; opacity: 0.45; }
+.ds-pill-status--ready .ds-pill-status__dot { background: currentColor; }
+.ds-pill-status--saving .ds-pill-status__dot { background: currentColor; animation: ds-status-pulse 1s ease-in-out infinite; }
 
 /* Tag chip — mono uppercase chip */
 .ds-tag-chip {
@@ -1035,7 +1064,6 @@ a { color: inherit; text-decoration: none; }
 .ds-input--light { background: rgba(255, 255, 255, 0.85); color: var(--text-on-light); border-color: var(--border-on-light); }
 .ds-input--light::placeholder { color: var(--text-on-light-subtle); }
 .ds-input:focus-visible { outline: 2px solid var(--orange-400); outline-offset: 2px; border-color: var(--orange-400); }
-.ds-input.is-error { border-color: var(--color-error) !important; }
 .ds-input.is-focused { outline: 2px solid var(--orange-400); outline-offset: 2px; border-color: var(--orange-400); }
 
 /* Field label */
@@ -1139,6 +1167,24 @@ a { color: inherit; text-decoration: none; }
 .ds-textarea--dark::placeholder { color: var(--text-on-dark-subtle); }
 .ds-textarea--light { background: rgba(255, 255, 255, 0.85); color: var(--text-on-light); border-color: var(--border-on-light); }
 .ds-textarea--light::placeholder { color: var(--text-on-light-subtle); }
+.ds-input[aria-invalid="true"],
+.ds-textarea[aria-invalid="true"],
+.ds-select[aria-invalid="true"] {
+  border-color: var(--color-error);
+  animation: ds-input-buzz 120ms var(--ease-ui);
+}
+@keyframes ds-input-buzz {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-3px); }
+  40%      { transform: translateX(3px); }
+  60%      { transform: translateX(-2px); }
+  80%      { transform: translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-input[aria-invalid="true"],
+  .ds-textarea[aria-invalid="true"],
+  .ds-select[aria-invalid="true"] { animation: none; }
+}
 
 /* Loaders */
 .ds-spinner {
@@ -1196,7 +1242,8 @@ a { color: inherit; text-decoration: none; }
   50% { opacity: 0.4; transform: scale(0.7); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ds-status-pulse__dot { animation: none; }
+  .ds-status-pulse__dot,
+  .ds-pill-status--saving .ds-pill-status__dot { animation: none; }
 }
 
 .ds-skeleton {
@@ -1593,6 +1640,19 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: 10px;
   margin-top: auto;
+}
+.ds-content-card__attribution {
+  display: block;
+  margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-subtle);
+}
+.ds-content-card--light .ds-content-card__attribution {
+  color: var(--text-on-light-subtle);
 }
 
 /* Dispatch card — newsletter / announcement card. Two-column on desktop:
@@ -2528,6 +2588,28 @@ a { color: inherit; text-decoration: none; }
 }
 .ds-code-block--dark .ds-code-block__body { color: var(--text-on-dark); }
 .ds-code-block--light .ds-code-block__body { color: var(--text-on-light); }
+/* Animated code block — typewriter type-on */
+.ds-code-block--animated .ds-code-block__code,
+.ds-code-block--animated .ds-code-block__body {
+  position: relative;
+  white-space: pre-wrap;
+}
+.ds-code-block__cursor {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  background: var(--orange-500);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: ds-cursor-blink 1s steps(2, end) infinite;
+}
+@keyframes ds-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-code-block__cursor { animation: none; opacity: 1; }
+}
 /* Status bar — composes `.ds-eyebrow ds-eyebrow--xs` for the mono cadence;
    only the layout (flex row + padding + border-top) is organism-specific. */
 .ds-code-block__status {
@@ -4878,6 +4960,14 @@ a.ds-testimonial-card { cursor: pointer; }
   gap: 16px;
   margin-top: 40px;
 }
+.ds-feature-tile-grid--2col { grid-template-columns: repeat(2, 1fr); }
+.ds-feature-tile-grid--3col { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) {
+  .ds-feature-tile-grid--2col,
+  .ds-feature-tile-grid--3col {
+    grid-template-columns: 1fr;
+  }
+}
 .ds-feature-tile {
   display: flex;
   flex-direction: column;
@@ -5051,6 +5141,19 @@ a.ds-testimonial-card { cursor: pointer; }
 }
 .ds-section--dark .ds-timeline-roadmap__milestone { color: var(--text-on-dark); text-decoration-color: var(--border-on-dark-strong); }
 .ds-section--light .ds-timeline-roadmap__milestone { color: var(--text-on-light); text-decoration-color: var(--border-on-light-strong); }
+.ds-timeline-roadmap__milestone-body {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Geist', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-on-light-subtle);
+  letter-spacing: 0;
+}
+.ds-timeline-roadmap--dark .ds-timeline-roadmap__milestone-body,
+.ds-section--dark .ds-timeline-roadmap__milestone-body {
+  color: var(--text-on-dark-subtle);
+}
 
 .ds-timeline-roadmap__bar { height: 32px; }
 .ds-timeline-roadmap__seg { border-radius: 2px; }
@@ -5338,6 +5441,21 @@ a.ds-testimonial-card { cursor: pointer; }
   height: 100%;
   background: linear-gradient(to right, var(--orange-500), rgba(var(--orange-rgb), 0.45));
   border-radius: var(--r-control);
+}
+.ds-diagram__connector {
+  stroke: var(--orange-500);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-dasharray: 6 4;
+  stroke-dashoffset: 0;
+  animation: stream-flow 2.4s linear infinite;
+}
+.ds-diagram__connector--reverse { animation-name: stream-flow-rev; }
+.ds-diagram__connector--on-light { stroke: var(--orange-600); }
+@keyframes stream-flow { to { stroke-dashoffset: -200; } }
+@keyframes stream-flow-rev { to { stroke-dashoffset: 200; } }
+@media (prefers-reduced-motion: reduce) {
+  .ds-diagram__connector { animation: none; stroke-dasharray: none; }
 }
 
 /* Empty state (for stubbed pages) */
@@ -6025,17 +6143,17 @@ a.ds-testimonial-card { cursor: pointer; }
         </div>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-on-light); border: 1px solid var(--border-on-light); border-radius: var(--r-card); overflow: hidden; margin-bottom: 40px;">
           <div class="ds-stat ds-stat--light" style="background: var(--white); padding: 32px 28px; border-radius: 0;">
-            <span class="ds-stat__value ds-stat__value--orange">3 TB</span>
+            <span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>3 TB</span>
             <span class="ds-stat__label">Uploaded every month</span>
             <span style="font-size: 12px; color: var(--text-on-light-second); margin-top: 4px;">Across cloud, VPC, and edge</span>
           </div>
           <div class="ds-stat ds-stat--light" style="background: var(--white); padding: 32px 28px; border-radius: 0;">
-            <span class="ds-stat__value">40K+</span>
+            <span class="ds-stat__value" data-ds-count-up>40K+</span>
             <span class="ds-stat__label">Custom indexes built each month</span>
             <span style="font-size: 12px; color: var(--text-on-light-second); margin-top: 4px;">Bring your own model</span>
           </div>
           <div class="ds-stat ds-stat--light" style="background: var(--white); padding: 32px 28px; border-radius: 0;">
-            <span class="ds-stat__value">25K+</span>
+            <span class="ds-stat__value" data-ds-count-up>25K+</span>
             <span class="ds-stat__label">Searches per month</span>
             <span style="font-size: 12px; color: var(--text-on-light-second); margin-top: 4px;">Every result a playable clip</span>
           </div>
@@ -6210,7 +6328,7 @@ a.ds-testimonial-card { cursor: pointer; }
               <a class="ds-btn ds-btn--ghost-dark" href="#github">View on GitHub <iconify-icon icon="ri:github-fill" width="14" height="14"></iconify-icon></a>
             </div>
           </div>
-          <div class="ds-code-block ds-code-block--dark">
+          <div class="ds-code-block ds-code-block--dark ds-code-block--animated" data-ds-typewriter data-ds-typewriter-delay="40" data-ds-typewriter-start="300">
             <div class="ds-code-block__head">
               <div role="tablist" aria-label="Runtime">
                 <div class="ds-code-tab-pills ds-code-tab-pills--dark">
@@ -6464,6 +6582,9 @@ print(result.timestamps)</pre>
     if (activePage && typeof initScrollReveals === 'function') {
       initScrollReveals(activePage);
     }
+    if (activePage && typeof initCountUpStats === 'function') {
+      initCountUpStats(activePage);
+    }
   }
 
   function buildToc(pageName) {
@@ -6544,6 +6665,51 @@ print(result.timestamps)</pre>
     });
   });
 
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.ds-code-block__copy');
+    if (!btn) return;
+    const block = btn.closest('.ds-code-block');
+    const codeEl = block && (block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body'));
+    if (!codeEl) return;
+    const text = block.dataset.dsTypewriterText || codeEl.textContent.trim();
+    const original = btn.textContent;
+    const showCopied = () => {
+      btn.textContent = 'Copied';
+      setTimeout(() => { btn.textContent = original; }, 1200);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(showCopied).catch(showCopied);
+    else showCopied();
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-ds-success-submit]');
+    if (!btn) return;
+    const label = btn.querySelector('.ds-btn__label');
+    if (!label || btn.getAttribute('aria-busy') === 'true') return;
+    if (!btn.querySelector('.ds-btn__icon-check')) {
+      btn.insertAdjacentHTML('beforeend', '<span class="ds-btn__icon-check" aria-hidden="true"><iconify-icon icon="solar:check-circle-bold" width="16" height="16"></iconify-icon></span>');
+    }
+    const original = btn.dataset.dsSuccessLabel || label.textContent.trim();
+    btn.dataset.dsSuccessLabel = original;
+    clearTimeout(btn._dsSuccessTimer);
+    clearTimeout(btn._dsResetTimer);
+    btn.classList.remove('ds-btn--success-on-submit');
+    btn.setAttribute('aria-busy', 'true');
+    btn.disabled = true;
+    label.textContent = btn.dataset.dsLoadingLabel || 'Sending';
+    btn._dsSuccessTimer = setTimeout(() => {
+      btn.removeAttribute('aria-busy');
+      btn.disabled = false;
+      label.textContent = btn.dataset.dsDoneLabel || 'Thank you';
+      void btn.offsetWidth;
+      btn.classList.add('ds-btn--success-on-submit');
+      btn._dsResetTimer = setTimeout(() => {
+        btn.classList.remove('ds-btn--success-on-submit');
+        label.textContent = original;
+      }, 1500);
+    }, 700);
+  });
+
   // ──── Dot-loader engine — 7×7 grid, frame-by-frame ───────────────────────
   // Ported from merged-design-system-cleanup. Each frame is a list of indices
   // (0–48) for which dots are .is-active that frame. Three frame sets:
@@ -6574,6 +6740,56 @@ print(result.timestamps)</pre>
       [24]
     ]
   };
+  function initAnimatedCodeBlocks() {
+    const blocks = document.querySelectorAll('[data-ds-typewriter]');
+    if (!blocks.length) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    blocks.forEach(block => {
+      if (block.dataset.dsTypewriterBooted) return;
+      block.dataset.dsTypewriterBooted = 'true';
+
+      const codeEl = block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body');
+      if (!codeEl) return;
+
+      const fullText = codeEl.textContent;
+      block.dataset.dsTypewriterText = fullText;
+      const charDelay = parseInt(block.dataset.dsTypewriterDelay, 10) || 40;
+      const startDelay = parseInt(block.dataset.dsTypewriterStart, 10) || 300;
+
+      const cursor = document.createElement('span');
+      cursor.className = 'ds-code-block__cursor';
+
+      if (reduced) {
+        codeEl.textContent = fullText;
+        codeEl.appendChild(cursor);
+        return;
+      }
+
+      codeEl.textContent = '';
+      codeEl.appendChild(cursor);
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(block);
+
+          setTimeout(() => {
+            let i = 0;
+            const tick = () => {
+              if (i >= fullText.length) return;
+              cursor.insertAdjacentText('beforebegin', fullText.charAt(i));
+              i++;
+              setTimeout(tick, charDelay);
+            };
+            tick();
+          }, startDelay);
+        });
+      }, { threshold: 0.4 });
+
+      io.observe(block);
+    });
+  }
   function initDotLoaders() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelectorAll('.ds-dot-loader').forEach(loader => {
@@ -6799,6 +7015,116 @@ print(result.timestamps)</pre>
         else if (e.key === 'ArrowLeft') next = arr[(i - 1 + arr.length) % arr.length];
         else if (e.key === 'Home') next = arr[0];
         else if (e.key === 'End') next = arr[arr.length - 1];
+        if (next) { next.focus(); e.preventDefault(); }
+      });
+      group.dataset.dsBooted = '1';
+    });
+
+    document.querySelectorAll('.ds-pill-tab').forEach(trigger => {
+      const group = trigger.closest('[role="tablist"]') || trigger.parentElement;
+      if (!group || group.dataset.dsPillTabsBooted === '1') return;
+      const triggers = Array.from(group.querySelectorAll('.ds-pill-tab'));
+      function activate(target) {
+        triggers.forEach(t => {
+          const isActive = t === target;
+          t.classList.toggle('is-selected', isActive);
+          t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+      }
+      triggers.forEach(t => t.addEventListener('click', () => activate(t)));
+      group.addEventListener('keydown', e => {
+        const i = triggers.indexOf(document.activeElement);
+        if (i === -1) return;
+        let next = null;
+        if (e.key === 'ArrowRight') next = triggers[(i + 1) % triggers.length];
+        else if (e.key === 'ArrowLeft') next = triggers[(i - 1 + triggers.length) % triggers.length];
+        else if (e.key === 'Home') next = triggers[0];
+        else if (e.key === 'End') next = triggers[triggers.length - 1];
+        if (next) { next.focus(); e.preventDefault(); }
+      });
+      group.dataset.dsPillTabsBooted = '1';
+    });
+
+    document.querySelectorAll('.ds-mode-toggle, .ds-surface-toggle').forEach(group => {
+      if (group.dataset.dsToggleBooted === '1') return;
+      const triggers = Array.from(group.querySelectorAll('.ds-mode-toggle__btn, .ds-surface-toggle__btn'));
+      function moveModeSlider(target) {
+        if (!group.classList.contains('ds-mode-toggle')) return;
+        const groupRect = group.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        if (!targetRect.width) return;
+        group.style.setProperty('--ds-slider-w', targetRect.width + 'px');
+        group.style.setProperty('--ds-slider-x', (targetRect.left - groupRect.left) + 'px');
+      }
+      function activate(target) {
+        triggers.forEach(t => {
+          const isActive = t === target;
+          t.classList.toggle('is-active', isActive);
+          t.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        moveModeSlider(target);
+      }
+      const active = triggers.find(t => t.classList.contains('is-active')) || triggers[0];
+      if (active) activate(active);
+      triggers.forEach(t => t.addEventListener('click', () => activate(t)));
+      group.dataset.dsToggleBooted = '1';
+    });
+
+    document.querySelectorAll('.ds-article-toc').forEach(toc => {
+      if (toc.dataset.dsArticleTocBooted === '1') return;
+      const links = Array.from(toc.querySelectorAll('.ds-article-toc__link'));
+      function activate(target) {
+        links.forEach(link => {
+          const isActive = link === target;
+          link.classList.toggle('is-active', isActive);
+          if (isActive) link.setAttribute('aria-current', 'true');
+          else link.removeAttribute('aria-current');
+        });
+      }
+      links.forEach(link => {
+        link.addEventListener('click', e => {
+          if (link.getAttribute('href') === '#') e.preventDefault();
+          activate(link);
+        });
+        link.addEventListener('focus', () => activate(link));
+      });
+      toc.dataset.dsArticleTocBooted = '1';
+    });
+
+    const CODE_TAB_SNIPPETS = {
+      npx: 'npx videodb init my-project\ncd my-project && npm install\nvideodb index ./samples/clip.mp4\n\n# Query a moment by spoken word + visual object\nvideodb query "shot 12 · skyline · golden hour"',
+      pip: 'pip install videodb\n\npython - <<\'PY\'\nfrom videodb import connect\n\nconn = connect()\nvideo = conn.upload("./samples/clip.mp4")\nvideo.index_spoken_words()\n\nprint(video.search("shot 12 · skyline · golden hour"))\nPY',
+      typescript: 'import { connect } from "videodb";\n\nconst conn = await connect();\nconst video = await conn.upload("./samples/clip.mp4");\nawait video.indexSpokenWords();\n\nconst results = await video.search("shot 12 · skyline · golden hour");\nconsole.log(results);',
+      python: 'from videodb import connect\n\nconn  = connect()\nvideo = conn.upload("keynote.mp4")\nvideo.index_spoken_words()\nvideo.index_scenes()\n\nresult = video.search("latency")\nprint(result.timestamps)'
+    };
+
+    document.querySelectorAll('.ds-code-tab-pills').forEach(group => {
+      if (group.dataset.dsBooted === '1') return;
+      const triggers = Array.from(group.querySelectorAll('.ds-code-tab-pills__btn'));
+      const block = group.closest('.ds-code-block');
+      const body = block && (block.querySelector('.ds-code-block__code') || block.querySelector('.ds-code-block__body'));
+      if (body && !body.dataset.dsDefaultCode) body.dataset.dsDefaultCode = body.textContent;
+      function activate(trigger) {
+        triggers.forEach(t => {
+          const isActive = t === trigger;
+          t.classList.toggle('is-selected', isActive);
+          t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        if (body) {
+          const key = trigger.textContent.trim().toLowerCase();
+          body.textContent = trigger.dataset.code || CODE_TAB_SNIPPETS[key] || body.dataset.dsDefaultCode;
+          if (block) block.dataset.dsTypewriterText = body.textContent;
+        }
+      }
+      triggers.forEach(t => t.addEventListener('click', () => activate(t)));
+      group.addEventListener('keydown', e => {
+        const i = triggers.indexOf(document.activeElement);
+        if (i === -1) return;
+        let next = null;
+        if (e.key === 'ArrowRight') next = triggers[(i + 1) % triggers.length];
+        else if (e.key === 'ArrowLeft') next = triggers[(i - 1 + triggers.length) % triggers.length];
+        else if (e.key === 'Home') next = triggers[0];
+        else if (e.key === 'End') next = triggers[triggers.length - 1];
         if (next) { next.focus(); e.preventDefault(); }
       });
       group.dataset.dsBooted = '1';
@@ -7135,6 +7461,82 @@ print(result.timestamps)</pre>
     });
   }
 
+  // ──── Stat count-up — viewport-triggered numeric reveal ──────────────────
+  // Opt-in via `[data-ds-count-up]` on `.ds-stat__value`. The parser preserves
+  // prefixes, suffixes, decimal precision, and comma grouping so values like
+  // `2.4M`, `99.99%`, `3,400+`, and `10×` land in their original format.
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let _countUpIO = null;
+  function parseCountUpValue(text) {
+    const match = String(text).trim().match(/^([^0-9+-]*)([-+]?\d[\d,]*(?:\.\d+)?)(.*)$/);
+    if (!match) return null;
+    const rawNumber = match[2];
+    const decimals = rawNumber.includes('.') ? rawNumber.split('.')[1].length : 0;
+    return {
+      prefix: match[1],
+      target: parseFloat(rawNumber.replace(/,/g, '')),
+      suffix: match[3],
+      decimals,
+      useCommas: rawNumber.includes(',')
+    };
+  }
+  function formatCountUpValue(value, config) {
+    let number = value.toFixed(config.decimals);
+    if (config.useCommas) {
+      const parts = number.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      number = parts.join('.');
+    }
+    return config.prefix + number + config.suffix;
+  }
+  function animateCountUp(el) {
+    if (el.dataset.dsCountUpDone === '1') return;
+    const finalText = el.dataset.dsCountUpFinal || el.textContent.trim();
+    el.dataset.dsCountUpFinal = finalText;
+    const config = parseCountUpValue(finalText);
+    el.dataset.dsCountUpDone = '1';
+    if (!config || !Number.isFinite(config.target) || prefersReducedMotion) {
+      el.textContent = finalText;
+      return;
+    }
+    const duration = parseInt(el.dataset.dsCountUpDuration || '1000', 10);
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = formatCountUpValue(config.target * eased, config);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = finalText;
+    }
+    el.textContent = formatCountUpValue(0, config);
+    requestAnimationFrame(tick);
+  }
+  function getCountUpIO() {
+    if (_countUpIO || !('IntersectionObserver' in window)) return _countUpIO;
+    _countUpIO = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        animateCountUp(entry.target);
+        _countUpIO.unobserve(entry.target);
+      });
+    }, { threshold: 0.35, rootMargin: '0px 0px -8% 0px' });
+    return _countUpIO;
+  }
+  function initCountUpStats(root) {
+    root = root || document;
+    const scope = root === document ? (document.querySelector('.ds-page.is-active') || document) : root;
+    const values = scope.querySelectorAll('[data-ds-count-up]');
+    if (!values.length) return;
+    const io = getCountUpIO();
+    values.forEach(value => {
+      if (value.dataset.dsCountUpBooted === '1' || value.dataset.dsCountUpDone === '1') return;
+      value.dataset.dsCountUpBooted = '1';
+      value.dataset.dsCountUpFinal = value.textContent.trim();
+      if (!io) animateCountUp(value);
+      else io.observe(value);
+    });
+  }
+
   // ──── Boot ────────────────────────────────────────────────────────────────
   window.addEventListener('hashchange', () => activatePage(parseHash()));
   // ──── Mobile drawer — open/close, focus trap, scroll lock, accordion ────
@@ -7232,9 +7634,9 @@ print(result.timestamps)</pre>
     });
   }
 
-  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); });
+  window.addEventListener('DOMContentLoaded', () => { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); initCountUpStats(); });
   // If DOMContentLoaded already fired (e.g. defer scripts), run immediately
-  if (document.readyState !== 'loading') { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); }
+  if (document.readyState !== 'loading') { activatePage(parseHash()); initAnimatedCodeBlocks(); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initScrollReveals(); initCountUpStats(); }
 })();
 </script>
 
