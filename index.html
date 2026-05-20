@@ -15925,27 +15925,5 @@ print(result.timestamps)</pre>
   if (document.readyState !== 'loading') { activatePage(parseHash()); initDotLoaders(); initTierFinders(); initMarquees(); initTestimonialTickers(); initCarousels(); initTabs(); initNavDropdowns(); initMobileDrawers(); initSyncCompare(); initParticleDomes(); initMotionClips(); initScrubbers(); initTrendHover(); initDataVizReveals(); initScrollReveals(); }
 })();
 </script>
-
-<!-- ─── UI review flow — conditional loader ──────────────────────────────────
-     Activates only when ?review=1 is on the URL. Pages without the flag pay
-     0 KB. See scripts/ui-review-flow/README.md for usage. ──────────────── -->
-<script>
-(function () {
-  if (!/[?&]review=1\b/.test(location.search)) return;
-  var base = 'scripts/ui-review-flow/';
-  var link = document.createElement('link');
-  link.rel = 'stylesheet'; link.href = base + 'review-mode.css';
-  document.head.appendChild(link);
-  function load(src, cb) {
-    var s = document.createElement('script');
-    s.src = src; s.onload = cb || null;
-    document.body.appendChild(s);
-  }
-  // ds-autotagger runs first to label .ds-* elements; review-mode.js then
-  // sees those data-comment-id attributes when its own autoTag() walks the DOM.
-  load(base + 'ds-autotagger.js', function () { load(base + 'review-mode.js'); });
-})();
-</script>
-
 </body>
 </html>
