@@ -817,9 +817,11 @@ Pattern: use the `.ds-bracket` atom as a header unit — bracket label on the le
 
 #### Cards (8)
 
+**Feature anchor vs feature tile** — `ds-feature-card` is the magazine-style hero anchor (one per section). For repeating grid tiles, see `ds-feature-tile` in Section 3.5.
+
 ##### ds-feature-card (Organism)
 
-Magazine-style hero anchor card. 5/7 split — art region left, copy right. The lead card on a Labs / Blog / Research index where one piece dominates. Below 720px stacks (art on top).
+Magazine-style hero anchor card — single-lead-story layout with a 5/7 art + body split. NOT for grid layouts — use `ds-feature-tile` for grids. The lead card on a Labs / Blog / Research index where one piece dominates. Below 720px stacks (art on top).
 
 **Variants/modifiers:**
 - `--dark` / `--light` (surface)
@@ -837,7 +839,7 @@ Magazine-style hero anchor card. 5/7 split — art region left, copy right. The 
 </article>
 ```
 
-**Use when:** One per index page — for the lead story only. Subsequent stories use the Content card grid.
+**Use when:** Use for ONE focal card per section, typically a hero or section opener. For 2×2 / 3×2 grids of small icon+title+body tiles, use `ds-feature-tile` (Section 3.5 Templates → Feature grid). Subsequent stories use the Content card grid.
 
 ---
 
@@ -2346,6 +2348,8 @@ Sequential-primitive grid. 6 cards, each numbered + titled + briefly described. 
 ---
 
 #### Feature grid (Template)
+
+Uses `ds-feature-tile` (small icon + title + body), NOT `ds-feature-card` (which is the hero anchor — see Section 3.3).
 
 3-column grid of feature tiles. Each tile composes a subtle icon tile + title + one-line claim. Two variants: **Left-aligned** (default — content stacks left, for security / value-prop lists) and **Centered** (icon + text centered, for trust-page symmetrical grids).
 
