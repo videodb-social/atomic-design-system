@@ -2353,6 +2353,11 @@ Uses `ds-feature-tile` (small icon + title + body), NOT `ds-feature-card` (which
 
 3-column grid of feature tiles. Each tile composes a subtle icon tile + title + one-line claim. Two variants: **Left-aligned** (default — content stacks left, for security / value-prop lists) and **Centered** (icon + text centered, for trust-page symmetrical grids).
 
+**Variants/modifiers:**
+- `--center` (centered tile composition)
+- `--2col` (strict 2-column on desktop, 1-column ≤768px)
+- `--3col` (strict 3-column on desktop, 1-column ≤768px)
+
 **HTML (Left-aligned variant A):**
 ```html
 <section class="ds-section ds-section--dark">

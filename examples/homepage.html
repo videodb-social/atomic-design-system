@@ -4878,6 +4878,14 @@ a.ds-testimonial-card { cursor: pointer; }
   gap: 16px;
   margin-top: 40px;
 }
+.ds-feature-tile-grid--2col { grid-template-columns: repeat(2, 1fr); }
+.ds-feature-tile-grid--3col { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) {
+  .ds-feature-tile-grid--2col,
+  .ds-feature-tile-grid--3col {
+    grid-template-columns: 1fr;
+  }
+}
 .ds-feature-tile {
   display: flex;
   flex-direction: column;
