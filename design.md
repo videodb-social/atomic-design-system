@@ -6,7 +6,7 @@ This is the canonical spec for the VideoDB v2 atomic design system. It is optimi
 
 ## TL;DR — the system in 200 words
 
-VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: 17 atoms compose into 12 molecules, 37 organisms, 1 motion primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is 96px top/bottom; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: 17 atoms compose into 12 molecules, 37 organisms, 1 motion primitive, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is 96px top/bottom; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
 
 ## Table of contents
 
@@ -17,7 +17,8 @@ VideoDB is a perception layer for AI — data infrastructure for video, built fo
    - [3.2 Molecules (12)](#32-molecules-12)
    - [3.3 Organisms (37)](#33-organisms-37)
    - [3.4 Motion (1)](#34-motion-1)
-   - [3.5 Templates (13)](#35-templates-13)
+   - [3.5 Illustration (1)](#35-illustration-1)
+   - [3.6 Templates (13)](#36-templates-13)
 4. [Page recipes](#4-page-recipes)
 5. [Brand tokens (foundation reference)](#5-brand-tokens-foundation-reference)
 6. [Voice, tone & principles (compressed)](#6-voice-tone--principles-compressed)
@@ -2066,7 +2067,49 @@ The brand-signature ambient animation. 15,000-particle (production) or 5,000-par
 
 ---
 
-### 3.5 Templates (13)
+### 3.5 Illustration (1)
+
+#### ascii-illustration (Illustration)
+
+Animated ASCII illustration — a preprocessed source PNG resolves through three resolution levels of block characters, then morphs cell-by-cell to binary digits on scroll-into-view. The metaphor mirrors what VideoDB does to a frame at runtime: pixels become the binary representation that agents read. Vanilla JS + canvas, ~6 KB inlined, JetBrains Mono. Honours `prefers-reduced-motion: reduce` (paints final binary state immediately, no animation). Auto-pauses when offscreen via IntersectionObserver.
+
+**Variants/modifiers:**
+- `data-src` (required) — path to the preprocessed PNG
+- `data-resolution` (default `120`) — column count at the fine level
+- `data-color` (default `#F5F5F7`) — character colour, modulated by per-cell brightness alpha
+- `data-background` (default `#0A0A0A`) — canvas background
+- `data-font-size` (default `12`) — fine-level font size in px (JetBrains Mono)
+- `data-replay` (default `always`) — `always` replays on every viewport entry; `once` plays first time only
+
+**HTML:**
+```html
+<div class="ascii-illustration"
+     data-src="assets/illustrations/sources/<concept>-processed.png"
+     data-resolution="120"
+     data-color="#F5F5F7"
+     data-background="#0A0A0A"
+     data-font-size="12"
+     data-replay="always">
+  <canvas></canvas>
+</div>
+```
+
+**Animation phases (~1.85 s total):**
+1. **Coarse dissolve-in** (500 ms) — large chunk-blocks pop in at randomised times at ¼ resolution
+2. **Mid snap** (250 ms) — chunks subdivide to ½ resolution
+3. **Fine snap** (200 ms) — chunks subdivide to full resolution
+4. **Morph** (900 ms) — each fine cell flips blocks → binary at randomised times
+5. **Done** — binary state holds until next viewport entry
+
+Per-cell appearance and flip times re-randomise on every replay; the dissolve pattern is never the same twice.
+
+**Source image pipeline.** PNGs are preprocessed once via the `ascii-converter` skill — composite onto white → auto-invert (corner-brightness heuristic) → edge flood-fill (clears opaque dark photo backgrounds) → autocrop to subject + padding → autocontrast → unsharp mask → posterise to 4 brightness levels. Output lands at `assets/illustrations/sources/<concept>-processed.png` plus a sidecar JSON recording every parameter applied.
+
+**Use when:** A page section calls for an illustration that reinforces VideoDB's "pixels become binary" thesis. Hero, inline, or background contexts (defaults differ; see the docs page). Dark surface non-negotiable at v1. One illustration per fold — same discipline as the Particle dome. Don't author with photographic images directly; let the skill preprocess first.
+
+---
+
+### 3.6 Templates (13)
 
 #### Section structure (Template)
 
