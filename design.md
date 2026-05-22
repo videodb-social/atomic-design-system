@@ -1,7 +1,7 @@
 # VideoDB Design System — Single Source of Truth
 
-**Version:** v2.1.1 (footer chevron desktop-leak patch, 2026-05-22)
-**Prior:** v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
+**Version:** v2.2.1 (cleanup pass — deprecated templates removed, Feature grid renamed, Problem/Solution + Pricing card variant B refreshed, 2026-05-22)
+**Prior:** v2.2.0 (homepage promotion batch, 2026-05-22) · v2.1.1 (footer chevron desktop-leak patch, 2026-05-22) · v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
 
 ## How to use this file
 
@@ -9,7 +9,110 @@ This is the canonical spec for the VideoDB v2 atomic design system. It is optimi
 
 ## TL;DR — the system in 200 words
 
-VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: **18 atoms** compose into **14 molecules**, **38 organisms**, 2 motion components + 2 examples + 2 authoring methods, 7 data-viz pieces, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is **96/80/64/52** px top/bottom across desktop → small-phone breakpoints; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: **19 atoms** compose into **15 molecules**, **38 organisms**, 2 motion components + 2 examples + 2 authoring methods, 7 data-viz pieces, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is **96/80/64/52** px top/bottom across desktop → small-phone breakpoints; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+
+## v2.2.1 changelog — what changed (2026-05-22)
+
+Structural cleanup of the templates and organisms inventory. No new components — this round removes deprecated entries and refreshes 3 existing components to match the live videodb-website implementation.
+
+### Summary
+
+| Section | Change | What |
+|---|---|---|
+| §3.7 Templates | DELETED | Lifecycle grid (was redundant with Feature + benefit grid and Industries grid) |
+| §3.7 Templates | DELETED | Platform overview (was redundant with the new Feature + benefit grid) |
+| §3.7 Templates | DELETED | Use case row (low-utility pattern, no live consumers) |
+| §3.7 Templates | RENAMED + REWORKED | Feature grid → **Feature and benefit grid**. Existing variants dropped; new canonical variant uses the homepage Platform section (6-card icon + title + body grid). Both light and dark surfaces. |
+| §3.7 Templates | REWORKED | **Problem / Solution** canonical variant — existing variants dropped; new variant uses the homepage Problem section pair (`ds-compare-card` × 2) with circular bullets, hairline row separators, no gradients, status pill at the bottom. Both light and dark. |
+| §3.3 Organisms · Cards | UPDATED | **ds-logo-card** — the `--grid` variant added in v2.2.0 is now documented inside the main Logo card preview page (no separate sidebar entry). |
+| §3.3 Organisms · Pricing | UPDATED | **ds-pricing-card** Variant B — replaced with the homepage Deployment cards (3-card bracket-headed pattern with circular bullets, row hairlines between features, prominent CTA at the bottom). Both light and dark. |
+| §3.3 Organisms · Social proof | UPDATED | **ds-customer-wall** — preview reverted to the standard pattern (no `--clean` variant in v2.2.1; the canonical form stays as-is). |
+| §3.3 Organisms · Page sections | DELETED | `ds-cta-band` — superseded by the new **Closing CTA — particle field** template (v2.2.0). Existing pages should migrate to the template; cta-band stays deprecated for one release before removal. |
+
+### Tweaks applied after initial v2.2.1 cut
+
+| Area | Tweak |
+|---|---|
+| `.ds-frame` | **Side rails removed globally** — `border-left: 0; border-right: 0;` added to the docs page CSS so previews match the website (which dropped rails in Phase 1). Old design system rendered hairlines on the left + right edges of every `.ds-frame`; the new convention drops them. |
+| `.ds-compare-card--good` | **Gradient dropped.** Previously `linear-gradient(rgba(orange, 0.04), white)` on light and equivalent on dark. New canonical: white (or charcoal on dark) background + orange border. Only the border carries the "this is the solution" semantic. |
+| `.ds-compare-card__rows` | **`flex: 1`** added so the rows column grows to fill the available card height. Combined with `margin-top: auto` on the bottom `.ds-pill-status`, the pill anchors to the bottom of the card regardless of how few rows are present. Both compare cards in a Problem/Solution pair stay aligned at the bottom. |
+| Logo card Variant A | **Light surface preview added** — the docs page now shows both dark and light versions of the List layout (matching the Variant B grid pattern which already had both). |
+| `templates/sync-compare` | **Preview restored.** Was accidentally removed during the v2.2.1 bulk-delete pass alongside the deprecated templates (Lifecycle grid / Platform overview / Use case row). The Sync compare template itself was never deprecated — its preview page has been rebuilt with the canonical 2-column synchronised-hover compare pattern from §3.7. |
+| `organisms/customer-wall` | **Preview restored to the full Variant A (Static grid) + Variant B (Ticker) + Usage rules layout.** The temporary `--clean` variant introduced and then reverted in the previous tweak round was an over-simplification; the canonical form has both static grid and ticker variants documented. |
+
+### Counts
+
+- Atoms: 19 (no change)
+- Molecules: 15 (no change)
+- Organisms: 39 → **38** (cta-band removed)
+- Templates: 16 → **13** (Lifecycle grid, Platform overview, Use case row removed; Feature grid renamed in place)
+- Conventions: 10 (no change)
+
+### Rationale
+
+The v2.2.0 promotion batch added 7 components from the homepage but left 5 redundant or deprecated entries in the inventory (Lifecycle grid, Platform overview, Use case row, Feature grid, ds-cta-band). v2.2.1 cleans these up so the inventory reflects what designers actually reach for today. The 3 reworked entries (Feature and benefit grid, Problem/Solution, Pricing card variant B) now match what ships on videodb-website, removing drift between docs and implementation.
+
+### Migration
+
+- **Lifecycle grid / Platform overview / Use case row** — no automated migration. Pages using these templates should adopt **Feature and benefit grid** (closest equivalent for a primitives or feature grid).
+- **Feature grid → Feature and benefit grid** — rename the template reference. Existing markup may need an update to the new canonical variant if the page wants the homepage Platform-section look.
+- **ds-cta-band** — adopt the new **Closing CTA — particle field** template (§3.7) for closing CTAs. The old `ds-cta-band` markup is preserved on legacy pages but should not be used for new builds.
+
+### `index.html` updates
+
+- Sidebar Templates group: removed Lifecycle grid, Platform overview, Use case row. Renamed Feature grid → Feature and benefit grid (orange UPDATED tag).
+- Sidebar Organisms · Cards: removed standalone Logo card --grid entry; Logo card now carries an asterisk indicating it has a new variant documented inline.
+- Sidebar Organisms · Page sections: removed Closing CTA band.
+- Preview pages removed: `#templates/lifecycle-grid`, `#templates/platform-overview`, `#templates/use-case-row`, `#organisms/cta-band`, `#organisms/logo-card-grid` (logo-card-grid content folded into `#organisms/logo-card`).
+- Preview pages reworked: `#templates/feature-grid` (now Feature and benefit grid), `#templates/problem-solution`, `#organisms/pricing-card` (Variant B section), `#organisms/customer-wall`.
+
+---
+
+## v2.2.0 changelog — what changed (2026-05-22)
+
+Feature round driven by the homepage refinement cycle on videodb-website (Phase 2). Promoted page-scoped overrides to canonical DS components. Documentation-only — the videodb-website homepage continues to use its `vh-*` override classes; the website itself was not updated in this version.
+
+### Summary
+
+| Section | Change | Component / convention |
+|---|---|---|
+| §3.1 Atoms | NEW (atom #19) | `.ds-skip-link` |
+| §3.2 Molecules | NEW (molecule #15) | `.ds-feature-list` |
+| §3.3 Organisms · Cards | NEW VARIANT on `.ds-logo-card` | `.ds-logo-card--grid` |
+| §3.3 Organisms · Cards | NEW (Cards #9) | `.ds-testimonial-card` |
+| §3.7 Templates | NEW (template #14) | Sticky scroll |
+| §3.7 Templates | NEW (template #15) | Closing CTA — particle field |
+| §3.7 Templates | NEW (template #16) | Onboarding |
+| §2.7 Conventions | NEW (C9) | `inert` for non-active panels in scroll-coupled / tabbed UIs |
+| §2.7 Conventions | NEW (C10) | Pointer-coarse fallback for hover-revealed content |
+
+Full HTML, CSS, variants, and use-when guidance for each entry live in the linked canonical sections — not here. This changelog is a record of what changed, not a second copy of the spec.
+
+### Counts
+
+- Atoms: 18 → **19**
+- Molecules: 14 → **15**
+- Organisms: 38 → **39** (Cards subgroup 8 → 9)
+- Templates: 13 → **16**
+- Conventions: 8 → **10**
+
+### Rationale
+
+Each candidate was hand-picked from the homepage `vh-*` overrides pool — the prefix originally meant "VideoDB homepage" and was deliberately separate from `ds-*`. After shipping the homepage, the patterns above proved generally reusable (any future page would benefit) and were promoted into the design system. Site-only patterns (hero pill weakening, eyebrow tweaks, mobile-only specifics) remain site-scoped in `videodb-website/src/partials/css_site_overrides.html`.
+
+### Migration
+
+None required. All v2.2.0 additions are net-new components or net-new variants — no breaking changes, no deprecations. Existing pages keep working as-is.
+
+Full prototype trail: `videodb-website/src/CHANGELOG.md` Phase 2 #1 through #30.
+
+### `index.html` updates
+
+- New sidebar group at top: orange "v2.2.0 · NEW" header with 8 entries (changelog + 7 component previews).
+- New preview routes: `#v2.2.0/changelog`, `#atoms/skip-link`, `#atoms/content-frame`, `#molecules/feature-list`, `#organisms/logo-card-grid`, `#organisms/testimonial-card`, `#templates/sticky-scroll`, `#templates/closing-particle-field`.
+- Per-route preview pages — rendered example, anatomy code block, CSS code block, variants list, "when to use" guidance, prev/next pagination chained back to v2.1's `#templates/hero-split`.
+
+---
 
 ## v2.1.1 changelog — what changed (2026-05-22)
 
@@ -204,8 +307,8 @@ The `index.html` design-system showcase page received the following:
 1. [Page scaffold (boilerplate)](#1-page-scaffold-boilerplate)
 2. [Universal conventions](#2-universal-conventions)
 3. [Component anatomy](#3-component-anatomy)
-   - [3.1 Atoms (18)](#31-atoms-18)
-   - [3.2 Molecules (14)](#32-molecules-14)
+   - [3.1 Atoms (19)](#31-atoms-19)
+   - [3.2 Molecules (15)](#32-molecules-15)
    - [3.3 Organisms (38)](#33-organisms-38)
    - [3.4 Motion (2 components + 2 examples + 2 authoring methods)](#34-motion-2-components--2-examples--2-authoring-methods)
    - [3.5 Data Viz (7)](#35-data-viz-7)
@@ -431,6 +534,39 @@ Always `assets/...`, never `../merged-design-system-cleanup/assets/...`. Example
 
 For partner logos on light surfaces, swap to `-light-bg.svg` / `-light-bg.png`. Some are `-any-bg.svg` (Gemini, Claude, Seedance, Zapier — work on both).
 
+### 2.7 Accessibility & focus conventions (NEW in v2.2.0)
+
+Two cross-cutting rules added in v2.2.0 driven by the homepage refinement cycle. Both apply system-wide, not to any specific component.
+
+**C9 — Use `inert` on non-active panels in scroll-coupled or tabbed UIs**
+
+When a panel is visually inactive (sticky scrollytelling, tab content not currently shown, modal-trapped background, etc.), set the HTML `inert` attribute on it. `inert` simultaneously: (1) removes its links from the tab order, (2) hides it from screen readers, (3) blocks pointer events. This keeps visual visibility and tab order in sync — a user's keyboard focus never lands on something they can't see.
+
+```html
+<!-- Sticky scroll — step 0 active, others inert -->
+<article class="vh-solutions-content" data-vh-step="0">…</article>
+<article class="vh-solutions-content" data-vh-step="1" inert>…</article>
+<article class="vh-solutions-content" data-vh-step="2" inert>…</article>
+<article class="vh-solutions-content" data-vh-step="3" inert>…</article>
+```
+
+JS toggles the attribute as the active step changes. Mobile breakpoints that drop the sticky behavior (e.g. ≤900px for sticky scrollytelling) must clear all `inert` attributes so panels are reachable in normal tab order.
+
+**C10 — Pointer-coarse fallback for hover-revealed content**
+
+Anywhere hover reveals content (testimonial card description slide-up, image overlays, hover-to-show tooltips), add a `@media (pointer: coarse)` rule that makes the content always visible. Touch users have no hover — they need the content unconditionally.
+
+```css
+.ds-testimonial-card__middle { grid-template-rows: 0fr; transition: grid-template-rows var(--dur-ui) var(--ease-ui); }
+.ds-testimonial-card:hover .ds-testimonial-card__middle { grid-template-rows: 1fr; }
+
+@media (pointer: coarse) {
+  .ds-testimonial-card__middle { grid-template-rows: 1fr; }
+}
+```
+
+This is preferred over `@media (max-width: ...)` because `pointer: coarse` is the right semantic — it matches any touch device regardless of viewport size (tablets, phones, touch-enabled laptops).
+
 ---
 
 ## 3. Component anatomy
@@ -439,7 +575,7 @@ Per-component HTML reference for the v2 atomic system. Every dark/light variant 
 
 ---
 
-### 3.1 Atoms (18)
+### 3.1 Atoms (19)
 
 #### ds-btn (Atom)
 
@@ -782,7 +918,23 @@ Card-footer indicator. Pill radius with a leading dot — orange by default (the
 
 ---
 
-### 3.2 Molecules (14)
+#### ds-skip-link (Atom)
+
+Visually-hidden-by-default keyboard skip link. Sits at the top of `<header>` as the first focusable element on every page; reveals at top-left of the viewport when keyboard-focused so users can bypass the site header. Targets `#main`.
+
+**Variants/modifiers:**
+- None (single canonical form — brand-orange treatment is fixed)
+
+**HTML:**
+```html
+<a class="ds-skip-link" href="#main">Skip to main content</a>
+```
+
+**Use when:** Mandatory on every shippable page. Every `<main>` element must carry `id="main"` so the link resolves. No visual change for mouse / touch users — purely a keyboard / screen-reader affordance. Don't override colors or sizing per page; the brand-orange focus reveal is a system signal.
+
+---
+
+### 3.2 Molecules (15)
 
 #### ds-section-heading (Molecule)
 
@@ -1047,9 +1199,34 @@ Pattern: use the `.ds-bracket` atom as a header unit — bracket label on the le
 
 ---
 
+#### ds-feature-list (Molecule)
+
+Stacked feature-item list with hairline-separated rows. Each item: icon + title on top, body paragraph below. 3–5 items per list is the sweet spot.
+
+**Variants/modifiers:**
+- Default — adapts automatically to the parent section's `--dark` / `--light` surface
+
+**HTML:**
+```html
+<ul class="ds-feature-list">
+  <li class="ds-feature-list__item">
+    <div class="ds-feature-list__head">
+      <iconify-icon icon="solar:bolt-linear" width="18" height="18"></iconify-icon>
+      <h3 class="ds-feature-list__title">Skills, not SDKs</h3>
+    </div>
+    <p class="ds-feature-list__body">Build by chaining named capabilities — index, search, edit, stream — instead of wiring services together.</p>
+  </li>
+  <!-- 2-4 more __item siblings -->
+</ul>
+```
+
+**Use when:** A section needs a 3-up (or N-up) feature breakdown without escalating to full cards. Pairs naturally with `.ds-content-frame` when a feature list sits beside a code block. Above 5 items, switch to the Feature grid template (§3.7).
+
+---
+
 ### 3.3 Organisms (38)
 
-#### Cards (8)
+#### Cards (9)
 
 **Feature anchor vs feature tile** — `ds-feature-card` is the magazine-style hero anchor (one per section). For repeating grid tiles, see `ds-feature-tile` in Section 3.5.
 
@@ -1231,6 +1408,45 @@ Title + list of brand-logo rows. Each row pairs a 36×36 icon frame with a name 
 ```
 
 **Use when:** Partner / model / integration tier tiles. Title is mandatory. Width caps at ~320px — stack in 2–3 columns, don't stretch.
+
+**Variant: `--grid` (v2.2.0)** — Replaces the default `__list` rows with a 3-col grid of hairline-bordered wordmark tiles. Each tile centers a partner wordmark SVG; tiles share the card's surface tint. Use when the card carries 4–9 partner wordmarks (logo-density tile is more legible than the row-by-row list at that count). Mobile (≤720px) falls back to 2-col.
+
+```html
+<div class="ds-logo-card ds-logo-card--grid ds-logo-card--dark">
+  <div class="ds-logo-card__title">Agent runtimes</div>
+  <div class="ds-logo-card__grid">
+    <div class="ds-logo-card__tile"><img src="assets/partner-logos/wordmark-logos/anthropic-wordmark-dark-bg.svg" alt="Anthropic"></div>
+    <div class="ds-logo-card__tile"><img src="assets/partner-logos/wordmark-logos/openai-wordmark-dark-bg.svg" alt="OpenAI"></div>
+    <div class="ds-logo-card__tile"><img src="assets/partner-logos/wordmark-logos/gemini-wordmark-dark-bg.svg" alt="Gemini"></div>
+    <!-- 1–6 more __tile siblings -->
+  </div>
+</div>
+```
+
+---
+
+##### ds-testimonial-card (Organism, NEW in v2.2.0)
+
+Single-layer case-study card. Title is always visible; full description slides up from below on hover (desktop) or stays revealed at rest on touch devices. Footer carries an industry tag + arrow CTA. Subtle press-state scale on `:active`.
+
+**Variants/modifiers:**
+- `--dark` / `--light` (surface)
+
+**HTML:**
+```html
+<a class="ds-testimonial-card ds-testimonial-card--dark" href="#">
+  <h3 class="ds-testimonial-card__title">CloudPhysician reduced ICU review time by 40% with VideoDB's clinical agent.</h3>
+  <div class="ds-testimonial-card__middle">
+    <p class="ds-testimonial-card__lead">Within six weeks, the team had a working agent watching every shift's surgical footage and surfacing the 30-second windows clinicians actually needed to review.</p>
+  </div>
+  <div class="ds-testimonial-card__footer">
+    <span class="ds-testimonial-card__industry">Healthcare</span>
+    <span class="ds-arrow-cta ds-arrow-cta--on-dark">Read case study <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="12" height="12"></iconify-icon></span></span>
+  </div>
+</a>
+```
+
+**Use when:** Customer-story grids on marketing pages (Traction / Customers sections). 2-up or 3-up grid. Distinct from `.ds-social-card` which is a smaller "where to find us" tile. The hover-reveal middle row is the signature interaction; if your testimonial needs the description always-visible by default, use `.ds-content-card` instead. Mobile (touch) falls back via Convention C10 (§2.7).
 
 ---
 
@@ -1952,85 +2168,6 @@ Pill-shaped tab group with orange-on-active. Distinct from `.ds-pill-tab` (white
 ---
 
 #### Page sections (2)
-
-##### ds-cta-band (Organism, "Closing CTA band")
-
-The "Get started" band that closes every marketing page. Display heading + lead + CTA pair. Two surface variants (Neutral / Tinted), plus a Stat-overlay composition for proof-driven moments.
-
-**Variants/modifiers:**
-- `--dark` / `--light` (surface, Neutral)
-- `--tinted-dark` / `--tinted-light` (brand-orange gradient bg, for highest-intent)
-- `.ds-cta-band__stat-row` (optional stat overlay)
-
-**HTML (Neutral):**
-```html
-<div class="ds-cta-band ds-cta-band--dark">
-  <div class="ds-cta-band__inner">
-    <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs">Get started</span>
-    <h2 class="ds-cta-band__title">Build agents that watch.</h2>
-    <p class="ds-cta-band__lead">Free tier covers your first 10 hours. No credit card. Director, CaptureSDK, and the MCP server are all open source.</p>
-    <div class="ds-cta-band__actions">
-      <div class="ds-cta-pair">
-        <a class="ds-btn ds-btn--primary" href="#">Get API key</a>
-        <a class="ds-btn ds-btn--ghost-dark" href="#">Read the docs</a>
-      </div>
-    </div>
-  </div>
-</div>
-```
-
-**HTML (With stat overlay):**
-```html
-<div class="ds-cta-band ds-cta-band--dark">
-  <div class="ds-cta-band__inner">
-    <h2 class="ds-cta-band__title">Built for production from day one.</h2>
-    <div class="ds-cta-band__stat-row">
-<div class="ds-stat ds-stat--dark"><span class="ds-stat__value ds-stat__value--orange" data-ds-count-up>4.2B</span><span class="ds-stat__label">queries served</span></div>
-<div class="ds-stat ds-stat--dark"><span class="ds-stat__value" data-ds-count-up>99.99%</span><span class="ds-stat__label">SLA uptime</span></div>
-<div class="ds-stat ds-stat--dark"><span class="ds-stat__value" data-ds-count-up>3,400+</span><span class="ds-stat__label">developers</span></div>
-    </div>
-    <div class="ds-cta-band__actions"><div class="ds-cta-pair"><a class="ds-btn ds-btn--primary" href="#">Get API key</a><a class="ds-btn ds-btn--ghost-dark" href="#">See pricing</a></div></div>
-  </div>
-</div>
-```
-
-**Use when:** Closing band at the bottom of every marketing page. One per page. Neutral by default; Tinted for Pricing / Enterprise pages. Stat overlay only with real numbers.
-
----
-
-##### ds-compare-table (Organism, "Comparison table")
-
-Feature × tier matrix. First column = feature name, subsequent columns = tiers. Cell content = text values, iconify check / em-dash for booleans, or short value strings. Row groups break long matrices into sections.
-
-**Variants/modifiers:**
-- `--dark` / `--light` (surface)
-- `is-highlight` on a column header + each cell in that column (one focal tier max)
-- `.ds-compare-table__row-group` for section headers
-
-**HTML:**
-```html
-<div class="ds-compare-wrap ds-compare-wrap--dark">
-  <table class="ds-compare-table ds-compare-table--dark">
-    <thead>
-      <tr>
-        <th scope="col">Feature</th>
-        <th scope="col">Free<span class="ds-compare-table__col-price">$0 / mo</span></th>
-        <th scope="col" class="is-highlight">Pro<span class="ds-compare-table__col-price">$49 / mo</span></th>
-        <th scope="col">Enterprise<span class="ds-compare-table__col-price">Custom</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="ds-compare-table__row-group"><td colspan="4">Indexing</td></tr>
-      <tr><td>Hours indexed / month</td><td>10</td><td class="is-highlight">500</td><td>Unlimited</td></tr>
-      <tr><td>Custom embedding models</td><td><span class="ds-compare-table__dash">—</span></td><td class="is-highlight"><iconify-icon class="ds-compare-table__check" icon="solar:check-circle-bold" width="18" height="18"></iconify-icon></td><td><iconify-icon class="ds-compare-table__check" icon="solar:check-circle-bold" width="18" height="18"></iconify-icon></td></tr>
-    </tbody>
-  </table>
-</div>
-```
-
-**Use when:** Pricing pages, feature-comparison pages. One highlighted column max. Row groups when 8+ rows. Check / em-dash, not Yes/No. Show real values, not "Limited". Horizontal scrolls on narrow viewports.
-
----
 
 #### Repo & chrome (5)
 
@@ -2835,95 +2972,7 @@ Editorial layout for long-form content — field notes, write-ups, engineering b
 
 ---
 
-#### Lifecycle grid (Template)
-
-Sequential-primitive grid. 6 cards, each numbered + titled + briefly described. Used for documenting ordered step-sets where the user benefits from seeing the whole sequence at once (the six VideoDB primitives, feature lifecycles). First card carries `.is-start` for the orange-accent "begin here" cue.
-
-**HTML:**
-```html
-<section class="ds-section ds-section--dark">
-  <div class="ds-frame">
-    <div class="ds-col-offset">
-      <div><div class="ds-section-code">L /<br>Lifecycle</div></div>
-      <div>
-        <div class="ds-section-heading ds-section-heading--dark">
-          <h2 class="ds-section-heading__title">A single backend for the entire video lifecycle.</h2>
-          <p class="ds-section-heading__lead">Six primitives, one SDK. Each card opens onto its own SDK reference + examples.</p>
-        </div>
-        <div class="ds-lifecycle-grid">
-          <div class="ds-lifecycle-card is-start" tabindex="0">
-            <div><div class="ds-lifecycle-card__num">01</div><h3 class="ds-lifecycle-card__title">Ingest</h3></div>
-            <p class="ds-lifecycle-card__desc">Stream, upload, sync from any source. Hot-folder ingest, S3 mirrors, direct API.</p>
-          </div>
-          <div class="ds-lifecycle-card" tabindex="0">
-            <div><div class="ds-lifecycle-card__num">02</div><h3 class="ds-lifecycle-card__title">Index</h3></div>
-            <p class="ds-lifecycle-card__desc">Multimodal embeddings — transcripts, scenes, faces — per asset.</p>
-          </div>
-          <div class="ds-lifecycle-card" tabindex="0">
-            <div><div class="ds-lifecycle-card__num">03</div><h3 class="ds-lifecycle-card__title">Memory</h3></div>
-            <p class="ds-lifecycle-card__desc">Persistent agent context across sessions and tasks.</p>
-          </div>
-          <div class="ds-lifecycle-card" tabindex="0">
-            <div><div class="ds-lifecycle-card__num">04</div><h3 class="ds-lifecycle-card__title">Search</h3></div>
-            <p class="ds-lifecycle-card__desc">Sub-second semantic queries across petabytes.</p>
-          </div>
-          <div class="ds-lifecycle-card" tabindex="0">
-            <div><div class="ds-lifecycle-card__num">05</div><h3 class="ds-lifecycle-card__title">Director</h3></div>
-            <p class="ds-lifecycle-card__desc">Orchestrate edits and pipelines as code.</p>
-          </div>
-          <div class="ds-lifecycle-card" tabindex="0">
-            <div><div class="ds-lifecycle-card__num">06</div><h3 class="ds-lifecycle-card__title">RTStream</h3></div>
-            <p class="ds-lifecycle-card__desc">Live agent-controlled playback to any endpoint.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-```
-
-**Use when:** Documenting the platform's six primitives or any ordered step-set. 6 cards is the sweet spot. Distinct from Platform overview — Lifecycle says "follow these in order", Platform overview says "here are the pieces, use what you need." Centered variant when the lifecycle IS the page (`/how-it-works`).
-
----
-
-#### Platform overview (Template)
-
-3-column grid of "primitive" cards. Each card composes an orange icon tile + mono `P/0X` number kicker + title + description. Distinct from Lifecycle grid (sequential numbered steps with "begin here" cue) — Platform overview is the SDK reference grid where any primitive can be the entry point.
-
-**HTML:**
-```html
-<section class="ds-section ds-section--dark">
-  <div class="ds-frame">
-    <div>
-      <div class="ds-section-heading ds-section-heading--dark">
-        <h2 class="ds-section-heading__title">Six primitives.<br><span style="color: var(--text-on-dark-second);">Everything your agents need to see and hear.</span></h2>
-        <p class="ds-section-heading__lead">Compose them. Use one, use all. Intelligence is pluggable — integrate frontier models natively.</p>
-      </div>
-      <div class="ds-primitive-grid">
-        <div class="ds-primitive-card">
-          <div class="ds-primitive-card__icon"><iconify-icon icon="solar:cloud-upload-linear" width="22" height="22"></iconify-icon></div>
-          <div class="ds-primitive-card__num">P/01</div>
-          <h3 class="ds-primitive-card__title">Ingest</h3>
-          <p class="ds-primitive-card__desc">Stream, upload, sync from any source. MP4, MOV, HLS, live streams.</p>
-        </div>
-        <div class="ds-primitive-card">
-          <div class="ds-primitive-card__icon"><iconify-icon icon="solar:database-linear" width="22" height="22"></iconify-icon></div>
-          <div class="ds-primitive-card__num">P/02</div>
-          <h3 class="ds-primitive-card__title">Index</h3>
-          <p class="ds-primitive-card__desc">Multimodal embeddings, scene-cut, transcripts. One queryable timeline.</p>
-        </div>
-        <!-- P/03 Memory, P/04 Search, P/05 Director, P/06 RTStream -->
-      </div>
-    </div>
-  </div>
-</section>
-```
-
-**Use when:** Platform / product pages as the canonical "what's in the SDK" grid. 3 columns at desktop, 2 at tablet, 1 at mobile. 6 cards. Each card opens onto its own primitive reference page in production (wrap in `<a>`).
-
----
-
-#### Feature grid (Template)
+#### Feature and benefit grid (Template, UPDATED in v2.2.1)
 
 Uses `ds-feature-tile` (small icon + title + body), NOT `ds-feature-card` (which is the hero anchor — see Section 3.3).
 
@@ -2963,7 +3012,7 @@ Uses `ds-feature-tile` (small icon + title + body), NOT `ds-feature-card` (which
 
 For centered variant, add `.ds-feature-tile-grid--center` and use `.ds-section-heading--centered`.
 
-**Use when:** 6 tiles in a 3×2 grid. Left-aligned for capability / security scan-lists; centered for trust pages where symmetry matters. Icon tile is mono by default, flips orange on hover (lighter than Platform overview's always-orange).
+**Use when:** 6 tiles in a 3×2 grid. Left-aligned for capability / security scan-lists; centered for trust pages where symmetry matters. Icon tile is mono by default, flips orange on hover (lighter than the always-orange treatment used in the Feature and benefit grid template).
 
 ---
 
@@ -3008,51 +3057,6 @@ For centered variant, add `.ds-feature-tile-grid--center` and use `.ds-section-h
 ```
 
 **Use when:** Industries / verticals folds on marketing pages. 6 tiles in 2×3 — below 4 use a CTA pair; above 8 split into categories. Bare icon (no bg tile) reads as content marker rather than chrome. One Arrow CTA only.
-
----
-
-#### Use case row (Template)
-
-Two-column "here's the use case, here's the 5-line code that solves it" section. Left column: vbar-bulleted list of build steps + Arrow CTA. Right column: real Code block organism showing the SDK call.
-
-**HTML:**
-```html
-<section class="ds-section ds-section--dark">
-  <div class="ds-frame">
-    <div>
-      <div class="ds-section-heading ds-section-heading--dark ds-section-heading--centered">
-        <h2 class="ds-section-heading__title">From archive to agent action,<br><span style="color: var(--text-on-dark-second);">in three lines of code.</span></h2>
-      </div>
-      <div class="ds-use-case-grid">
-        <div>
-          <ul class="ds-use-case-list">
-            <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>Connect any source.</strong> Buckets, RTMP, HLS, live feeds.</span></li>
-            <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>Index automatically.</strong> Scenes, transcripts, embeddings.</span></li>
-            <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>Query natively.</strong> SDK or MCP. Direct semantic search.</span></li>
-            <li><span class="ds-vbar ds-vbar--orange"></span><span><strong>Stream the result.</strong> RTStream feeds back to the agent in ms.</span></li>
-          </ul>
-          <div style="margin-top: 32px;"><a class="ds-arrow-cta ds-arrow-cta--on-dark" href="#">Read the build log <span class="ds-arrow-cta__circle"><iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon></span></a></div>
-        </div>
-        <div class="ds-code-block ds-code-block--dark">
-          <div class="ds-code-block__head"><div role="tablist" aria-label="Runtime"><div class="ds-code-tab-pills ds-code-tab-pills--dark"><button class="ds-code-tab-pills__btn is-selected" role="tab" aria-selected="true">python</button></div></div><button class="ds-code-block__copy">Copy</button></div>
-          <pre class="ds-code-block__body">import videodb
-
-conn  = videodb.connect()
-video = conn.upload("keynote.mp4")
-video.index_spoken_words()
-video.index_scenes()
-
-result = video.search("latency")
-print(result.timestamps)</pre>
-          <div class="ds-code-block__status"><span class="ds-status-pulse__dot"></span><span class="ds-eyebrow ds-eyebrow--xs">Live · agent.py · v2.4.0</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-```
-
-**Use when:** Product pages where value-prop is "look how short the code is". 4–5 bullets, ~10–15 line code. Bold lead + descriptor pattern on each bullet. Single language tab in the code block (other languages live in the docs).
 
 ---
 
@@ -3256,7 +3260,7 @@ Horizontal milestone-bar infographic. Two-tone mission heading at the top + segm
 </section>
 ```
 
-**Use when:** Company roadmap, product history, fundraise journey, release-by-release infographics. 5–8 segments, override `style="--cols: 5"` on the wrapper. One `.is-active` segment (typically rightmost). Labels alternate above/below to avoid crowding. Not for changelog (use Carousel) or workflow steps (use Lifecycle grid).
+**Use when:** Company roadmap, product history, fundraise journey, release-by-release infographics. 5–8 segments, override `style="--cols: 5"` on the wrapper. One `.is-active` segment (typically rightmost). Labels alternate above/below to avoid crowding. Not for changelog (use Carousel) or for workflow steps (use Feature and benefit grid).
 
 ---
 
@@ -3314,6 +3318,156 @@ Section that sits above the Footer on most public pages. Centered heading + lead
 
 ---
 
+#### Sticky scroll (Template, NEW in v2.2.0)
+
+Scroll-pinned narrative section. A left-column stack of 3–5 panels translates upward through a fixed 100vh stage as the user scrolls; a right-column illustration crossfades between panel-specific art. Vertical dot progress indicator tracks the active step. Mobile (≤900px) breaks the sticky pinning entirely and renders all panels stacked vertically with their own mobile illustration.
+
+**Anatomy:**
+
+- **`.vh-solutions-wrapper`** — outer 500vh container that gives the sticky stage room to be pinned through (N × 100vh, where N = number of panels + 1).
+- **`.vh-solutions-stage`** — 100vh sticky stage (`position: sticky; top: 0`) containing the section heading, progress dots, and the pair of columns.
+- **`.vh-solutions-progress`** — vertical dot list on the far left; one `<li>` per panel; `.is-active` flips to brand orange.
+- **`.vh-solutions-left-stack`** — left column container holding 4 panels stacked vertically; transform-translated upward by the scroll handler.
+- **`.vh-solutions-content[data-vh-step]`** — each panel. Non-active panels carry the HTML `inert` attribute (see Convention C9, §2.7).
+- **`.vh-solutions-art[data-vh-step]`** — right-column illustration layers; opacity 0 by default, `.is-active` flips to opacity 1.
+
+**HTML (skeleton):**
+
+```html
+<section class="ds-section ds-section--dark vh-solutions-sticky">
+  <div class="vh-solutions-wrapper">
+    <div class="vh-solutions-stage">
+      <div class="ds-frame">
+        <div class="vh-solutions-header"><!-- section heading --></div>
+
+        <ol class="vh-solutions-progress" aria-hidden="true">
+          <li class="is-active"></li><li></li><li></li><li></li>
+        </ol>
+
+        <div class="vh-solutions-pairs">
+          <div class="vh-solutions-left">
+            <div class="vh-solutions-left-stack">
+              <article class="vh-solutions-content" data-vh-step="0">…</article>
+              <article class="vh-solutions-content" data-vh-step="1" inert>…</article>
+              <article class="vh-solutions-content" data-vh-step="2" inert>…</article>
+              <article class="vh-solutions-content" data-vh-step="3" inert>…</article>
+            </div>
+          </div>
+          <div class="vh-solutions-right">
+            <div class="vh-solutions-art is-active" data-vh-step="0">…</div>
+            <div class="vh-solutions-art" data-vh-step="1">…</div>
+            <div class="vh-solutions-art" data-vh-step="2">…</div>
+            <div class="vh-solutions-art" data-vh-step="3">…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+**Wiring (JS):** scroll handler reads progress (0 → 1) within the wrapper, sets a `translate3d(0, -X%, 0)` on `.vh-solutions-left-stack` where X scales with progress, toggles `.is-active` on the matching right-column art, syncs the active dot, and applies `inert` to non-active panels. Mobile branch (matched via `matchMedia('(max-width: 900px)')`) clears the inert attribute on all panels and disables the scroll handler entirely.
+
+**Use when:** A narrative section with 3–5 sequential ideas earns an extended pinned moment ("here are the four solutions we power"). Don't use for navigation, comparison tables, or quick-scan content — sticky scrollytelling is sequential by design and steals scroll velocity. Cap at 1 instance per page.
+
+---
+
+#### Closing CTA — particle field (Template, NEW in v2.2.0)
+
+Full-bleed closing section with a 2D canvas particle background behind heading + lead + CTA pair. ~150 free-flowing dots animate via `requestAnimationFrame`; respects `prefers-reduced-motion` (renders frame 0 only) and pauses the loop when the section scrolls off-screen via `IntersectionObserver`.
+
+**HTML (skeleton):**
+
+```html
+<section class="ds-section ds-section--dark vh-closing">
+  <canvas class="vh-closing__particles" aria-hidden="true"></canvas>
+  <div class="ds-frame">
+    <div class="ds-section-heading ds-section-heading--centered">
+      <h2 class="ds-section-heading__title">Build with the perception layer for AI.</h2>
+      <p class="ds-section-heading__lead">Six primitives, one SDK, every surface. Start free — committed annual when you outgrow it.</p>
+    </div>
+    <div class="ds-cta-pair ds-cta-pair--centered">
+      <a class="ds-btn ds-btn--primary" href="#">Start building</a>
+      <a class="ds-btn ds-btn--ghost-dark" href="#">Talk to us</a>
+    </div>
+  </div>
+</section>
+```
+
+**Wiring (JS):** `initClosingParticles()` lives in `scripts.html` — creates ~150 dot particles with randomized velocity, draws them on the canvas every frame with additive blending. Checks `window.matchMedia('(prefers-reduced-motion: reduce)').matches` at init and renders only frame 0 in that case. `IntersectionObserver` pauses the rAF loop when the canvas is off-screen.
+
+**Use when:** The final section before the footer on long marketing pages where the closing wants atmospheric weight. One per page, max. Avoid pairing with a `ds-particle-dome` hero on the same page — two motion focal points compete.
+
+---
+
+#### Onboarding (Template, NEW in v2.2.0)
+
+A two-column "install + show me code" fold. Eyebrow + heading + lead at the top, then a bordered content frame containing a 2-up grid: feature list on the left, animated code block on the right. The bordered frame is what gives the pair its "install + show me" cohesion — without it, the feature list and code block would read as two unrelated columns instead of a contained unit. The section heading sits *outside* the frame so it reads with the page rhythm.
+
+**Anatomy:**
+
+- **`.ds-dev-frame`** — bordered content container. 1px hairline + softly tinted fill + `r-card` radius. Adapts to surface (`--dark` / `--light`). Sits inside `.ds-frame`, beneath the section heading. Mobile (≤720) drops padding 40 → 24.
+- **`.ds-dev-grid`** — 2-col grid (`1fr 1fr`) with 48px gap. Stacks to 1-col below 720.
+- **Left column** — `.ds-feature-list` (3 items) + `.ds-cta-pair` below it
+- **Right column** — `.ds-code-block` with the animated typewriter modifier
+
+**HTML (skeleton):**
+
+```html
+<section class="ds-section ds-section--light" id="developers">
+  <div class="ds-frame">
+    <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose">Developer experience</span>
+    <div class="ds-section-heading ds-section-heading--light">
+      <h2 class="ds-section-heading__title">One command. <span style="color: var(--text-on-light-second);">Your agent gets a video backend.</span></h2>
+      <p class="ds-section-heading__lead">Skill-first install across every modern agent runtime. SDKs for Python and TypeScript. Free tier for prototypes; production scales without rewrite.</p>
+    </div>
+
+    <div class="ds-dev-frame">
+      <div class="ds-dev-grid">
+
+        <div>
+          <ul class="ds-feature-list">
+            <li class="ds-feature-list__item">
+              <div class="ds-feature-list__head">
+                <iconify-icon icon="solar:code-square-linear" width="18" height="18"></iconify-icon>
+                <h3 class="ds-feature-list__title">Skills, not SDKs</h3>
+              </div>
+              <p class="ds-feature-list__body">One command bootstraps every primitive…</p>
+            </li>
+            <!-- 2 more items -->
+          </ul>
+          <div class="ds-cta-pair" style="margin-top: 32px;">
+            <a class="ds-btn ds-btn--primary" href="#">Read the docs</a>
+            <a class="ds-btn ds-btn--ghost-light" href="#">View on GitHub</a>
+          </div>
+        </div>
+
+        <div class="ds-code-block ds-code-block--light ds-code-block--animated">
+          <div class="ds-code-block__head"><!-- runtime tabs --></div>
+          <pre class="ds-code-block__body">$ claude /install videodb-skills
+
+from videodb import connect
+
+conn  = connect()
+video = conn.upload("keynote.mp4")
+video.index_spoken_words()
+video.index_scenes()</pre>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+**Surface variants:** the entire template flips dark / light via the parent `.ds-section--dark/--light` modifier — `.ds-dev-frame` auto-tints (rgba(0,0,0,0.025) on light, rgba(255,255,255,0.025) on dark) and the feature-list / code-block / buttons all surface-adapt.
+
+**Use when:** the "show me how to use it" fold on a developer landing page. Pair with a primary + ghost CTA pair beneath the feature list. The bordered frame is what makes it work — it gives the two-column pair visual cohesion.
+
+**Preview:** `index.html#templates/onboarding`
+
+---
+
 ## 4. Page recipes
 
 Common page assemblies. Each recipe is a section flow — pick the components in order, then fill with brief copy.
@@ -3328,7 +3482,7 @@ Article hero (with byline + tag list) → Pull quote → Article body with Highl
 
 ### 4.3 Features / Platform page
 
-Hero variant E (Animated with dome) → Logo wall → Platform primitives 6-up → Feature grid → Use case row → Sync compare → Closing CTA → Footer Directory.
+Hero variant E (Animated with dome) → Customer wall → Feature and benefit grid → Industries grid → Sync compare → Closing CTA — particle field → Footer Directory.
 
 ### 4.4 About / Company page
 
@@ -3336,7 +3490,7 @@ Hero Centered → Mission statement (Section heading centered + body) → Team g
 
 ### 4.5 Pages that don't match a recipe
 
-For pages outside these recipes, combine a Hero variant + 6–10 sections that follow the dark/light rhythm + Closing CTA + Pre-footer Socials + Footer. Most marketing sections fit one of: Hero variant, Customer wall, 2-up compare, 3-up cards, 4-up arch grid, Big stats, Solutions 2x2, Closing CTA band.
+For pages outside these recipes, combine a Hero variant + 6–10 sections that follow the dark/light rhythm + a closing section + Pre-footer Socials + Footer. Most marketing sections fit one of: Hero variant, Customer wall, 2-up compare, 3-up cards, 4-up arch grid, Big stats, Sticky scroll narrative, Closing CTA — particle field.
 
 ### 4.6 Build sequence for any marketing page
 
