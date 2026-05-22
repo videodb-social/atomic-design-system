@@ -1,21 +1,212 @@
 # VideoDB Design System — Single Source of Truth
 
+**Version:** v2.1.1 (footer chevron desktop-leak patch, 2026-05-22)
+**Prior:** v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
+
 ## How to use this file
 
 This is the canonical spec for the VideoDB v2 atomic design system. It is optimised for agents that generate marketing pages from briefs — read top-down and you'll have everything you need at each stage of assembly. Sections 1–2 cover page assembly. Section 3 is the per-component anatomy lookup. Sections 5–8 carry the foundation tokens, voice rules, and build conventions. `index.html` is the live source of truth on any conflict — open it locally to see component previews and the canonical CSS.
 
 ## TL;DR — the system in 200 words
 
-VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: 17 atoms compose into 12 molecules, 37 organisms, 1 motion primitive, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is 96px top/bottom; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: **18 atoms** compose into **14 molecules**, **38 organisms**, 2 motion components + 2 examples + 2 authoring methods, 7 data-viz pieces, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is **96/80/64/52** px top/bottom across desktop → small-phone breakpoints; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+
+## v2.1.1 changelog — what changed (2026-05-22)
+
+Minor patch. Single-rule fix to the footer organism.
+
+### `ds-footer` — chevron desktop-leak fix
+
+The `.vh-footer__nav-chevron` span (accordion-trigger affordance on `.vh-footer__nav-title`) was rendering on desktop because its only styling lived inside `@media (max-width: 768px)`. The span is in the markup unconditionally so the icon leaked above 768px, sitting next to each section label ("PLATFORM ⌄ / SOLUTIONS ⌄ / …").
+
+**Fix** — desktop-default `display: none` on the chevron, plus `cursor: default` on the nav title. Mobile rule (`display: inline-flex` inside `@media (max-width: 768px)`) overrides as before; accordion behavior at ≤768 unchanged.
+
+```css
+/* Desktop default — hide the accordion chevron + trigger affordance.
+   Mobile media query re-enables both as an accordion. */
+.vh-footer .vh-footer__nav-chevron { display: none; }
+.vh-footer .vh-footer__nav-title { cursor: default; }
+```
+
+Applied to `platform.html`. Same chevron-leak exists on every page that uses the `vh-footer` accordion wrapper — roll out across `index.html`, `developers.html`, `company.html`, `agentic-perception.html`, `programmable-media.html`, `real-time-monitoring.html`, `world-model-data.html` next.
+
+**Affected component:** §3.3 `ds-footer` organism (Editorial variant, `vh-footer` wrapper).
+
+---
+
+## v2.1 changelog — what changed (2026-05-21)
+
+Patch round driven by the platform-page refinement cycle on videodb-website. Promoted from page-scoped overrides to canonical DS. Full rationale and prototype trail in `videodb-website/docs/PLATFORM_REFINEMENT_REPORT.md` + `docs/DS_PROPOSALS.md`.
+
+### Mobile breakpoint canon (NEW — §5.6)
+
+```
+--bp-xs:  420px    (small phone)
+--bp-sm:  640px    (phone landscape / small tablet)
+--bp-md:  768px    (tablet portrait)
+--bp-lg:  960px    (tablet landscape)
+--bp-xl:  1280px   (laptop)
+--bp-2xl: 1440px   (desktop)
+```
+
+### Base-rule updates to existing components
+
+| Selector | Change |
+|---|---|
+| `html, body` | `overflow-x: clip` ≤640 (NOT `hidden` — `hidden` creates a scrollport that breaks `position: sticky`) |
+| `.ds-section` | Mobile padding ladder: 96 → 80 (≤960) → 64 (≤640) → 52 (≤420) |
+| `.ds-section--tight` | 56 → 40 (≤640) |
+| `.ds-frame` | Mobile padding-inline: 32 → 20 (≤640) → 16 (≤380); side borders dropped ≤640 |
+| `.ds-section-heading__title` | `font-size: clamp(26px, 4.5vw, 40px)` (was fixed 40px). `--display` modifier: `clamp(32px, 6vw, 56px)` |
+| `.ds-section-heading__lead` | Mobile size 18 → 16 (≤768) |
+| `.ds-cta-band` | Mobile padding 96/32 → 56/24 (≤768) → 44/18 (≤480). `__inner` `align-items: stretch; width: 100%` ≤768. `__actions { width: 100% }` ≤768. |
+| `.ds-cta-pair` | Auto-stack inside `.ds-cta-band` ≤768: column flex, align stretch, width 100%, gap 12, child buttons full-width padding-block 14 |
+| `.ds-btn` | Mobile `min-height: var(--touch-target-min, 44px)` (CRITICAL accessibility fix) |
+| `.ds-mobile-drawer__sub-list` | Replaced `[hidden]` display:none snap with max-height transition (0↔520, 280ms cubic) |
+| `.ds-header-nav` | z-index 50 → 60 (sits above drawer during slide). Mobile padding-inline 32 → 16 (≤768) → 12 (≤420). Wordmark height 20 → 16. Brand `margin-left: 6px` ≤768 |
+| `.ds-header-nav__menu-trigger` | Mobile: drop container border + bg; min 44×44 (touch-target floor) |
+| `.ascii-illustration canvas`, `.ds-motion-clip > canvas` | Built-in canvas-clamp: `width: 100% !important; height: 100% !important; object-fit: contain` |
+
+### New modifiers on existing components
+
+| Modifier | Used by |
+|---|---|
+| `.ds-section-heading--split` | Heading left + lead right (1.4fr / 1fr), stacks ≤900. See §3.2. |
+| `.ds-section-heading--display` | Larger title clamp(32, 6vw, 56) for hero-adjacent headings |
+| `.ds-tabgroup--scroll` | Horizontal scroll-snap on mobile (5+ triggers). See §3.3. |
+| `.ds-tabgroup-shell` | Nested-pill: outer light-grey shell wrapping a `ds-tabgroup--light`. See §3.3. |
+| `.ds-content-card--dim` + `.is-focused` | Dim-and-focus state convention for cards-driven tab nav. See §3.3. |
+| `.ds-hero--split` | NEW hero variant: copy-left / illustration-right 2-col grid (1.25fr / 1fr). Mobile collapses to single-col + illustration becomes background watermark (opacity 0.10 / 0.08). See §3.7. |
+| `.ds-hero--split__illustration--tilt-right` / `--tilt-left` | Utility for ±8° rotation on the illustration slot |
+| `.ds-mobile-drawer--top-down` | Drawer slides top-to-bottom from behind navbar; in-panel header dropped; stagger-fade-in for items; `:has()`-driven sibling dimming when an accordion section is expanded. See §3.3. |
+| `.ds-cta-pair--stack-mobile` | Opt-in stack-and-fill on mobile (auto-applied inside `.ds-cta-band` ≤768) |
+| `.ds-header-nav__mobile-cta` | NEW slot inside `.ds-header-nav__actions` — single primary CTA shown only ≤768 |
+| `.ds-header-nav__desktop-action` | Class on the desktop-only `Talk to us` + `Start building` pair (hidden ≤768) |
+| `.ds-trust-band--chip` | Wraps each item in a hairline-pill (auto-applied ≤640 unless `--flat` is set) |
+| `.ds-trust-band--flat` | Opt-out of mobile chip auto-promotion |
+
+### Brand-new components
+
+#### `.ds-menu-toggle` — Atom (NEW, atom #18)
+
+CSS-only hamburger ↔ X icon. Three rounded 1.75px bars. `.is-open` rotates top/bottom 45°/-45° to form a plain X; middle bar scale-fades to 0. 220ms cubic-bezier(0.4, 0, 0.2, 1).
+
+```html
+<button class="ds-menu-toggle ds-header-nav__menu-trigger" data-ds-mobile-drawer-open aria-label="Open menu">
+  <span class="ds-menu-toggle__icon" aria-hidden="true">
+    <span class="ds-menu-toggle__bar ds-menu-toggle__bar--top"></span>
+    <span class="ds-menu-toggle__bar ds-menu-toggle__bar--mid"></span>
+    <span class="ds-menu-toggle__bar ds-menu-toggle__bar--bot"></span>
+  </span>
+</button>
+```
+
+Trigger receives `.is-open` via JS mirror from drawer state. Replaces both the iconify hamburger AND the in-panel close button. 22×16 icon area inside a 44×44 touch target. Respects `prefers-reduced-motion`.
+
+**Preview:** `index.html#atoms/menu-toggle`
+
+#### `.ds-trust-band` — Molecule (NEW, molecule #13)
+
+Compliance / trust pill row. Was page-scoped inline-style soup; now a proper molecule.
+
+```html
+<div class="ds-trust-band ds-trust-band--on-dark">
+  <span class="ds-trust-band__item">
+    <iconify-icon class="ds-trust-band__icon" icon="solar:check-circle-linear" width="14" height="14"></iconify-icon>
+    Fully Managed
+  </span>
+  <span class="ds-trust-band__item">…</span>
+  …
+</div>
+```
+
+Variants: `--on-dark` (default for dark sections), `--on-light`, `--chip` (each item wraps in a hairline pill — auto-applies ≤640 unless `--flat` is set), `--flat` (opt-out of chip auto-promotion).
+
+**Preview:** `index.html#molecules/trust-band`
+
+#### `.ds-mode-grid` — Molecule (NEW, molecule #14)
+
+2-up grid of `.ds-content-card` with mixed light/dark variants and a code-line strip at the bottom of each card via the new `.ds-content-card__code` sub-element.
+
+```html
+<div class="ds-mode-grid">
+  <article class="ds-card ds-card--light ds-content-card ds-content-card--light">
+    <span class="ds-eyebrow ds-eyebrow--orange">Batch</span>
+    <h3 class="ds-content-card__title">Files and archives.</h3>
+    <p class="ds-content-card__lead">…</p>
+    <div class="ds-content-card__code">
+      <span>// upload.file()</span>
+      <span>// upload.dataset()</span>
+    </div>
+  </article>
+  <article class="ds-card ds-card--dark ds-content-card ds-content-card--dark">
+    …
+  </article>
+</div>
+```
+
+Stacks to 1-col below 768. Token-driven (no new colors, no new radii).
+
+**Preview:** `index.html#molecules/mode-grid`
+
+#### `.ds-search-demo` (planned)
+
+Interactive search-materializes-a-clip composition. Shipped initially as a page-scoped recipe on `platform.html` (typed query → packet rails → result frame w/ cycling scene markers). Promoting to DS pending a JS controller decision: organism (self-contained, harder to customize) vs `ds-motion-clip` recipe (lighter, needs page wiring). Tracked in `docs/DS_PROPOSALS.md` #14.
+
+### New conventions
+
+| # | Convention | Where it lives |
+|---|---|---|
+| C1 | **Mobile breakpoint canon (6-tier)** | §5.6 — `--bp-xs` … `--bp-2xl` custom properties |
+| C2 | **`overflow-x: clip` on `html`/`body` mobile** (never `hidden`) | §1 page scaffold |
+| C3 | **`.ds-frame` side-borders off ≤640** | §2 universal conventions |
+| C4 | **`scroll-margin-top` for sticky chrome** | §2 — anchor-target cards need `calc(var(--ds-header-h) + 24px)` (extended w/ tabbar if present) |
+| C5 | **`prefers-reduced-motion` enforcement across ALL motion components** | §3.4 motion + §6 voice principles. Hard rule, not opt-in. Includes the ASCII renderer JS (FLAGGED CRITICAL — pending JS guard in `scripts/ascii-renderer.js`). |
+| C6 | **Canvas-illustration clamp in every illustration slot** | §3.6 illustration — baked in the base rule, not consumer-side |
+| C7 | **Scroll-driven content-card focus** | §6 — for cards-driven tab nav: IntersectionObserver rootMargin `-40% 0 -40% 0` toggles `.is-focused`; tab pill mirrors via ARIA-selected sync |
+| C8 | **Tab pill sticky behavior on mobile** | §2 — when tabs nav vertical-stacked cards: `position: sticky; top: var(--ds-header-h)` + backdrop-blur; pill scrolls into view via `scrollIntoView({inline: 'center'})` |
+
+### Stale components removed / superseded
+
+These existed in v2.0 and have been deprecated or replaced in v2.1. Consumers should migrate when convenient; legacy pages keep working but new pages should use the v2.1 canonical pattern.
+
+| Stale piece | Replacement | Migration note |
+|---|---|---|
+| Mobile drawer side-slide pattern (`translateX(100%)`) | `.ds-mobile-drawer--top-down` modifier | Add the modifier class to the drawer root. CSS handles the rest. |
+| In-panel drawer header (logo + circle close button inside the drawer) | Site header stays visible during open state; hamburger morphs to X | Hidden via `display: none` on `--top-down` |
+| `solar:close-circle-linear` close icon | `.ds-menu-toggle` atom (#18) | Trigger receives `.is-open` via JS mirror from drawer state |
+| `solar:hamburger-menu-linear` open icon | `.ds-menu-toggle` atom (#18) | Same as above; one icon replaces both open + close |
+| `[hidden]` display:none snap on `.ds-mobile-drawer__sub-list` | max-height transition (0 ↔ 520px, 280–320ms cubic) | Auto-applied on `--top-down`. Use class toggle instead of hidden attribute for animation hooks. |
+| Inline-style trust band (`<div style="display: flex; flex-wrap: wrap; gap: 12px 28px; …">`) | `.ds-trust-band` molecule (#13) | Replace inline styles with `.ds-trust-band ds-trust-band--on-dark` (or `--on-light`); items wrap in `.ds-trust-band__item` |
+| `overflow-x: hidden` on `html`/`body` | `overflow-x: clip` | `hidden` creates a scrollport that breaks `position: sticky` on the header |
+| Consumer-side canvas-clamp boilerplate (`canvas { width: 100% !important; … }` re-implemented per page) | Baked into base `.ascii-illustration` / `.ds-motion-clip` rules | Remove the per-page override; the DS rule handles it |
+| Fixed-padding `.ds-section { padding: 96px 0 }` (no mobile ladder) | Built-in mobile padding ladder (96 → 80 → 64 → 52) | Page-scoped section-padding overrides on mobile are no longer needed |
+| Fixed-padding `.ds-frame { padding: 0 32px }` (no mobile ladder) | Built-in mobile padding ladder (32 → 20 → 16) | Same as above |
+
+### `index.html` updates
+
+The `index.html` design-system showcase page received the following:
+
+- **New sidebar group** at the top (orange "v2.1 patch · NEW" header) listing every new + changed entry with `NEW` and `*` markers.
+- **New preview routes**: `#v2.1/changelog`, `#atoms/menu-toggle`, `#molecules/trust-band`, `#molecules/mode-grid`, `#molecules/section-heading-split`, `#organisms/tabs-scroll`, `#organisms/tabs-nested-pill`, `#organisms/mobile-drawer-top-down`, `#templates/hero-split`.
+- **Changed pages marked** with an asterisk `*` next to the heading + in the breadcrumb: `#foundation/typography`, `#foundation/spacing`, `#foundation/layout`, `#atoms/button`, `#molecules/section-heading`, `#molecules/cta-pair`, `#organisms/content-card`, `#organisms/tabs`, `#organisms/site-header`, `#organisms/footer`, `#illustration/ascii`, `#templates/hero`.
+- **Per-page change notes** below each `*`-marked page's H1 — orange-bordered callout listing the specific selectors / values / new modifiers added in v2.1. Mechanical to update; one source of truth per page.
+- **Anatomy code-block styling** on v2.1 pages: dark-grey container (`var(--charcoal)` border) + darkest-grey fill (`var(--neutral-darker)`) + 28px / 32px padding for readable spec snippets.
+- **Live interactions wired** on every new preview that has state: menu-toggle (click to toggle X), tabs nested-pill (click pill OR hover card → ARIA-selected sync across 6 primitives), mobile-drawer-top-down (open-state phone-frame mockup with Solutions expanded).
+- **Responsive preview containers** on every component with a mobile variant: hero-split, trust-band, mode-grid, mobile-drawer-top-down. Each uses CSS `resize: horizontal` — drag the bottom-right handle to test responsive behavior in-place.
+- **Old `#organisms/mobile-drawer` route consolidated** — content replaced with a redirect stub pointing to `#organisms/mobile-drawer-top-down`. Removed from the Organisms sidebar group; route preserved for legacy bookmarks. The canonical mobile-drawer page now lives only in the v2.1 Patch sidebar group as "Mobile drawer --top-down".
+- **Marker legend** documented on the changelog page: `NEW` for net-new, `*` for changed.
+
+---
 
 ## Table of contents
 
 1. [Page scaffold (boilerplate)](#1-page-scaffold-boilerplate)
 2. [Universal conventions](#2-universal-conventions)
 3. [Component anatomy](#3-component-anatomy)
-   - [3.1 Atoms (17)](#31-atoms-17)
-   - [3.2 Molecules (12)](#32-molecules-12)
-   - [3.3 Organisms (37)](#33-organisms-37)
+   - [3.1 Atoms (18)](#31-atoms-18)
+   - [3.2 Molecules (14)](#32-molecules-14)
+   - [3.3 Organisms (38)](#33-organisms-38)
    - [3.4 Motion (2 components + 2 examples + 2 authoring methods)](#34-motion-2-components--2-examples--2-authoring-methods)
    - [3.5 Data Viz (7)](#35-data-viz-7)
    - [3.6 Illustration (1)](#36-illustration-1)
@@ -208,7 +399,7 @@ For **card grids** that should stagger-reveal, add manually:
 
 80ms increments. Cap at 4 elements in a sequence.
 
-### 2.4 Hero composition — 5 variants
+### 2.4 Hero composition — 6 variants
 
 Pick by intent:
 
@@ -248,7 +439,7 @@ Per-component HTML reference for the v2 atomic system. Every dark/light variant 
 
 ---
 
-### 3.1 Atoms (17)
+### 3.1 Atoms (18)
 
 #### ds-btn (Atom)
 
@@ -591,7 +782,7 @@ Card-footer indicator. Pill radius with a leading dot — orange by default (the
 
 ---
 
-### 3.2 Molecules (12)
+### 3.2 Molecules (14)
 
 #### ds-section-heading (Molecule)
 
@@ -856,7 +1047,7 @@ Pattern: use the `.ds-bracket` atom as a header unit — bracket label on the le
 
 ---
 
-### 3.3 Organisms (37)
+### 3.3 Organisms (38)
 
 #### Cards (8)
 
@@ -2117,6 +2308,8 @@ Site footer. Two variants — **Directory** (4-column nav grid + legal strip + c
 
 **Use when:** Directory for most pages with deep IA (Product, Developers, Pricing). Editorial for brand-statement closers (about, manifesto, single-narrative landing). Compliance row is non-negotiable. Editorial prelude line is the page-finale moment — under 8 words.
 
+**v2.1.1 patch — chevron desktop-leak (`vh-footer` accordion wrapper):** the `.vh-footer__nav-chevron` span (accordion-trigger affordance) had no desktop styling and rendered inline next to each section label above 768px. Default it to `display: none` and reset `.vh-footer__nav-title { cursor: default }` outside the mobile media query so the mobile rule (`display: inline-flex` ≤768px) still overrides. Mobile accordion behavior unchanged.
+
 ---
 
 ### 3.4 Motion (2 components + 2 examples + 2 authoring methods)
@@ -2479,7 +2672,7 @@ The page-section primitive. Every other template sits on this. Three layers: `.d
 
 ---
 
-#### Hero composition (Template, 5 variants)
+#### Hero composition (Template, 6 variants)
 
 The page-opener. Five variants ship: **A — Default** (live pill + display + lead + CTA pair + small mono-stats strip), **B — Centered with code** (eyebrow + centered display + lead + single CTA + Code block), **C — Big stats** (homepage scale-pitch, 4-up display-scale stats grid), **D — Image ticker** (centered + full-width marquee of value-prop cards), **E — Animated** (centered + Particle dome behind).
 
