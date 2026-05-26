@@ -106,6 +106,23 @@
     });
     document.querySelectorAll('.ds-scrubber__dot').forEach((d, i) => dsTag(d, 'Scrubber dot · #' + (i + 1)));
     document.querySelectorAll('.ds-particle-dome-stage').forEach((s, i) => dsTag(s, 'Particle dome stage · #' + (i + 1)));
+    // v2.2.2 promotion batch — Round 4 net-new components (Company + Developers folds)
+    document.querySelectorAll('.ds-content-frame').forEach((f, i) => dsTag(f, 'Content frame · #' + (i + 1)));
+    document.querySelectorAll('.ds-feature-list').forEach((l, i) => {
+      const ttl = l.querySelector('.ds-feature-list__title');
+      dsTag(l, 'Feature list · ' + (ttl ? textOf(ttl, 36) : '#' + (i + 1)));
+    });
+    document.querySelectorAll('.ds-feature-list__item').forEach(it => {
+      const ttl = it.querySelector('.ds-feature-list__title');
+      dsTag(it, 'Feature list item · ' + (ttl ? textOf(ttl, 28) : 'untitled'));
+    });
+    document.querySelectorAll('.ds-compare-card').forEach((c, i) => {
+      const pill = c.querySelector('.ds-compare-card__pill');
+      const desc = c.querySelector('.ds-compare-card__desc');
+      dsTag(c, 'Compare card · ' + (pill ? textOf(pill, 24) : (desc ? textOf(desc, 28) : '#' + (i + 1))));
+    });
+    document.querySelectorAll('.ds-trust-fold').forEach((t, i) => dsTag(t, 'Trust fold · #' + (i + 1)));
+    document.querySelectorAll('.ds-feature-showcase').forEach((s, i) => dsTag(s, 'Feature showcase · #' + (i + 1)));
     document.querySelectorAll('.ds-page .ds-section-heading').forEach(h => {
       const t = h.querySelector('.ds-section-heading__title');
       dsTag(h, 'Section heading · ' + (t ? textOf(t, 36) : 'untitled'));

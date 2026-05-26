@@ -1,0 +1,21 @@
+{
+  "input": "platform-hero-illustration.png",
+  "output": "platform-hero-illustration-processed.png",
+  "params": {
+    "invert_decision": "auto",
+    "invert_applied": false,
+    "floodfill": true,
+    "floodfill_threshold": 30,
+    "padding": 0.08,
+    "autocontrast": true,
+    "unsharp_mask": true,
+    "contrast": 1.0,
+    "posterize_levels": 4,
+    "size": 1024
+  },
+  "original_size": [
+    1064,
+    1064
+  ],
+  "timestamp": "2026-05-21T14:14:11.958486"
+}

@@ -1,6 +1,6 @@
 # VideoDB Design System — Single Source of Truth
 
-**Version:** v2.2.2 (company + developers page lift — foundation tunings (vbar, reveal, lead, footer) + opt-in particle gradient + hero cascade, 2026-05-25)
+**Version:** v2.2.2 (Round 4 promotion batch — Company + Developers page lift; ds-content-frame, ds-feature-list, ds-compare-card modifiers, ds-trust-fold, ds-feature-showcase, 2026-05-25)
 **Prior:** v2.2.1 (cleanup pass — deprecated templates removed, Feature grid renamed, Problem/Solution + Pricing card variant B refreshed, 2026-05-22) · v2.2.0 (homepage promotion batch, 2026-05-22) · v2.1.1 (footer chevron desktop-leak patch, 2026-05-22) · v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
 
 ## How to use this file
@@ -13,174 +13,47 @@ VideoDB is a perception layer for AI — data infrastructure for video, built fo
 
 ## v2.2.2 changelog — what changed (2026-05-25)
 
-Lift round driven by the videodb-website Company + Developers page revamps (pass 1 = 55 pins c-001 → c-055, pass 2 = 49 pins c-056 → c-104). Both pages were rebuilt against the v2.2.1 system and surfaced patterns at every tier — foundation tunings, new molecules, new organisms, new templates — that belong in the design system itself, not as page-scoped `vh-*` overrides.
+Round 4 promotion batch — five recurring page-scoped patterns from downstream marketing sites promoted to canonical primitives. After this batch the homepage Problem, Platform, Developer Experience, and Security folds compose entirely from canonical atoms / molecules / organisms / templates with no page-scoped CSS for any of those shapes.
 
-This is the first release where every entry in the showcase carries its **canonical code name as a chip next to the breadcrumb** so non-technical readers can scan the catalog without opening DevTools. Auto-injected via a manifest in the boot script (`CODE_NAMES`).
-
-### Summary — at a glance
-
-| Tier | Code name | Plain-English purpose | Status |
+| Component | Type | Inventory section | Live preview |
 |---|---|---|---|
-| **Foundation · Animation** | `.ds-reveal` | Site-wide scroll entrance — softer, longer, deeper curve | RE-TUNED (720ms / 18px / outQuint) |
-| **Foundation · Animation** | `.ds-reveal--slow` | Ceremonial long-form variant for pre-footer ASCII | NEW MODIFIER (50px / 1500ms) |
-| **Foundation · Atom** | `.ds-vbar` | Vertical bar bullet — opacity halved (less loud in dense stacks) | RE-TUNED |
-| **Foundation · Molecule** | `.ds-section-heading__lead` | Section subcopy — 18 → 16px base | RE-TUNED |
-| **Foundation · Organism** | `.ds-footer` | No top border + gradient fill — seamless flow from section above | RE-TUNED |
-| **Foundation · Composite** | `.ds-section--blend-to-footer` | Gradient bg fade into the following footer | NEW MODIFIER |
-| **Foundation · Container** | `.ds-footer__prelude-ascii` | Canvas wrapper for the pre-footer ASCII illustration | NEW |
-| **Foundation · Convention C11** | `main ::selection` palette | Grey body / orange titles — global text-selection styling | NEW CONVENTION |
-| **Foundation · Mobile** | `.ds-frame` padding 20 → 32px @ ≤640px | More breathing room on phones | RE-TUNED |
-| **Foundation · Mobile** | `.ds-hero__lead` 18 → 16px @ ≤768px | Quieter hero subcopy | RE-TUNED |
-| **Molecule** | `.ds-recap-grid` | 5-tile bento photo grid w/ staggered reveal | NEW |
-| **Molecule** | `.ds-recap-report` | Month label + flex-end packed stat row | NEW |
-| **Molecule** | `.ds-iframe-wrap` | Fixed-width 880px wrapper for embedded iframes (Luma, video, forms) | NEW (generalized from luma-wrap) |
-| **Molecule** | `.ds-careers-list` | Layout-only definition-list for job rows | NEW (layout only) |
-| **Molecule** | `.ds-kv-list` | Layout-only 2-col label/body rows w/ hover tint | NEW (layout only) |
-| **Molecule** | `.ds-digest-form` + `__visual` | Subscribe Band variant w/ side visual | NEW |
-| **Molecule** | `.ds-subscribe-band` | Pill input radius baked in as canonical (no modifier needed) | UPDATED |
-| **Organism** | `.ds-investor-card` | Circular avatar + name + bio for named investor rows | NEW |
-| **Organism** | `.ds-partner-card` | Height-locked logo card for design-partner rows | NEW |
-| **Organism** | `.ds-showcase-card` | 3-up media card w/ thumb + body for "Built on" showcase | NEW |
-| **Organism** | `.ds-community-ticker` | Testimonial marquee w/ press-and-hold slow mode | NEW (variant on testimonials-ticker) |
-| **Organism** | `.ds-quickstart-tabs` | Multi-body code block w/ per-tab typewriter + active-tab clipboard | NEW |
-| **Template** | `templates/pre-footer-ascii` | **"To see is to know"** ASCII brand sign-off — canonical close | NEW (replaces closing-particle-field) |
-| **Template** | `templates/recap-band` | "What we've been up to" — bento + month/stats report | NEW |
-| **Template** | `templates/showcase-3up` | "Built on VideoDB" — 3-up media card row | NEW |
-| **Template** | `templates/hero-with-dome` | Hero composition + particle dome + stats strip + cascade reveal | NEW |
-| **Template** | `templates/onboarding` | Code block on the right now has typewriter on load | UPDATED |
-| **Engine** | `createParticleEngine` | Opt-in `config.gradient = {top, bottom}` for per-vertex color lerp | EXTENDED (non-breaking) |
-| **Engine** | `decorateReveals()` | Hero cascade — per-child stagger on `<section id="hero">` | EXTENDED |
-| **Showcase chrome** | Anatomy `<pre>` styling | Globalized: grey stroke, dark fill, 30px padding, no per-line bg | RESTYLED |
-| **Showcase chrome** | Code-name chip next to breadcrumb | Auto-injected on every preview via `CODE_NAMES` manifest | NEW |
-| **Templates STALE** | `templates/closing-particle-field` | Superseded by Pre-footer ASCII band — 1-release deprecation | MOVED TO STALE |
+| `ds-content-frame` | NEW atom | §3.1 Atoms | `#atoms/content-frame` |
+| `ds-feature-list` | Anatomy already shipped v2.2.0; canonical CSS ships in this round | §3.2 Molecules | `#molecules/feature-list` |
+| `ds-compare-card` | Three new modifiers on existing organism: `--icon-rows`, `--icon-rows-affirmative`, `--with-metrics` | §3.3 Organisms / Cards | `#organisms/compare-card` |
+| `ds-trust-fold` | NEW template | §3.7 Templates | `#templates/trust-fold` |
+| `ds-feature-showcase` | NEW template | §3.7 Templates | `#templates/feature-showcase` |
 
-### Counts
+**Why three modifiers on `ds-compare-card` rather than a monolithic variant.** The icon-rows row anatomy, the affirmative-tint, and the metric strip are orthogonal — a future page might want metrics on a "today" card, or icon-rows without affirmative tint on a neutral comparison. Keeping them composable preserves that flexibility at no extra cost.
 
-- Atoms: 19 (no change)
-- Molecules: 15 → **21** (+6 new: recap-grid, recap-report, iframe-wrap, careers-list, kv-list, digest-form; 1 updated: subscribe-band)
-- Organisms: 38 → **43** (+5 new: investor-card, partner-card, showcase-card, community-ticker, quickstart-tabs)
-- Templates: 13 → **17** active + **1 stale** (4 new: pre-footer-ascii, recap-band, showcase-3up, hero-with-dome; 1 updated: onboarding; 1 moved to Stale: closing-particle-field)
-- Conventions: 10 → **11** (+1 new: ::selection palette)
-- New modifiers: 3 (`.ds-reveal--slow`, `.ds-section--blend-to-footer`, `data-ds-particle-gradient` attribute family)
-- New containers: 1 (`.ds-footer__prelude-ascii`)
-- Showcase chrome: 2 improvements (Anatomy pre-block restyled globally; code-name chips on every entry)
+**Why `ds-feature-showcase` bakes in `ds-content-frame` chrome.** Every documented use of the template wants the bordered frame; making it opt-out via a `--no-frame` modifier would be cleaner than requiring consumers to apply both classes for the common case.
 
-### Rationale
+### Added
 
-The Company + Developers pages both pushed against the same set of foundation frustrations: reveals felt rushed, dividers read too loud, subcopy out-shouted body, footer hairline broke the section-to-footer flow, OS-default text selection was off-brand. Those tunings ride into the system as canonical defaults so every future page inherits the polished baseline.
+- **`ds-content-frame`** (atom, §3.1) — bordered "frame" wrapper for a fold's primary content composition. Subtle tinted fill + 1px hairline + `--r-card` radius + adaptive padding (40px desktop, 24px mobile). Adapts to dark/light surfaces automatically.
+- **`ds-compare-card --icon-rows`** + **`--icon-rows-affirmative`** + **`--with-metrics`** (three modifiers on existing organism, §3.3) — replaces canonical vbar markers with a 2-column row anatomy (icon + title + sub-copy); affirmative variant tints row icons orange; metric variant opens a 3-up compact `ds-stat` strip above the rows.
+- **`ds-trust-fold`** (template, §3.7) — centered eyebrow + heading + lead + optional CTA + compliance badge strip + 3-col `ds-feature-tile` grid. Three slots: `__cta`, `__badges`, `__controls`.
+- **`ds-feature-showcase`** (template, §3.7) — bordered frame with 40/60 two-column layout. `__list` slot accepts `ds-feature-list` or any list; `__art` slot accepts img / svg / code-block / motion-clip. Composes `ds-content-frame` chrome implicitly.
 
-Beyond foundation tunings, both pages introduced full new patterns at molecule/organism/template tier:
+### Updated
 
-- The **Pre-footer ASCII band** ("To see is to know" + hand-rendered ASCII) is now the canonical brand sign-off across every page. It replaces the older orange-particle closing CTA template, which is moved to a new **Stale folder** for 1-release deprecation.
-- The **Showcase, Recap, and Hero-with-dome** templates capture three full folds that recur across the latest page set.
-- The **Investor / Partner / Showcase card** organisms cover the named-portrait, design-partner-logo, and 3-up-media-thumbnail patterns respectively. Naming note: the existing `ds-build-card` (editorial "How I built" article card) is unrelated — the `vh-built-card` pattern for "Built on VideoDB" was lifted as `ds-showcase-card` to avoid collision.
-- The **Community ticker** is a press-and-hold-to-slow variant of the existing testimonials-ticker — useful when you want kinetic motion but readable on demand.
-- The **Quickstart tabs** organism formalizes the multi-body code block with per-tab typewriter + active-tab clipboard pattern used for multi-runtime install rows.
-- Two **layout-only molecules** (`ds-careers-list`, `ds-kv-list`) lift the definition-list and key-value-list row layouts without prescribing content — content is caller-supplied.
-- A **Subscribe Band** update bakes the pill input radius into the canonical wrapper (no `.ds-input--pill` modifier needed inside `.ds-subscribe-band`).
-- One **convention** added: C11 — global `::selection` palette scoped to `<main>` so chrome retains OS default.
+- **`ds-feature-list`** (molecule, §3.2) — anatomy was already inventoried in v2.2.0 but the canonical CSS now ships in this round (was previously implemented as page-scoped CSS on consumer sites). Sidebar entry unchanged.
 
-### Showcase chrome improvements (every preview benefits)
+### Counts after v2.2.2
 
-Two changes apply across the entire showcase, not just the new entries:
+- Atoms: 19 → **20** (Content frame added)
+- Molecules: 15 (no change)
+- Organisms: 38 (no change — three modifiers on existing `ds-compare-card`, not a new organism)
+- Templates: 13 → **15** (Trust fold + Feature showcase added)
+- Conventions: 10 (no change)
 
-1. **Code-name chips next to breadcrumbs.** Every preview page (existing + new) shows its canonical class name in an orange chip next to the breadcrumb (e.g. `Atoms / Button · ds-btn`). Non-technical readers can scan the catalog and read off code names without inspecting CSS. Manifest is `CODE_NAMES` in the boot script — add an entry there when registering a new preview.
+### Migration for downstream consumers
 
-2. **Anatomy `<pre>` block restyled globally.** Previously a per-route override applied dark styling to ~10 specific pages; every other page fell back to default browser <pre> with a white stroke and per-line backgrounds. v2.2.2 promotes this to a global `.ds-page pre` rule: grey stroke (`--charcoal`), very dark fill (`--neutral-darker`), 30px padding all around, and `.ds-page pre *` background-transparent to kill the per-line tint that ships from inline span chrome.
+The marketing site running on this design system migrated its homepage in lockstep. Reference markup lives in `src/pages/index.html` (sections: `#problem`, `#platform`, `#developers`, `#security`).
 
-### Stale folder
-
-This is the first release with a dedicated **Stale folder** in the sidebar (collapsed by default). Superseded entries land here for 1 release before being removed entirely. Stale entries render their preview pages with a `Deprecated v2.2.2` banner at the top pointing to the canonical replacement. Active deprecations:
-
-- `templates/closing-particle-field` → use `templates/pre-footer-ascii` instead
-
-Per user direction, the following entries that were marked DELETED in v2.2.1 are **kept active** in v2.2.2 (not moved to Stale):
-
-- `templates/lifecycle-grid`
-- `templates/use-case-row`
-- `organisms/cta-band`
-- `templates/onboarding` (kept + enhanced with typewriter on the right-column code block)
-
-### Migration
-
-None required.
-
-- Foundation re-tunings (`.ds-vbar`, `.ds-reveal`, `.ds-section-heading__lead`, `.ds-footer`, mobile `.ds-frame` / `.ds-hero__lead`) are drop-in.
-- New modifiers / containers / molecules / organisms / templates are all opt-in. Existing pages render unchanged.
-- `::selection` is global but scoped to `<main>` so chrome (header / drawer / footer) keeps OS-default behaviour. Pages that previously hand-rolled their own `::selection` rule should remove it.
-- `createParticleEngine` callers that don't supply `config.gradient` see no behaviour change.
-- Hero cascade auto-decorator only fires on `<section id="hero">` elements.
-- `.ds-subscribe-band` canonical: pages can drop the redundant `.ds-input--pill` modifier inside the wrapper. The modifier still works standalone (for inputs outside a Subscribe Band).
-- Pages still pointing at `templates/closing-particle-field` should migrate to `templates/pre-footer-ascii` before v2.2.3.
-
-Full prototype trail: `videodb-website/feedback/DEVELOPERS-REVAMP-REPORT.md` + `videodb-website/src/CHANGELOG.md` (Company + Developers pass entries 2026-05-22 → 2026-05-25).
-
-### `index.html` updates
-
-**Foundation:**
-- `.ds-reveal` rule patched + `.ds-reveal--slow` modifier added next to base; `prefers-reduced-motion` block expanded to cover the modifier.
-- `.ds-vbar` + `.ds-vbar--orange` opacity values updated; inline comment cites c-077 rationale.
-- `.ds-section-heading__lead` base font-size updated to 16px.
-- `.ds-footer` `border-top` zeroed; `.ds-footer--dark` and `.ds-footer--light` switched to gradient fills.
-- `.ds-footer__prelude-ascii` container rules added below the existing prelude rules; canvas-attribute baseline documented in the inline comment.
-- `.ds-section--blend-to-footer.ds-section--dark` + `.ds-section--blend-to-footer.ds-section--light` rules added next to `.ds-section--tight`.
-- Global `::selection` palette added below the focus-visible block (two separate rule sets per the browser quirk note).
-- Mobile breakpoint block: `.ds-frame` padding `20 → 32px` at `≤640px`; new `.ds-hero__lead { font-size: 16px }` at `≤768px`.
-- `.ds-subscribe-band` wrapper + auto-pill rule added next to `.ds-input--pill`.
-
-**Showcase chrome:**
-- Per-route Anatomy `<pre>` overrides replaced with global `.ds-page pre` rule (grey stroke, dark fill, 30px padding, descendant background-transparent).
-- `.ds-code-name` CSS rule added for the orange code-name chip; `CODE_NAMES` manifest + `injectCodeNames()` function added at the top of the boot script; runs once on DOMContentLoaded and walks every `.ds-page` to inject the chip next to its breadcrumb.
-- `.ds-sidebar__group--stale` CSS + new Stale `<details>` group in sidebar containing the deprecated `templates/closing-particle-field` link.
-- `.ds-deprecation-banner` CSS + banner inserted at the top of `templates/closing-particle-field`'s preview.
-
-**New CSS (v2.2.2 promotion batch, dedicated section above the v2.2.1 block):**
-- `.ds-investor-card`, `.ds-investor-grid` (+ avatar, name-row, name, bio sub-elements)
-- `.ds-partner-card__logo`, `.ds-partner-grid`
-- `.ds-showcase-card` (+ `__media`, `__media-fallback`, `__body` sub-elements)
-- `.ds-recap-grid` (+ tile + p1–p5 area modifiers + responsive)
-- `.ds-recap-report` (+ month + month-num + stats sub-elements + 2×2 mobile via display: contents)
-- `.ds-iframe-wrap` (+ `--light`, `--neutral` variants)
-- `.ds-careers-list` (+ item, head, title, body, cta sub-elements)
-- `.ds-kv-list` (+ row, label, body, body--mono sub-elements + hover ::before)
-- `.ds-digest-grid`, `.ds-digest-form`, `.ds-digest-form__copy`, `.ds-digest-form__meta`, `.ds-digest-form__visual`
-- `.ds-community-ticker` (wraps `.ds-marquee` + per-card `.ds-testimonial-card`)
-- `.ds-quickstart-tabs` (multi-body `[data-active-tab]` switching)
-
-**Engine:**
-- `createParticleEngine`: gradient hook + per-vertex color buffer + `vertexColors` material flag + opacity-compensation; controller gained `DOME_GRADIENTS` preset map + `data-ds-particle-gradient` / `-top` / `-bottom` attribute resolution.
-- `decorateReveals()`: hero-section walker + per-child `data-ds-reveal-delay` tagger + `data-ds-hero-cascaded` sentinel.
-
-**Showcase preview pages added:**
-- `v2.2.2/changelog`
-- `molecules/recap-grid`, `molecules/recap-report`, `molecules/iframe-wrap`, `molecules/careers-list`, `molecules/kv-list`, `molecules/digest-form`
-- `organisms/investor-card`, `organisms/partner-card`, `organisms/showcase-card`, `organisms/community-ticker`, `organisms/quickstart-tabs`
-- `templates/pre-footer-ascii`, `templates/recap-band`, `templates/showcase-3up`, `templates/hero-with-dome`
-
-**Showcase preview pages updated:**
-- `molecules/subscribe-band` (canonical wrapper + pill bake-in)
-- `templates/onboarding` (typewriter on the right-col code block)
-- `templates/closing-particle-field` (deprecation banner + breadcrumb retitled "Stale · Templates")
-
-**Sidebar updates:**
-- Changelog group: new `v2.2.2/changelog` entry at the top.
-- Molecules group: 6 new entries (recap-grid, recap-report, iframe-wrap, careers-list, kv-list, digest-form).
-- Organisms · Cards: 3 new entries (investor-card, partner-card, showcase-card).
-- Organisms · Social proof: community-ticker added.
-- Organisms · Code & lists: quickstart-tabs added.
-- Templates group: hero-with-dome, showcase-3up, recap-band, pre-footer-ascii added; closing-particle-field removed from active group.
-- New collapsible Stale group at the bottom with closing-particle-field as the lone occupant.
-
-### Quirks & gotchas
-
-1. **`::selection` rule split.** Body-grey and title-orange rules MUST stay in separate selectors. Combining them with a comma triggers the browser to drop the entire chain if any pseudo in the list is unrecognised — silently nuking the palette.
-2. **Mobile media-query source order.** When adding new mobile-scoped rules, audit prior `@media` blocks in the same area for collisions — source-order specificity decides the winner inside identical media queries.
-3. **`.ds-eyebrow.ds-eyebrow--xs` mobile overrides** still need the chained selector (and sometimes `!important`) to outrank the base `.ds-eyebrow` when going smaller.
-4. **Particle engine pixel-ratio cap.** Gradient mode lerps through darker mid-tones — the engine bumps default opacity 0.40 → 0.55 to compensate. If you retune the gradient stops, also retune opacity.
-5. **Hero cascade idempotency.** The `data-ds-hero-cascaded="1"` sentinel on the section prevents re-tagging on SPA re-init. Don't remove it manually.
-6. **Showcase Anatomy pre-block precedence.** The new global rule uses `!important` on the wrapper styling because the existing per-route overrides also used `!important`. Don't try to override these from a single preview page without `!important` of your own.
-7. **`ds-showcase-card` vs `ds-build-card`.** Two different patterns. `ds-build-card` is the existing editorial "How I built" article card. `ds-showcase-card` is the v2.2.2 "Built on VideoDB" 3-up media card. Don't conflate.
-8. **`ds-careers-list` + `ds-kv-list` are layout-only.** Caller supplies content. These molecules don't prescribe icons, dept names, or specific copy patterns — they only own row layout + hover behavior.
+- Sites with `vh-problem-rows` family → swap to `ds-compare-card--icon-rows` (+ `--icon-rows-affirmative` on the "good" side). Row class names migrate from `vh-problem-row*` → `ds-compare-card__row*`.
+- Sites with `vh-problem-metrics` → add `--with-metrics` to the parent article; rename the wrapper to `ds-compare-card__metrics`.
+- Sites with `vh-dev-frame` or `vh-platform-frame` → wrap the 2-col grid in `ds-feature-showcase > ds-feature-showcase__layout` (`__list` + `__art` on the columns). Drop any old border/background CSS — the template provides it.
+- Sites with `vh-security-badge-strip` + `vh-security-tile-grid` → add `ds-trust-fold` to the section; rename badge wrapper to `__badges`, tile grid to `__controls`. Optional CTA wraps in `__cta`.
 
 ---
 
@@ -701,7 +574,7 @@ Always `assets/...`, never `../merged-design-system-cleanup/assets/...`. Example
 ```html
 <img src="assets/logos/wordmark-dark.png" alt="VideoDB">
 <img src="assets/customer-logos/hoichoi.png" alt="Hoichoi">
-<img src="assets/compliance-logos/soc2-logo-dark-bg.png" alt="SOC 2">
+<img src="assets/compliance-logos/soc2-logo-dark-bg.svg" alt="SOC 2">
 <img src="assets/partner-logos/anthropic-logo-dark-bg.svg" alt="Anthropic">
 ```
 
@@ -1107,6 +980,24 @@ Visually-hidden-by-default keyboard skip link. Sits at the top of `<header>` as 
 
 ---
 
+#### ds-content-frame (Atom, NEW in v2.2.2)
+
+Bordered "frame" wrapper for a fold's primary content composition — subtle tinted fill, 1px hairline border, `--r-card` radius, generous internal padding (40px desktop, 24px mobile). Adapts to dark/light surfaces automatically via `.ds-section--{dark,light}` scoping. Composes inside the `ds-feature-showcase` template by default; can also wrap any standalone content composition that wants a soft anchored container.
+
+**Variants/modifiers:**
+- Default — adapts to parent section's surface
+
+**HTML:**
+```html
+<div class="ds-content-frame">
+  <!-- any content composition: grids, lists, code blocks, illustrations -->
+</div>
+```
+
+**Use when:** A fold's primary composition needs a soft bordered anchor — typically when paired with a section header above it (so the frame visually separates header from body). Don't use as a section background; use the canonical `ds-section` for that.
+
+---
+
 ### 3.2 Molecules (15)
 
 #### ds-section-heading (Molecule)
@@ -1372,7 +1263,7 @@ Pattern: use the `.ds-bracket` atom as a header unit — bracket label on the le
 
 ---
 
-#### ds-feature-list (Molecule)
+#### ds-feature-list (Molecule, canonical CSS shipped in v2.2.2)
 
 Stacked feature-item list with hairline-separated rows. Each item: icon + title on top, body paragraph below. 3–5 items per list is the sweet spot.
 
@@ -1572,7 +1463,7 @@ Title + list of brand-logo rows. Each row pairs a 36×36 icon frame with a name 
       <span class="ds-logo-card__value">2.0</span>
     </li>
     <li class="ds-logo-card__row">
-      <span class="ds-logo-card__icon-frame"><img src="assets/partner-logos/openai-logo-dark-bg.svg" alt="OpenAI"></span>
+      <span class="ds-logo-card__icon-frame"><img src="assets/partner-logos/openai-logo-light-bg.svg" alt="OpenAI"></span>
       <span class="ds-logo-card__name">OpenAI</span>
       <span class="ds-logo-card__value">gpt-4o</span>
     </li>
@@ -2579,10 +2470,10 @@ Site footer. Two variants — **Directory** (4-column nav grid + legal strip + c
     </div>
     <div class="ds-footer__compliance">
       <span class="ds-footer__compliance-label">Compliance</span>
-      <img loading="lazy" src="assets/compliance-logos/soc2-logo-dark-bg.png" alt="SOC 2">
-      <img loading="lazy" src="assets/compliance-logos/gdpr-logo-dark-bg.png" alt="GDPR">
-      <img loading="lazy" src="assets/compliance-logos/hipaa-logo-dark-bg.png" alt="HIPAA">
-      <img loading="lazy" src="assets/compliance-logos/iso-logo-dark-bg.png" alt="ISO 27001">
+      <img loading="lazy" src="assets/compliance-logos/soc2-logo-dark-bg.svg" alt="SOC 2">
+      <img loading="lazy" src="assets/compliance-logos/gdpr-logo-dark-bg.svg" alt="GDPR">
+      <img loading="lazy" src="assets/compliance-logos/hipaa-logo-dark-bg.svg" alt="HIPAA">
+      <img loading="lazy" src="assets/compliance-logos/iso-logo-dark-bg.svg" alt="ISO 27001">
     </div>
   </div>
 </footer>
@@ -2599,8 +2490,8 @@ Site footer. Two variants — **Directory** (4-column nav grid + legal strip + c
     <div class="ds-footer__bottom">
       <div class="ds-footer__bottom-left">
         <div class="ds-footer__compliance-row" aria-label="Compliance">
-          <img loading="lazy" src="assets/compliance-logos/soc2-logo-dark-bg.png" alt="SOC 2">
-          <img loading="lazy" src="assets/compliance-logos/gdpr-logo-dark-bg.png" alt="GDPR">
+          <img loading="lazy" src="assets/compliance-logos/soc2-logo-dark-bg.svg" alt="SOC 2">
+          <img loading="lazy" src="assets/compliance-logos/gdpr-logo-dark-bg.svg" alt="GDPR">
         </div>
         <span>© Copyright VideoDB 2026. All Rights Reserved.</span>
       </div>
@@ -3092,6 +2983,41 @@ Two-up compare-card grid. Left card states today's broken state (neutral); right
 ```
 
 **Use when:** Section 2 of a marketing page — the "why VideoDB exists" beat. Left = problem, right = solution (eye scans left-to-right). 5–8 rows per card. Centered variant when the comparison IS the page hero (no section-code rail).
+
+##### Variant C — Icon-row + optional metric strip (NEW in v2.2.2)
+
+A richer row anatomy for the Problem/Solution template — replaces the canonical `__rows` vbar markers with bare icons + title + sub-copy structure, with an optional 3-up metric strip above the rows.
+
+**Three composable modifiers:**
+- `ds-compare-card--icon-rows` — opt into the icon + title + sub-copy row anatomy (replaces vbar markers + row-tag pattern)
+- `ds-compare-card--icon-rows-affirmative` — additionally tints row icons orange (pair with `--good`)
+- `ds-compare-card--with-metrics` — opt-in slot above the rows for a 3-up compact `ds-stat` strip on an orange-tinted tile
+
+**HTML (right card, affirmative side with metric strip):**
+```html
+<article class="ds-compare-card ds-compare-card--good ds-compare-card--icon-rows-affirmative ds-compare-card--with-metrics">
+  <div class="ds-bracket ds-bracket--orange"><span class="ds-bracket__label">[VIDEODB]</span><span class="ds-bracket__tag">One backend</span></div>
+  <p class="ds-compare-card__desc">One platform for the whole loop.</p>
+  <div class="ds-compare-card__metrics">
+    <div class="ds-stat ds-stat--light"><span class="ds-stat__value ds-stat__value--orange">1</span><span class="ds-stat__label">API</span></div>
+    <div class="ds-stat ds-stat--light"><span class="ds-stat__value ds-stat__value--orange">1</span><span class="ds-stat__label">Mental model</span></div>
+    <div class="ds-stat ds-stat--light"><span class="ds-stat__value ds-stat__value--orange">2 min</span><span class="ds-stat__label">To first query</span></div>
+  </div>
+  <ul class="ds-compare-card__rows">
+    <li class="ds-compare-card__row">
+      <span class="ds-compare-card__row-icon"><iconify-icon icon="solar:cloud-upload-linear" width="22" height="22"></iconify-icon></span>
+      <div class="ds-compare-card__row-text">
+        <h3 class="ds-compare-card__row-title">Deploy anywhere</h3>
+        <p class="ds-compare-card__row-desc">Cloud · VPC · Edge</p>
+      </div>
+    </li>
+    <!-- more rows -->
+  </ul>
+  <span class="ds-pill-status ds-pill-status--orange"><span class="ds-pill-status__dot"></span>One SDK · One bill · One mental model</span>
+</article>
+```
+
+**Use when:** The Problem/Solution comparison needs the rows to carry more semantic weight than vbar markers can carry — typically when each row represents a category (icon = category symbol) with a one-line sub-copy underneath. The metric strip is reserved for the affirmative card when the page wants to anchor a quantitative claim ("1 SDK · 1 bill · 2 min to first query") visually above the row list.
 
 ---
 
@@ -3638,6 +3564,97 @@ video.index_scenes()</pre>
 **Use when:** the "show me how to use it" fold on a developer landing page. Pair with a primary + ghost CTA pair beneath the feature list. The bordered frame is what makes it work — it gives the two-column pair visual cohesion.
 
 **Preview:** `index.html#templates/onboarding`
+
+---
+
+#### Trust fold (Template, NEW in v2.2.2)
+
+The "trust / compliance / security" section template. Centered eyebrow + display heading + lead + optional primary CTA, followed by a horizontal compliance-badge strip (n SVGs), followed by a 3-column `ds-feature-tile` grid explaining the headline controls. Subsumes the marketing site's prior page-scoped pattern (`vh-security-badge-strip` + `vh-security-tile-grid` + `vh-security-cta`).
+
+**Three slots:**
+- `ds-trust-fold__cta` — optional `ds-cta-pair--center` between heading and badges
+- `ds-trust-fold__badges` — n compliance SVGs in a centered flex row (110px tall, wraps below 720px)
+- `ds-trust-fold__controls` — 3-col `ds-feature-tile` grid, collapses 3 → 2 → 1 at 900 / 640
+
+**HTML skeleton:**
+```html
+<section class="ds-section ds-section--light ds-trust-fold">
+  <div class="ds-frame"><div>
+    <div class="ds-section-heading ds-section-heading--light ds-section-heading--centered">
+      <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose">Security &amp; controls</span>
+      <h2 class="ds-section-heading__title">Enterprise-grade security and controls.</h2>
+      <p class="ds-section-heading__lead">SOC 2 Type II, GDPR, HIPAA, ISO 27001…</p>
+    </div>
+    <div class="ds-trust-fold__cta">
+      <div class="ds-cta-pair ds-cta-pair--center"><a class="ds-btn ds-btn--primary" href="#contact">Talk to an expert</a></div>
+    </div>
+    <div class="ds-trust-fold__badges" aria-label="Compliance">
+      <img src="…/gdpr.svg" alt="GDPR">
+      <!-- more badge imgs -->
+    </div>
+    <div class="ds-trust-fold__controls">
+      <article class="ds-feature-tile">…</article>
+      <article class="ds-feature-tile">…</article>
+      <article class="ds-feature-tile">…</article>
+    </div>
+  </div></div>
+</section>
+```
+
+**Surface variants:** light by default; combine with `ds-section--dark` for dark variant (badge / tile chrome adapt via existing canonical scoping).
+
+**Use when:** Every B2B marketing page needs a "we're trustworthy" fold — usually two folds before the closing CTA. Don't ship a page that mentions enterprise / security / compliance without this template, or you lose the conversion path on the procurement persona.
+
+---
+
+#### Feature showcase (Template, NEW in v2.2.2)
+
+The "primary explainer" section template. A bordered frame containing a 40/60 two-column layout — vertical `ds-feature-list` on the left, an "art region" on the right that accepts any single child (image, SVG, `ds-code-block`, `ds-motion-clip`). Subsumes the marketing site's two prior page-scoped patterns: the homepage Platform fold (40/60 list + image showcase) and the homepage Dev Experience fold (40/60 list + code block).
+
+Composes `ds-content-frame` (#35) chrome implicitly so consumers don't have to apply both classes.
+
+**Two slots:**
+- `ds-feature-showcase__list` — left 40% column, accepts `ds-feature-list` or any list-like content
+- `ds-feature-showcase__art` — right 60% column, accepts any single child (img / svg / code-block / motion-clip)
+
+Section header (eyebrow + heading + lead + CTA pair) sits ABOVE the template — it's the consumer's responsibility, not part of the template scope.
+
+**HTML skeleton:**
+```html
+<section class="ds-section ds-section--dark">
+  <div class="ds-frame"><div>
+    <span class="ds-eyebrow ds-eyebrow--orange ds-eyebrow--xs ds-eyebrow--loose">The platform</span>
+    <div class="ds-section-heading ds-section-heading--dark">
+      <h2 class="ds-section-heading__title">One platform loop for video intelligence.</h2>
+      <p class="ds-section-heading__lead">VideoDB turns every source into structured machine data.</p>
+    </div>
+    <div class="ds-cta-pair">
+      <a class="ds-btn ds-btn--primary" href="platform.html">Read the spec</a>
+      <a class="ds-btn ds-btn--ghost-dark" href="developers.html">Try the SDK</a>
+    </div>
+
+    <div class="ds-feature-showcase">
+      <div class="ds-feature-showcase__layout">
+        <div class="ds-feature-showcase__list">
+          <ul class="ds-feature-list">
+            <!-- 4-6 ds-feature-list__item entries -->
+          </ul>
+        </div>
+        <div class="ds-feature-showcase__art">
+          <!-- One of: <img>, <svg>, ds-code-block, ds-motion-clip -->
+          <img src="assets/illustrations/auth-page.gif" alt="">
+        </div>
+      </div>
+    </div>
+  </div></div>
+</section>
+```
+
+**Surface variants:** adapts to parent section's surface automatically (frame fill, art-region border, code-block tinting).
+
+**Use when:** Any section that needs to teach how the product works — usually section 3 or 4 of a marketing page. The left column tells the story (named feature + body); the right column shows it (screenshot, code, animation). Below 900px the columns stack vertically (list above art).
+
+**Preview:** `index.html#templates/feature-showcase` *(once upstream lands)*
 
 ---
 
