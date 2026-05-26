@@ -1,7 +1,7 @@
 # VideoDB Design System — Single Source of Truth
 
-**Version:** v2.2.1 (cleanup pass — deprecated templates removed, Feature grid renamed, Problem/Solution + Pricing card variant B refreshed, 2026-05-22)
-**Prior:** v2.2.0 (homepage promotion batch, 2026-05-22) · v2.1.1 (footer chevron desktop-leak patch, 2026-05-22) · v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
+**Version:** v2.2.2 (company + developers page lift — foundation tunings (vbar, reveal, lead, footer) + opt-in particle gradient + hero cascade, 2026-05-25)
+**Prior:** v2.2.1 (cleanup pass — deprecated templates removed, Feature grid renamed, Problem/Solution + Pricing card variant B refreshed, 2026-05-22) · v2.2.0 (homepage promotion batch, 2026-05-22) · v2.1.1 (footer chevron desktop-leak patch, 2026-05-22) · v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
 
 ## How to use this file
 
@@ -10,6 +10,179 @@ This is the canonical spec for the VideoDB v2 atomic design system. It is optimi
 ## TL;DR — the system in 200 words
 
 VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: **19 atoms** compose into **15 molecules**, **38 organisms**, 2 motion components + 2 examples + 2 authoring methods, 7 data-viz pieces, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is **96/80/64/52** px top/bottom across desktop → small-phone breakpoints; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+
+## v2.2.2 changelog — what changed (2026-05-25)
+
+Lift round driven by the videodb-website Company + Developers page revamps (pass 1 = 55 pins c-001 → c-055, pass 2 = 49 pins c-056 → c-104). Both pages were rebuilt against the v2.2.1 system and surfaced patterns at every tier — foundation tunings, new molecules, new organisms, new templates — that belong in the design system itself, not as page-scoped `vh-*` overrides.
+
+This is the first release where every entry in the showcase carries its **canonical code name as a chip next to the breadcrumb** so non-technical readers can scan the catalog without opening DevTools. Auto-injected via a manifest in the boot script (`CODE_NAMES`).
+
+### Summary — at a glance
+
+| Tier | Code name | Plain-English purpose | Status |
+|---|---|---|---|
+| **Foundation · Animation** | `.ds-reveal` | Site-wide scroll entrance — softer, longer, deeper curve | RE-TUNED (720ms / 18px / outQuint) |
+| **Foundation · Animation** | `.ds-reveal--slow` | Ceremonial long-form variant for pre-footer ASCII | NEW MODIFIER (50px / 1500ms) |
+| **Foundation · Atom** | `.ds-vbar` | Vertical bar bullet — opacity halved (less loud in dense stacks) | RE-TUNED |
+| **Foundation · Molecule** | `.ds-section-heading__lead` | Section subcopy — 18 → 16px base | RE-TUNED |
+| **Foundation · Organism** | `.ds-footer` | No top border + gradient fill — seamless flow from section above | RE-TUNED |
+| **Foundation · Composite** | `.ds-section--blend-to-footer` | Gradient bg fade into the following footer | NEW MODIFIER |
+| **Foundation · Container** | `.ds-footer__prelude-ascii` | Canvas wrapper for the pre-footer ASCII illustration | NEW |
+| **Foundation · Convention C11** | `main ::selection` palette | Grey body / orange titles — global text-selection styling | NEW CONVENTION |
+| **Foundation · Mobile** | `.ds-frame` padding 20 → 32px @ ≤640px | More breathing room on phones | RE-TUNED |
+| **Foundation · Mobile** | `.ds-hero__lead` 18 → 16px @ ≤768px | Quieter hero subcopy | RE-TUNED |
+| **Molecule** | `.ds-recap-grid` | 5-tile bento photo grid w/ staggered reveal | NEW |
+| **Molecule** | `.ds-recap-report` | Month label + flex-end packed stat row | NEW |
+| **Molecule** | `.ds-iframe-wrap` | Fixed-width 880px wrapper for embedded iframes (Luma, video, forms) | NEW (generalized from luma-wrap) |
+| **Molecule** | `.ds-careers-list` | Layout-only definition-list for job rows | NEW (layout only) |
+| **Molecule** | `.ds-kv-list` | Layout-only 2-col label/body rows w/ hover tint | NEW (layout only) |
+| **Molecule** | `.ds-digest-form` + `__visual` | Subscribe Band variant w/ side visual | NEW |
+| **Molecule** | `.ds-subscribe-band` | Pill input radius baked in as canonical (no modifier needed) | UPDATED |
+| **Organism** | `.ds-investor-card` | Circular avatar + name + bio for named investor rows | NEW |
+| **Organism** | `.ds-partner-card` | Height-locked logo card for design-partner rows | NEW |
+| **Organism** | `.ds-showcase-card` | 3-up media card w/ thumb + body for "Built on" showcase | NEW |
+| **Organism** | `.ds-community-ticker` | Testimonial marquee w/ press-and-hold slow mode | NEW (variant on testimonials-ticker) |
+| **Organism** | `.ds-quickstart-tabs` | Multi-body code block w/ per-tab typewriter + active-tab clipboard | NEW |
+| **Template** | `templates/pre-footer-ascii` | **"To see is to know"** ASCII brand sign-off — canonical close | NEW (replaces closing-particle-field) |
+| **Template** | `templates/recap-band` | "What we've been up to" — bento + month/stats report | NEW |
+| **Template** | `templates/showcase-3up` | "Built on VideoDB" — 3-up media card row | NEW |
+| **Template** | `templates/hero-with-dome` | Hero composition + particle dome + stats strip + cascade reveal | NEW |
+| **Template** | `templates/onboarding` | Code block on the right now has typewriter on load | UPDATED |
+| **Engine** | `createParticleEngine` | Opt-in `config.gradient = {top, bottom}` for per-vertex color lerp | EXTENDED (non-breaking) |
+| **Engine** | `decorateReveals()` | Hero cascade — per-child stagger on `<section id="hero">` | EXTENDED |
+| **Showcase chrome** | Anatomy `<pre>` styling | Globalized: grey stroke, dark fill, 30px padding, no per-line bg | RESTYLED |
+| **Showcase chrome** | Code-name chip next to breadcrumb | Auto-injected on every preview via `CODE_NAMES` manifest | NEW |
+| **Templates STALE** | `templates/closing-particle-field` | Superseded by Pre-footer ASCII band — 1-release deprecation | MOVED TO STALE |
+
+### Counts
+
+- Atoms: 19 (no change)
+- Molecules: 15 → **21** (+6 new: recap-grid, recap-report, iframe-wrap, careers-list, kv-list, digest-form; 1 updated: subscribe-band)
+- Organisms: 38 → **43** (+5 new: investor-card, partner-card, showcase-card, community-ticker, quickstart-tabs)
+- Templates: 13 → **17** active + **1 stale** (4 new: pre-footer-ascii, recap-band, showcase-3up, hero-with-dome; 1 updated: onboarding; 1 moved to Stale: closing-particle-field)
+- Conventions: 10 → **11** (+1 new: ::selection palette)
+- New modifiers: 3 (`.ds-reveal--slow`, `.ds-section--blend-to-footer`, `data-ds-particle-gradient` attribute family)
+- New containers: 1 (`.ds-footer__prelude-ascii`)
+- Showcase chrome: 2 improvements (Anatomy pre-block restyled globally; code-name chips on every entry)
+
+### Rationale
+
+The Company + Developers pages both pushed against the same set of foundation frustrations: reveals felt rushed, dividers read too loud, subcopy out-shouted body, footer hairline broke the section-to-footer flow, OS-default text selection was off-brand. Those tunings ride into the system as canonical defaults so every future page inherits the polished baseline.
+
+Beyond foundation tunings, both pages introduced full new patterns at molecule/organism/template tier:
+
+- The **Pre-footer ASCII band** ("To see is to know" + hand-rendered ASCII) is now the canonical brand sign-off across every page. It replaces the older orange-particle closing CTA template, which is moved to a new **Stale folder** for 1-release deprecation.
+- The **Showcase, Recap, and Hero-with-dome** templates capture three full folds that recur across the latest page set.
+- The **Investor / Partner / Showcase card** organisms cover the named-portrait, design-partner-logo, and 3-up-media-thumbnail patterns respectively. Naming note: the existing `ds-build-card` (editorial "How I built" article card) is unrelated — the `vh-built-card` pattern for "Built on VideoDB" was lifted as `ds-showcase-card` to avoid collision.
+- The **Community ticker** is a press-and-hold-to-slow variant of the existing testimonials-ticker — useful when you want kinetic motion but readable on demand.
+- The **Quickstart tabs** organism formalizes the multi-body code block with per-tab typewriter + active-tab clipboard pattern used for multi-runtime install rows.
+- Two **layout-only molecules** (`ds-careers-list`, `ds-kv-list`) lift the definition-list and key-value-list row layouts without prescribing content — content is caller-supplied.
+- A **Subscribe Band** update bakes the pill input radius into the canonical wrapper (no `.ds-input--pill` modifier needed inside `.ds-subscribe-band`).
+- One **convention** added: C11 — global `::selection` palette scoped to `<main>` so chrome retains OS default.
+
+### Showcase chrome improvements (every preview benefits)
+
+Two changes apply across the entire showcase, not just the new entries:
+
+1. **Code-name chips next to breadcrumbs.** Every preview page (existing + new) shows its canonical class name in an orange chip next to the breadcrumb (e.g. `Atoms / Button · ds-btn`). Non-technical readers can scan the catalog and read off code names without inspecting CSS. Manifest is `CODE_NAMES` in the boot script — add an entry there when registering a new preview.
+
+2. **Anatomy `<pre>` block restyled globally.** Previously a per-route override applied dark styling to ~10 specific pages; every other page fell back to default browser <pre> with a white stroke and per-line backgrounds. v2.2.2 promotes this to a global `.ds-page pre` rule: grey stroke (`--charcoal`), very dark fill (`--neutral-darker`), 30px padding all around, and `.ds-page pre *` background-transparent to kill the per-line tint that ships from inline span chrome.
+
+### Stale folder
+
+This is the first release with a dedicated **Stale folder** in the sidebar (collapsed by default). Superseded entries land here for 1 release before being removed entirely. Stale entries render their preview pages with a `Deprecated v2.2.2` banner at the top pointing to the canonical replacement. Active deprecations:
+
+- `templates/closing-particle-field` → use `templates/pre-footer-ascii` instead
+
+Per user direction, the following entries that were marked DELETED in v2.2.1 are **kept active** in v2.2.2 (not moved to Stale):
+
+- `templates/lifecycle-grid`
+- `templates/use-case-row`
+- `organisms/cta-band`
+- `templates/onboarding` (kept + enhanced with typewriter on the right-column code block)
+
+### Migration
+
+None required.
+
+- Foundation re-tunings (`.ds-vbar`, `.ds-reveal`, `.ds-section-heading__lead`, `.ds-footer`, mobile `.ds-frame` / `.ds-hero__lead`) are drop-in.
+- New modifiers / containers / molecules / organisms / templates are all opt-in. Existing pages render unchanged.
+- `::selection` is global but scoped to `<main>` so chrome (header / drawer / footer) keeps OS-default behaviour. Pages that previously hand-rolled their own `::selection` rule should remove it.
+- `createParticleEngine` callers that don't supply `config.gradient` see no behaviour change.
+- Hero cascade auto-decorator only fires on `<section id="hero">` elements.
+- `.ds-subscribe-band` canonical: pages can drop the redundant `.ds-input--pill` modifier inside the wrapper. The modifier still works standalone (for inputs outside a Subscribe Band).
+- Pages still pointing at `templates/closing-particle-field` should migrate to `templates/pre-footer-ascii` before v2.2.3.
+
+Full prototype trail: `videodb-website/feedback/DEVELOPERS-REVAMP-REPORT.md` + `videodb-website/src/CHANGELOG.md` (Company + Developers pass entries 2026-05-22 → 2026-05-25).
+
+### `index.html` updates
+
+**Foundation:**
+- `.ds-reveal` rule patched + `.ds-reveal--slow` modifier added next to base; `prefers-reduced-motion` block expanded to cover the modifier.
+- `.ds-vbar` + `.ds-vbar--orange` opacity values updated; inline comment cites c-077 rationale.
+- `.ds-section-heading__lead` base font-size updated to 16px.
+- `.ds-footer` `border-top` zeroed; `.ds-footer--dark` and `.ds-footer--light` switched to gradient fills.
+- `.ds-footer__prelude-ascii` container rules added below the existing prelude rules; canvas-attribute baseline documented in the inline comment.
+- `.ds-section--blend-to-footer.ds-section--dark` + `.ds-section--blend-to-footer.ds-section--light` rules added next to `.ds-section--tight`.
+- Global `::selection` palette added below the focus-visible block (two separate rule sets per the browser quirk note).
+- Mobile breakpoint block: `.ds-frame` padding `20 → 32px` at `≤640px`; new `.ds-hero__lead { font-size: 16px }` at `≤768px`.
+- `.ds-subscribe-band` wrapper + auto-pill rule added next to `.ds-input--pill`.
+
+**Showcase chrome:**
+- Per-route Anatomy `<pre>` overrides replaced with global `.ds-page pre` rule (grey stroke, dark fill, 30px padding, descendant background-transparent).
+- `.ds-code-name` CSS rule added for the orange code-name chip; `CODE_NAMES` manifest + `injectCodeNames()` function added at the top of the boot script; runs once on DOMContentLoaded and walks every `.ds-page` to inject the chip next to its breadcrumb.
+- `.ds-sidebar__group--stale` CSS + new Stale `<details>` group in sidebar containing the deprecated `templates/closing-particle-field` link.
+- `.ds-deprecation-banner` CSS + banner inserted at the top of `templates/closing-particle-field`'s preview.
+
+**New CSS (v2.2.2 promotion batch, dedicated section above the v2.2.1 block):**
+- `.ds-investor-card`, `.ds-investor-grid` (+ avatar, name-row, name, bio sub-elements)
+- `.ds-partner-card__logo`, `.ds-partner-grid`
+- `.ds-showcase-card` (+ `__media`, `__media-fallback`, `__body` sub-elements)
+- `.ds-recap-grid` (+ tile + p1–p5 area modifiers + responsive)
+- `.ds-recap-report` (+ month + month-num + stats sub-elements + 2×2 mobile via display: contents)
+- `.ds-iframe-wrap` (+ `--light`, `--neutral` variants)
+- `.ds-careers-list` (+ item, head, title, body, cta sub-elements)
+- `.ds-kv-list` (+ row, label, body, body--mono sub-elements + hover ::before)
+- `.ds-digest-grid`, `.ds-digest-form`, `.ds-digest-form__copy`, `.ds-digest-form__meta`, `.ds-digest-form__visual`
+- `.ds-community-ticker` (wraps `.ds-marquee` + per-card `.ds-testimonial-card`)
+- `.ds-quickstart-tabs` (multi-body `[data-active-tab]` switching)
+
+**Engine:**
+- `createParticleEngine`: gradient hook + per-vertex color buffer + `vertexColors` material flag + opacity-compensation; controller gained `DOME_GRADIENTS` preset map + `data-ds-particle-gradient` / `-top` / `-bottom` attribute resolution.
+- `decorateReveals()`: hero-section walker + per-child `data-ds-reveal-delay` tagger + `data-ds-hero-cascaded` sentinel.
+
+**Showcase preview pages added:**
+- `v2.2.2/changelog`
+- `molecules/recap-grid`, `molecules/recap-report`, `molecules/iframe-wrap`, `molecules/careers-list`, `molecules/kv-list`, `molecules/digest-form`
+- `organisms/investor-card`, `organisms/partner-card`, `organisms/showcase-card`, `organisms/community-ticker`, `organisms/quickstart-tabs`
+- `templates/pre-footer-ascii`, `templates/recap-band`, `templates/showcase-3up`, `templates/hero-with-dome`
+
+**Showcase preview pages updated:**
+- `molecules/subscribe-band` (canonical wrapper + pill bake-in)
+- `templates/onboarding` (typewriter on the right-col code block)
+- `templates/closing-particle-field` (deprecation banner + breadcrumb retitled "Stale · Templates")
+
+**Sidebar updates:**
+- Changelog group: new `v2.2.2/changelog` entry at the top.
+- Molecules group: 6 new entries (recap-grid, recap-report, iframe-wrap, careers-list, kv-list, digest-form).
+- Organisms · Cards: 3 new entries (investor-card, partner-card, showcase-card).
+- Organisms · Social proof: community-ticker added.
+- Organisms · Code & lists: quickstart-tabs added.
+- Templates group: hero-with-dome, showcase-3up, recap-band, pre-footer-ascii added; closing-particle-field removed from active group.
+- New collapsible Stale group at the bottom with closing-particle-field as the lone occupant.
+
+### Quirks & gotchas
+
+1. **`::selection` rule split.** Body-grey and title-orange rules MUST stay in separate selectors. Combining them with a comma triggers the browser to drop the entire chain if any pseudo in the list is unrecognised — silently nuking the palette.
+2. **Mobile media-query source order.** When adding new mobile-scoped rules, audit prior `@media` blocks in the same area for collisions — source-order specificity decides the winner inside identical media queries.
+3. **`.ds-eyebrow.ds-eyebrow--xs` mobile overrides** still need the chained selector (and sometimes `!important`) to outrank the base `.ds-eyebrow` when going smaller.
+4. **Particle engine pixel-ratio cap.** Gradient mode lerps through darker mid-tones — the engine bumps default opacity 0.40 → 0.55 to compensate. If you retune the gradient stops, also retune opacity.
+5. **Hero cascade idempotency.** The `data-ds-hero-cascaded="1"` sentinel on the section prevents re-tagging on SPA re-init. Don't remove it manually.
+6. **Showcase Anatomy pre-block precedence.** The new global rule uses `!important` on the wrapper styling because the existing per-route overrides also used `!important`. Don't try to override these from a single preview page without `!important` of your own.
+7. **`ds-showcase-card` vs `ds-build-card`.** Two different patterns. `ds-build-card` is the existing editorial "How I built" article card. `ds-showcase-card` is the v2.2.2 "Built on VideoDB" 3-up media card. Don't conflate.
+8. **`ds-careers-list` + `ds-kv-list` are layout-only.** Caller supplies content. These molecules don't prescribe icons, dept names, or specific copy patterns — they only own row layout + hover behavior.
+
+---
 
 ## v2.2.1 changelog — what changed (2026-05-22)
 
