@@ -1,7 +1,7 @@
 # VideoDB Design System — Single Source of Truth
 
-**Version:** v2.2.2 (company + developers page lift — foundation tunings (vbar, reveal, lead, footer) + opt-in particle gradient + hero cascade, 2026-05-25)
-**Prior:** v2.2.1 (cleanup pass — deprecated templates removed, Feature grid renamed, Problem/Solution + Pricing card variant B refreshed, 2026-05-22) · v2.2.0 (homepage promotion batch, 2026-05-22) · v2.1.1 (footer chevron desktop-leak patch, 2026-05-22) · v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
+**Version:** v2.3 (website→DS reconciliation — eyebrow / line-height / card-body tunings, canonical easing + success tokens, the June component roster (atoms / molecules / templates) + JS utilities, the ap-doc long-form reader, and 9 new rules, 2026-06-25)
+**Prior:** v2.2.2 (company + developers page lift — foundation tunings (vbar, reveal, lead, footer) + opt-in particle gradient + hero cascade, 2026-05-25) · v2.2.1 (cleanup pass — deprecated templates removed, Feature grid renamed, Problem/Solution + Pricing card variant B refreshed, 2026-05-22) · v2.2.0 (homepage promotion batch, 2026-05-22) · v2.1.1 (footer chevron desktop-leak patch, 2026-05-22) · v2.1 (mobile-responsive patch round, 2026-05-21) · v2.0 (initial atomic spec)
 
 ## How to use this file
 
@@ -10,6 +10,24 @@ This is the canonical spec for the VideoDB v2 atomic design system. It is optimi
 ## TL;DR — the system in 200 words
 
 VideoDB is a perception layer for AI — data infrastructure for video, built for machines and agents. The v2 design system covers every marketing surface (videodb.io and adjacent pages) for an audience of AI engineers, software architects, multimedia developers. It is **single-file, no build step** — every page is a standalone HTML file with the canonical CSS and JS inlined; Three.js loads from CDN only when a Particle dome is on the page. The architecture is atomic: **19 atoms** compose into **15 molecules**, **38 organisms**, 2 motion components + 2 examples + 2 authoring methods, 7 data-viz pieces, 1 illustration primitive, and 13 page-level templates. Every component carries `--dark` / `--light` (or `--on-dark` / `--on-light`) modifiers; pages alternate dark and light section surfaces in a stable rhythm — first 2–3 dark, middle shuffle, closing 3–4 dark. The brand is pure black with an orange accent (`--orange-500: #F24E1E`), Geist for body, JetBrains Mono for chrome. Flat fills + 1px hairline borders are the visual vocabulary; gradients, multiple fonts, and pixel ornament are out of bounds. Section padding is **96/80/64/52** px top/bottom across desktop → small-phone breakpoints; scroll-reveal decorates `.ds-section-heading` and `.ds-hero` automatically.
+
+## v2.3 changelog — what changed (2026-06-25)
+
+The **website → DS reconciliation** release. The consolidated June website feedback (`DESIGN_SYSTEM_COMPLIANCE_FEEDBACK_2026-06.md`, validated against the live `Design/Staging` build) was cross-checked against this repo and the gaps were back-ported. The repo was **not broadly behind** — ~39 of 40 component families were already canonical; v2.3 closes the real gaps.
+
+**Foundation tunings.** `.ds-eyebrow--xs` 10→12px; `.ds-compare-card__row-tag` collapsed to one canonical 12px rule; `.ds-section-heading__title` line-height 1.1→1.375 and font-size now fluid `clamp(26px, 4.5vw, 40px)`; `.ds-feature-tile__desc` 13/1.55→14/1.65; `.ds-hero__big-stat-label` gains `line-height: 1.7`.
+
+**New tokens.** `--ds-ease-canonical` (the house hover curve, previously hand-typed everywhere) + `--ds-duration-hover` (280ms); `--color-success` (`#1f9d55`, unifies two hardcoded greens); a `-strong` text tier (`--text-on-dark-strong` / `--text-on-light-strong`); the `--surface-illus-base / -sunken / -raised` illustration-surface stack; `--ds-desaturate-dur`; and hero modifiers `.ds-hero__display--lg` / `.ds-hero__lead--compact`.
+
+**Back-ports** (were website-only, now canonical): `.ds-section-heading--display` CSS, `.ds-code-block--syntax`, and the `.ds-feature-tile-grid--4col` rule + responsive collapse.
+
+**New component roster** (promoted from page-local `vh-*` / `cs-*` patterns). *Atoms:* flow-tagline, two-tone heading utilities, snippet value, text-accent, code-block action + thin cursor, and the `.ds-conn` HTML/CSS pipeline connector (replaces decorative arrow SVGs). *Molecules:* page-crumb, illustration-card, choice-card + grid, media-text, ticker-tile, result-preview, chat-row, action-tile, source-thumbnail, player-mockup, stat-card inner-lift, accent-orange callout. *Templates:* stage-grid, note-grid, code-split, card-pipe, viz, split-sticky, spotlight-list, sticky-wipe, the reverse photo ticker, desaturate-on-reveal, centred form wrap, wide CTA inner, no-bottom-pad, the code-block `--glass` / `--prose` / `--fill` variants, and the `.ds-balance` utility.
+
+**JS utilities** (ship in `scripts/ds/`): `ds-form-submit.js` (in-page Formspark state machine), `ds-spotlight.js`, `ds-sticky-wipe.js`, `ds-marquee.js` (smoothPause), `ds-proximity-hover.js`, `ds-snippet-copy.js`, and the `verify-widows.mjs` CI linter.
+
+**ap-doc long-form reader** brought into the DS — the canonical article / legal reading system (light default + `--dark` legal theme), shared by the blog and legal pages.
+
+**Rules** (see §9): decorative dashes → solid (3 sanctioned exceptions); opacity discipline; the form-submit state machine; the SVG-illustration checklist; diagram foundations; concentric corner-radius; illustration-surface tokens; `figure { margin: 0 }`; and the page-local token-shadow caveat.
 
 ## v2.2.2 changelog — what changed (2026-05-25)
 
@@ -333,7 +351,7 @@ Patch round driven by the platform-page refinement cycle on videodb-website. Pro
 | `.ds-section` | Mobile padding ladder: 96 → 80 (≤960) → 64 (≤640) → 52 (≤420) |
 | `.ds-section--tight` | 56 → 40 (≤640) |
 | `.ds-frame` | Mobile padding-inline: 32 → 20 (≤640) → 16 (≤380); side borders dropped ≤640 |
-| `.ds-section-heading__title` | `font-size: clamp(26px, 4.5vw, 40px)` (was fixed 40px). `--display` modifier: `clamp(32px, 6vw, 56px)` |
+| `.ds-section-heading__title` | **Shipped v2.3:** `font-size: clamp(26px, 4.5vw, 40px)` (was fixed 40px) + `line-height: 1.375`. `--display` modifier shipped as `clamp(32px, 5vw, 56px)`, lh 1.05. |
 | `.ds-section-heading__lead` | Mobile size 18 → 16 (≤768) |
 | `.ds-cta-band` | Mobile padding 96/32 → 56/24 (≤768) → 44/18 (≤480). `__inner` `align-items: stretch; width: 100%` ≤768. `__actions { width: 100% }` ≤768. |
 | `.ds-cta-pair` | Auto-stack inside `.ds-cta-band` ≤768: column flex, align stretch, width 100%, gap 12, child buttons full-width padding-block 14 |
@@ -348,7 +366,7 @@ Patch round driven by the platform-page refinement cycle on videodb-website. Pro
 | Modifier | Used by |
 |---|---|
 | `.ds-section-heading--split` | Heading left + lead right (1.4fr / 1fr), stacks ≤900. See §3.2. |
-| `.ds-section-heading--display` | Larger title clamp(32, 6vw, 56) for hero-adjacent headings |
+| `.ds-section-heading--display` | **Shipped v2.3** — larger title `clamp(32px, 5vw, 56px)`, lh 1.05, for hero-adjacent headings |
 | `.ds-tabgroup--scroll` | Horizontal scroll-snap on mobile (5+ triggers). See §3.3. |
 | `.ds-tabgroup-shell` | Nested-pill: outer light-grey shell wrapping a `ds-tabgroup--light`. See §3.3. |
 | `.ds-content-card--dim` + `.is-focused` | Dim-and-focus state convention for cards-driven tab nav. See §3.3. |
@@ -3891,6 +3909,48 @@ Architectural observations about how the system is organized — not gaps in cov
 
 - **Editorial primitives ship as one doc page, three distinct primitives** — `index.html` has a single `organisms/editorial-primitives` page covering Pull quote, Labeled callout, and Decision list. They're documented as three separate entries in section 3.3 because they're independent primitives composed independently. Together with `ds-highlight`, `ds-article-hero`, and `ds-article-toc`, that's the 6 editorial organisms.
 - **Additional loading primitives** — `ds-spinner`, `ds-skeleton`, and `ds-progress` ship in the same `atoms/loaders` page as `ds-dot-loader` and `ds-status-pulse`. They aren't counted as separate atoms in the inventory but exist as utility classes — see the end of the `ds-dot-loader` entry in section 3.1 for usage.
+
+---
+
+## 9. Engineering rules & conventions (v2.3)
+
+New rules promoted in v2.3 from the website build. CSS hooks referenced here live in `index.html`; JS utilities ship in `scripts/ds/`.
+
+### 9.1 Borders — solid hairlines, no decorative dashes
+
+Decorative borders and dividers use **solid hairlines** (`1px solid var(--border-on-*)`) or solid rounded rectangles — never `dashed` / `dotted`. For a "draft / placeholder / coming-soon" look, use a background tint or a border-width step, not a dash style. **Three sanctioned exceptions** keep a dashed style because the dash itself carries meaning: (1) the inline tooltip / disclosure trigger underline (signals "definition on hover"), (2) the keyboard focus outline, (3) the diagram connector "dotted" variant (`stroke-dasharray`) that marks a *pending / optional / derived* edge — max one per diagram. Everything else (footer compliance row, hero stats / meta top-borders, empty-state box, roadmap milestone underline) is now solid.
+
+### 9.2 Opacity discipline
+
+Dim a colour by shifting to a **token or an explicit HSL / RGB value**, not by lowering `opacity`. `opacity` dims the whole element (borders, shadows and text together) and compounds unpredictably when nested; an explicit colour keeps each layer intentional. Reserve `opacity` for genuine fade-in / out transitions.
+
+### 9.3 Form submit — in-page state machine
+
+Primary form submits give feedback **in place** instead of redirecting to Formspark's generic thank-you page. Ship `scripts/ds/ds-form-submit.js`: it `preventDefault()`s, runs `checkValidity()`, converts `FormData → URLSearchParams`, `fetch`es the endpoint, and drives the button through `default → .is-sending → .is-success → (auto-reset)`, or `→ .is-error` (clickable) on failure. The reset delay is a **prop** (`data-ds-reset-ms`), not a baked 10s. Button states are `.ds-btn.is-sending / .is-success / .is-error`; success and error reuse `--color-success` / `--color-error`; the spinner is the existing `.ds-btn__spinner`.
+
+### 9.4 SVG illustration engineering checklist
+
+The single most-repeated source of rework. Before shipping a hand-built animated SVG: (1) inherited `stroke: none` — set stroke explicitly on each shape rather than relying on inheritance; (2) set the **base fill / opacity BEFORE the keyframe** so the first frame isn't a flash of the un-animated state; (3) use `paint-order: stroke fill` where strokes must sit under fills; (4) put `animation-fill-mode: backwards` on **every** delayed element so it holds its start state during the delay; (5) round scroll-driven transforms to **whole pixels** (sub-pixel transforms make SVG strokes shimmer). See `DIAGRAM_RULES.md` for the full treatment.
+
+### 9.5 Diagram foundations
+
+Cross-references `DIAGRAM_RULES.md`. Floors: diagram label text ≥ 11px; **8px minimum padding** inside any node; the title : body size ratio is held consistent across a diagram; the hover affordance is a **ring only** when there are many sibling nodes (skip the glow); a 2px gap sits between an arrowhead and its target container, while the arrow line meets the arrowhead body. Illustration surfaces use the layered `--surface-illus-*` family (below), not raw greys.
+
+### 9.6 Concentric corner radius
+
+When a rounded element nests inside another, the **outer radius = inner radius + the uniform padding** between them, so the curves stay concentric. For example, an inner card with radius 12px and 16px of padding around it wants a 28px outer radius. Mismatched radii are the usual cause of a nested card looking "slightly off".
+
+### 9.7 Illustration surface tokens
+
+Diagram / illustration cards layer depth with a named dark stack, distinct from the page neutrals: `--surface-illus-base` (`#121212`, sits above the card), `--surface-illus-sunken` (`#0c0c0c`, recessed wells), `--surface-illus-raised` (`#1c1c1c`, tiles / nodes lifted above the base). Layer with these, not ad-hoc hexes.
+
+### 9.8 `figure` reset
+
+`figure { margin: 0 }` is now part of the base reset — browsers add a default ~40px inline margin to `<figure>` that previously leaked into image / diagram layouts.
+
+### 9.9 Page-local token-shadow caveat (website integration)
+
+When a page vendors its own copy of the DS tokens in a page-top `<style>`, that copy loads **after** the shared stylesheet and **wins**. So any site-wide token change must also patch the page-local copies, or the page silently keeps the old value. Prefer referencing the shared tokens over re-declaring them per page.
 
 ---
 
