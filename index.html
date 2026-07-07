@@ -30,6 +30,7 @@
   --color-primary: var(--orange-500);
   --color-accent: var(--orange-600);
   --color-error: #E5484D;
+  --color-success: #1f9d55;            /* calm green — unifies the two hardcoded form greens */
 
   /* Scrims — overlay surfaces used over images/video posters and subtle
      hover affordances on real surfaces. Naming the alphas keeps the next
@@ -59,13 +60,22 @@
   --grey-900: #161616;
   --grey-1000: #0A0A0A;
 
+  /* Illustration surfaces — the layered dark stack used inside diagram / illustration
+     cards, distinct from the page neutrals. base = sits above the card; sunken =
+     recessed wells; raised = tiles / nodes lifted above the base. */
+  --surface-illus-base: #121212;
+  --surface-illus-sunken: #0c0c0c;
+  --surface-illus-raised: #1c1c1c;
+
   /* Text */
   --text-on-dark: #FFFFFF;
+  --text-on-dark-strong: #FFFFFF;             /* emphasis tier — full-contrast <strong> on dark */
   --text-on-dark-display: rgba(255, 255, 255, 0.95);
   --text-on-dark-muted: rgba(255, 255, 255, 0.75);
   --text-on-dark-subtle: rgba(255, 255, 255, 0.65);
   --text-on-dark-second: rgba(255, 255, 255, 0.60);
   --text-on-light: #111111;
+  --text-on-light-strong: #111111;            /* emphasis tier — full-contrast <strong> on light */
   --text-on-light-display: rgba(0, 0, 0, 0.90);
   --text-on-light-muted: rgba(0, 0, 0, 0.75);
   --text-on-light-subtle: rgba(0, 0, 0, 0.60);
@@ -88,9 +98,12 @@
   --ease-ui: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ds-ease-canonical: cubic-bezier(0.25, 0.8, 0.25, 1);   /* canonical hover/state curve — route hover transitions here */
   --dur-fast: 150ms;
   --dur-ui: 200ms;
   --dur-ext: 300ms;
+  --ds-duration-hover: 280ms;         /* 240–320ms band — default duration for hover-driven props */
+  --ds-desaturate-dur: 4000ms;        /* grayscale→colour image reveal (.ds-img-reveal--desaturate) */
 
   /* Sizing */
   --touch-target-min: 44px;
@@ -109,6 +122,7 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 html, body { margin: 0; padding: 0; }
+figure { margin: 0; }
 body {
   font-family: 'Geist', sans-serif;
   font-size: 15px;
@@ -746,6 +760,12 @@ main .ds-feature-tile__title::selection {
   flex-shrink: 0;
 }
 .ds-btn[aria-busy="true"] .ds-btn__spinner { display: inline-block; }
+/* Form submit state machine (driven by ds-form-submit.js) — background states layered over the
+   existing spinner. Success/error reuse the semantic tokens; success is non-interactive. */
+.ds-btn.is-sending { pointer-events: none; }
+.ds-btn.is-success { background: var(--color-success); border-color: var(--color-success); color: var(--white); cursor: default; }
+.ds-btn.is-error { background: var(--color-error); border-color: var(--color-error); color: var(--white); }
+.ds-btn.is-success .ds-btn__spinner, .ds-btn.is-error .ds-btn__spinner { display: none; }
 @keyframes ds-btn-spin { to { transform: rotate(360deg); } }
 .ds-btn--success-on-submit {
   animation: bk-sent-bounce 400ms var(--ease-spring);
@@ -992,7 +1012,7 @@ main .ds-feature-tile__title::selection {
 .ds-eyebrow--strong-on-dark { color: var(--text-on-dark); }
 .ds-eyebrow--strong-on-light { color: var(--text-on-light); }
 /* Size modifiers — for tight chrome contexts that need a step smaller. */
-.ds-eyebrow--xs { font-size: 10px; letter-spacing: 0.16em; }
+.ds-eyebrow--xs { font-size: 12px; letter-spacing: 0.16em; }
 /* Tracking modifiers — different cadences for different reading contexts.
    Default 0.18em; --loose for full-word labels (byline meta), --tight for
    short two-or-three-char chrome. */
@@ -1415,14 +1435,19 @@ main .ds-feature-tile__title::selection {
 }
 .ds-section-heading__title {
   font-family: 'Geist', sans-serif;
-  font-size: 40px;
+  font-size: clamp(26px, 4.5vw, 40px);
   font-weight: 400;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.375;
   margin: 0;
 }
 .ds-section-heading--dark .ds-section-heading__title { color: var(--text-on-dark); }
 .ds-section-heading--light .ds-section-heading__title { color: var(--text-on-light); }
+/* Display modifier — larger title for hero-adjacent headings. Back-ported from website. */
+.ds-section-heading--display .ds-section-heading__title {
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.05;
+}
 /* Kicker slot — mono-orange section-identity eyebrow above the title.
    Drops 24px below into the title, composes the Eyebrow atom typography
    (font + tracking inherited from .ds-eyebrow class on the element).
@@ -2746,6 +2771,720 @@ main .ds-feature-tile__title::selection {
 }
 .ds-code-block--dark .ds-code-block__status { border-top-color: var(--border-on-dark); color: var(--text-on-dark-subtle); }
 .ds-code-block--light .ds-code-block__status { border-top-color: var(--border-on-light); color: var(--text-on-light-subtle); }
+/* Syntax-highlight variant — scoped token colors: .c comment / .k keyword / .s string /
+   .n name. Dark by default; pairs with --light. Back-ported from website. */
+.ds-code-block--syntax .c { color: rgba(255, 255, 255, 0.45); }
+.ds-code-block--syntax .k { color: var(--orange-500); }
+.ds-code-block--syntax .s { color: #ffd2c2; }
+.ds-code-block--syntax .n { color: var(--text-on-dark); }
+.ds-code-block--syntax.ds-code-block--light .c { color: var(--text-on-light-second); }
+.ds-code-block--syntax.ds-code-block--light .k { color: var(--orange-500); }
+.ds-code-block--syntax.ds-code-block--light .s { color: #c44318; }
+.ds-code-block--syntax.ds-code-block--light .n { color: var(--text-on-light); }
+
+/* Skip link (atom #19) — keyboard skip-to-main-content. Its CSS was documented on the atoms/skip-link
+   page but never actually shipped to the stylesheet, so the component (and its demo) did nothing.
+   Shipping it here. Rests at top-left; hidden (faded out, nudged 10px down, non-interactive) until it's
+   focused, then it fades in and slides UP into place. */
+.ds-skip-link {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+  padding: 12px 20px;
+  background: var(--orange-500);
+  color: var(--white);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: var(--r-control);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity var(--dur-ui) var(--ease-ui), transform var(--dur-ui) var(--ease-ui), background-color var(--ds-duration-hover) var(--ds-ease-canonical);
+}
+.ds-skip-link:focus,
+.ds-skip-link:focus-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  outline: 2px solid var(--orange-500);
+  outline-offset: 3px;
+}
+.ds-skip-link:hover { background: var(--orange-600); }
+/* Light-surface variant — dark-grey button for light containers. */
+.ds-skip-link--on-light { background: var(--grey-700); color: var(--white); }
+.ds-skip-link--on-light:hover { background: var(--charcoal); }
+.ds-skip-link--on-light:focus,
+.ds-skip-link--on-light:focus-visible { outline-color: var(--grey-700); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v2.3 NEW ATOMS — promoted from page-local vh-* patterns (feedback §D1).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Code-block ghost action — generalises __copy into any small ghost button/link.
+   May be <a> or <button>; nav links must NOT carry copy behaviour. From .vh-codeblock-cta. */
+.ds-code-block__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: var(--r-control);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--ds-duration-hover) var(--ds-ease-canonical),
+              border-color var(--ds-duration-hover) var(--ds-ease-canonical);
+}
+.ds-code-block--dark .ds-code-block__action { color: var(--text-on-dark-muted); border-color: var(--border-on-dark-strong); }
+.ds-code-block--dark .ds-code-block__action:hover { color: var(--orange-500); border-color: var(--orange-500); }
+.ds-code-block--light .ds-code-block__action { color: var(--text-on-light-muted); border-color: var(--border-on-light-strong); }
+.ds-code-block--light .ds-code-block__action:hover { color: var(--orange-500); border-color: var(--orange-500); }
+
+/* Thin typed-cursor — narrower glyph for prose (default __cursor is 0.5ch). From .vh-typed-cursor. */
+.ds-code-block__cursor--thin { width: 0.3ch; }
+
+/* Flow tagline — JBM data-flow line ("data → transform → stream") between hero
+   display and lead. Body-size (18px) so it reads as a typed signature, not chrome. From .vh-flow-strip. */
+.ds-flow-tagline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  color: var(--text-on-dark-muted);
+  margin: 18px 0 24px;
+}
+.ds-section--light .ds-flow-tagline { color: var(--text-on-light-muted); }
+.ds-flow-tagline__arrow { color: var(--orange-500); padding: 0 8px; }
+@media (max-width: 768px) { .ds-flow-tagline { font-size: 16px; } }
+
+/* Two-tone heading second clause — muted colour utilities for the second clause of a
+   two-tone heading (bright → muted). Re-emphasise words with an inline full-colour span. */
+.ds-heading-second-dark { color: var(--text-on-dark-second); }
+.ds-heading-second-light { color: var(--text-on-light-second); }
+
+/* Snippet value — muted colour for user-supplied values in a CLI snippet (filenames,
+   paths, IDs); literal/keyword tokens stay orange. */
+.ds-snippet__value { color: var(--text-on-dark-muted); }
+.ds-snippet__value--light { color: var(--text-on-light-muted); }
+
+/* Text accent — muted sub-phrase that warms to orange on hover (canonical curve). From .vh-founder__ceo. */
+.ds-text-accent {
+  color: var(--text-on-dark-second);
+  transition: color var(--ds-duration-hover) var(--ds-ease-canonical);
+}
+.ds-text-accent:hover { color: var(--orange-500); }
+.ds-section--light .ds-text-accent { color: var(--text-on-light-second); }
+
+/* Pipeline connector (.ds-conn) — HTML/CSS connector that REPLACES decorative arrow SVGs:
+   hairline line + CSS-border arrowhead + N streaming dots. 36×2px desktop; rotates to 2×38px
+   <1000px (dots switch left→top axis). Per-dot animation-delay is set inline in markup.
+   `.ds-pipeline-connector` is an accepted semantic alias on the container. From .vh-v2-conn / .vh-mp-conn. */
+.ds-conn {
+  flex: 0 0 36px;
+  position: relative;
+  align-self: center;
+  height: 2px;
+  margin: 0 2px;
+}
+.ds-conn__line { position: absolute; inset: 0; background: #8a8a8a; border-radius: 1px; }
+.ds-conn__head {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid #8a8a8a;
+}
+.ds-conn--accent .ds-conn__line { background: rgba(var(--orange-rgb), 0.6); }
+.ds-conn--accent .ds-conn__head { border-left-color: var(--orange-500); }
+.ds-conn__dot {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  opacity: 0;
+  animation: ds-conn-flow-x 8s linear infinite;
+  animation-fill-mode: backwards;
+}
+@keyframes ds-conn-flow-x {
+  0%   { left: 8px;              opacity: 0; }
+  2%   { left: 8px;              opacity: 1; }
+  20%  { left: calc(100% - 8px); opacity: 1; }
+  22%  { left: calc(100% - 8px); opacity: 0; }
+  100% { left: calc(100% - 8px); opacity: 0; }
+}
+@media (max-width: 1000px) {
+  .ds-conn { width: 2px; height: 38px; align-self: stretch; margin: 2px auto; }
+  .ds-conn__head {
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto;
+    bottom: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #8a8a8a;
+    border-bottom: 0;
+  }
+  .ds-conn--accent .ds-conn__head { border-top-color: var(--orange-500); border-left-color: transparent; }
+  .ds-conn__dot { animation-name: ds-conn-flow-y; left: 50%; top: 8px; }
+  @keyframes ds-conn-flow-y {
+    0%   { top: 8px;              opacity: 0; }
+    2%   { top: 8px;              opacity: 1; }
+    20%  { top: calc(100% - 8px); opacity: 1; }
+    22%  { top: calc(100% - 8px); opacity: 0; }
+    100% { top: calc(100% - 8px); opacity: 0; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-conn__dot { animation: none; opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v2.3 NEW MOLECULES — promoted from page-local vh-* / cs-* patterns (feedback §D2).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Page crumb — sub-page breadcrumb. JBM uppercase 11px (chrome exception), chevrons in markup,
+   current clause orange. Hero-spacing rules scope the tighter rhythm to breadcrumbed heroes. From .vh-page-crumb. */
+.ds-page-crumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-subtle);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ds-page-crumb a { color: var(--text-on-dark-muted); text-decoration: none; transition: color var(--ds-duration-hover) var(--ds-ease-canonical); }
+.ds-page-crumb a:hover { color: var(--orange-500); }
+.ds-page-crumb__current { color: var(--orange-500); }
+.ds-section--light .ds-page-crumb { color: var(--text-on-light-subtle); }
+.ds-section--light .ds-page-crumb a { color: var(--text-on-light-muted); }
+.ds-page-crumb + .ds-eyebrow { margin-bottom: 14px; }
+.ds-page-crumb ~ .ds-hero__display { margin-top: 12px; }
+
+/* Illustration card — animated-SVG container. default (light) / --dark (illus surface) / --grid
+   (24px dot-grid). Corner __title unifies three former vh- classes. Named .ds-illustration-card
+   (per the repo's own naming note; .ds-illus-card was the terse alternative). From .vh-mp-illus-card. */
+.ds-illustration-card {
+  background: var(--white);
+  border: 1px solid var(--border-on-light);
+  border-radius: 50px;
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+}
+.ds-illustration-card--dark { background: var(--surface-illus-base); border-color: var(--border-on-dark); }
+.ds-illustration-card--grid {
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.ds-illustration-card__title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-on-light-second);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ds-illustration-card--dark .ds-illustration-card__title { color: rgba(255, 255, 255, 0.55); }
+.ds-illustration-card__title::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  box-shadow: 0 0 0 4px rgba(var(--orange-rgb), 0.18);
+}
+.ds-illustration-card--dark .ds-illustration-card__title::before { box-shadow: 0 0 0 4px rgba(var(--orange-rgb), 0.22); }
+.ds-illustration-card svg { width: 100%; height: auto; max-height: 380px; display: block; }
+
+/* Choice card + grid — checkbox-card multi-select (replaces broken native <select multiple>).
+   Selected via :has(input:checked) → orange border + 6% tint; hover → 5% tint. Distinct from the
+   inline .ds-field-choice radio control. */
+.ds-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 720px) { .ds-choice-grid { grid-template-columns: 1fr; gap: 24px; } }
+.ds-choice-card {
+  position: relative;
+  border: 1px solid var(--border-on-light-strong);
+  border-radius: var(--r-card);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: border-color var(--ds-duration-hover) var(--ds-ease-canonical),
+              background-color var(--ds-duration-hover) var(--ds-ease-canonical);
+}
+.ds-choice-card input { position: absolute; opacity: 0; pointer-events: none; }
+.ds-choice-card:hover { border-color: rgba(var(--orange-rgb), 0.45); background: rgba(var(--orange-rgb), 0.05); }
+.ds-choice-card:has(input:checked) { border-color: var(--orange-500); background: rgba(var(--orange-rgb), 0.06); }
+.ds-choice-card--on-dark { border-color: var(--border-on-dark-strong); color: var(--text-on-dark); }
+.ds-choice-card--on-light { border-color: var(--border-on-light-strong); color: var(--text-on-light); }
+
+/* Media + text — two-column image + heading/body, vertically centred. --reverse flips order.
+   (The grayscale→colour reveal is the separate .ds-img-reveal--desaturate utility.) From .vh-founder. */
+.ds-media-text { display: grid; grid-template-columns: 1fr 1fr; gap: 88px; align-items: center; }
+.ds-media-text__media img { width: 100%; max-width: 460px; height: auto; border-radius: 18px; display: block; margin: 0 auto; }
+.ds-media-text--reverse .ds-media-text__media { order: 2; }
+@media (max-width: 860px) {
+  .ds-media-text { grid-template-columns: 1fr; gap: 36px; }
+  .ds-media-text__media img { max-width: 100%; }
+  .ds-media-text--reverse .ds-media-text__media { order: 0; }
+}
+
+/* Ticker tile — fixed-height media tile for horizontal photo tickers. From .vh-team-tile. */
+.ds-ticker-tile { height: 210px; width: auto; margin-right: 16px; border-radius: 12px; object-fit: cover; display: inline-block; flex: 0 0 auto; }
+@media (max-width: 640px) { .ds-ticker-tile { height: 150px; } }
+
+/* Accent-orange callout — soft orange-tinted info box (exact spec, §C7). */
+.ds-callout--accent-orange { border: 1px solid rgba(var(--orange-rgb), 0.45); border-radius: var(--r-card); background: rgba(var(--orange-rgb), 0.08); }
+
+/* Stat-card inner-lift — wrap a filled stat/number card's contents in __inner and translate
+   ONLY the inner on hover, so the card's own fill never reveals the grid gutter behind it. From .cs-number__inner. */
+.ds-stat-card__inner { display: flex; flex-direction: column; gap: 8px; transition: transform var(--ds-duration-hover) var(--ds-ease-canonical); }
+.ds-stat-card:hover .ds-stat-card__inner { transform: translateY(-2px); }
+
+/* Result preview — [thumbnail tile] [text column]. The tile only changes state (grey→accent);
+   descriptive text sits BESIDE it, never inside. Idle tile = a recognizable placeholder glyph. */
+.ds-result-preview { display: flex; align-items: center; gap: 16px; }
+.ds-result-preview__tile {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 64px;
+  border-radius: 8px;
+  border: 1px solid var(--border-on-dark-strong);
+  background: var(--surface-illus-sunken);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-on-dark-subtle);
+  transition: border-color var(--ds-duration-hover) var(--ds-ease-canonical), color var(--ds-duration-hover) var(--ds-ease-canonical);
+}
+.ds-result-preview.is-active .ds-result-preview__tile { border-color: var(--orange-500); color: var(--orange-500); }
+.ds-result-preview__text { color: var(--text-on-dark); }
+
+/* Chat row — avatar-icon + name header (no circle) + full-width bubble with orange caret +
+   blinking cursor (reuses ds-cursor-blink). From .vh-mp-chat. */
+.ds-chat-row { display: flex; flex-direction: column; gap: 8px; }
+.ds-chat-row__head { display: flex; align-items: center; gap: 4px; padding-left: 4px; }
+.ds-chat-row__avatar { flex-shrink: 0; display: inline-flex; align-items: center; color: var(--orange-500); }
+.ds-chat-row__name { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.78); letter-spacing: 0.04em; }
+.ds-chat-row__bubble { background: rgba(0,0,0,0.4); border: 1px solid var(--border-on-dark-strong); border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start; }
+.ds-chat-row__caret { color: var(--orange-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; flex-shrink: 0; }
+.ds-chat-row__text { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; color: var(--text-on-dark); }
+.ds-chat-row__cursor { display: inline-block; width: 6px; height: 14px; background: var(--orange-500); margin-left: 3px; transform: translateY(2px); animation: ds-cursor-blink 1.1s step-end infinite; }
+
+/* Action tile — icon-left + label-right tile on the sunken illus surface. --expanded stacks a head
+   row above a row of "clip" rectangles one shade up (raised surface). From .vh-mp-actions__tile. */
+.ds-action-tile { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface-illus-sunken); border: 1px solid var(--border-on-dark-strong); border-radius: 8px; }
+.ds-action-tile__icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--orange-500); }
+.ds-action-tile__label { font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.92); }
+.ds-action-tile--expanded { flex-direction: column; align-items: stretch; gap: 10px; }
+.ds-action-tile__head { display: flex; align-items: center; gap: 12px; }
+.ds-action-tile__clips { display: flex; gap: 6px; }
+.ds-action-tile__clip { flex: 1; height: 38px; background: var(--surface-illus-raised); border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; position: relative; transition: border-color var(--ds-duration-hover) var(--ds-ease-canonical); }
+.ds-action-tile__clip:hover { border-color: rgba(255,255,255,0.36); }
+.ds-action-tile__clip::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-left: 8px solid rgba(255,255,255,0.7); border-top: 5px solid transparent; border-bottom: 5px solid transparent; margin-left: 2px; }
+
+/* Source thumbnail — 16:9 source mockup on the sunken illus surface with 18px grid texture +
+   centred play affordance. From .vh-mp-source. */
+.ds-source-thumbnail {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-on-dark-strong);
+  background: var(--surface-illus-sunken);
+  background-image:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,0.06), transparent 60%),
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 18px 18px, 18px 18px;
+}
+.ds-source-thumbnail__play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 1.3px solid rgba(255,255,255,0.55); display: flex; align-items: center; justify-content: center; }
+.ds-source-thumbnail__play::after { content: ''; border-left: 9px solid #fff; border-top: 6px solid transparent; border-bottom: 6px solid transparent; margin-left: 2px; }
+.ds-source-thumbnail__label { position: absolute; bottom: 7px; left: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.06em; color: rgba(255,255,255,0.55); }
+
+/* Player mockup — 9:16 phone-player output mockup. Shares the source grid texture; elevation via
+   depth (shadow) not colour. From .vh-mp-player. */
+.ds-player-mockup {
+  position: relative;
+  width: 130px;
+  aspect-ratio: 9 / 16;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #555;
+  background: var(--surface-illus-sunken);
+  background-image:
+    radial-gradient(circle at 50% 36%, rgba(var(--orange-rgb),0.16), transparent 60%),
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 18px 18px, 18px 18px;
+  box-shadow: 0 16px 38px -20px rgba(0,0,0,0.7);
+}
+.ds-player-mockup__live { position: absolute; top: 18px; right: 18px; font-family: 'JetBrains Mono', monospace; font-size: 7.5px; letter-spacing: 0.12em; color: #fff; background: rgba(var(--orange-rgb),0.9); border-radius: 999px; padding: 2px 6px; }
+.ds-player-mockup__play { position: absolute; top: 44%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; }
+.ds-player-mockup__play::after { content: ''; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+.ds-player-mockup__bar { position: absolute; left: 10px; right: 50px; bottom: 12px; height: 3px; border-radius: 3px; background: rgba(255,255,255,0.2); }
+.ds-player-mockup__bar::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 38%; border-radius: 3px; background: var(--orange-500); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-stat-card__inner, .ds-action-tile__clip, .ds-result-preview__tile { transition: none; }
+  .ds-stat-card:hover .ds-stat-card__inner { transform: none; }
+  .ds-chat-row__cursor { animation: none; opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v2.3 NEW TEMPLATES — composition patterns, wave A: grids / code / layout (feedback §D3).
+   (Scroll-driven split-sticky, spotlight-list, sticky-wipe ship in wave B with their JS.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Stage grid — 3-up "how it works in N steps" cards: numbered eyebrow → icon → title → desc →
+   bottom-pinned code. Hover = orange border + soft shadow, NO transform (keeps edges aligned). From .vh-mp-stage-grid. */
+.ds-stage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 32px; }
+@media (max-width: 880px) { .ds-stage-grid { grid-template-columns: 1fr; } }
+.ds-stage {
+  background: var(--white);
+  border: 1px solid var(--border-on-light);
+  border-radius: var(--r-card);
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: border-color 320ms var(--ds-ease-canonical), box-shadow 320ms var(--ds-ease-canonical);
+}
+.ds-stage:hover { border-color: rgba(var(--orange-rgb), 0.45); box-shadow: 0 12px 28px -14px rgba(0, 0, 0, 0.12); }
+.ds-stage__num { position: absolute; top: 22px; right: 24px; margin: 0; }
+.ds-stage__icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(var(--orange-rgb), 0.08); border: 1px solid rgba(var(--orange-rgb), 0.4); color: var(--orange-500); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ds-stage__title { font-family: 'Geist', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: -0.01em; color: var(--text-on-light); margin: 0; line-height: 1.3; }
+.ds-stage__desc { font-family: 'Geist', sans-serif; font-size: 13.5px; line-height: 1.6; color: var(--text-on-light-muted); margin: 0; }
+.ds-stage__code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: var(--neutral-light); border: 1px solid var(--border-on-light); border-radius: 6px; padding: 10px 12px; color: var(--text-on-light); line-height: 1.92; overflow-x: auto; margin-top: auto; }
+.ds-stage__code .k { color: var(--orange-500); }
+.ds-stage__code .s { color: #c44318; }
+.ds-stage__code .c { color: var(--text-on-light-second); }
+
+/* Note grid — 4-up note cards (32px/300 JBM number, orange eyebrow, title, desc).
+   Hover = focus mode: hovered card stays, siblings dim and lose their orange. Stacks 2@880 / 1@640. From .vh-mp-notes-row. */
+.ds-note-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 880px) { .ds-note-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .ds-note-grid { grid-template-columns: 1fr; } }
+.ds-note-card { background: var(--charcoal); border: 1px solid var(--border-on-dark); border-radius: var(--r-card); padding: 28px 24px; display: flex; flex-direction: column; gap: 12px; transition: background-color 320ms var(--ds-ease-canonical); }
+.ds-note-card__num { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 300; line-height: 1; color: var(--text-on-dark); letter-spacing: -0.02em; margin: 0 0 4px; transition: color 320ms var(--ds-ease-canonical); }
+.ds-note-card__lbl { margin: 0; transition: color 320ms var(--ds-ease-canonical); }
+.ds-note-card__title { font-family: 'Geist', sans-serif; font-size: 16px; font-weight: 500; color: var(--text-on-dark); margin: 0; letter-spacing: -0.005em; transition: color 320ms var(--ds-ease-canonical); }
+.ds-note-card__desc { font-family: 'Geist', sans-serif; font-size: 13.5px; line-height: 1.6; color: var(--text-on-dark-muted); margin: 0; }
+.ds-note-grid:has(.ds-note-card:hover) .ds-note-card:not(:hover) { background: var(--neutral-dark); }
+.ds-note-grid:has(.ds-note-card:hover) .ds-note-card:not(:hover) .ds-note-card__num,
+.ds-note-grid:has(.ds-note-card:hover) .ds-note-card:not(:hover) .ds-note-card__lbl,
+.ds-note-grid:has(.ds-note-card:hover) .ds-note-card:not(:hover) .ds-note-card__title { color: var(--text-on-dark-subtle); }
+
+/* Code split — 2-col walkthrough: sticky heading left, .ds-code-block right, 1 : 1.2 ratio.
+   Stacks <980px (sticky → static). From .vh-code-split. */
+.ds-code-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 56px; align-items: start; }
+.ds-code-split__heading { position: sticky; top: calc(var(--ds-header-h, 64px) + 32px); }
+.ds-code-split__heading .ds-section-heading { margin: 0; }
+.ds-code-split__heading .ds-section-heading__title { margin: 0; }
+.ds-code-split__heading .ds-section-heading__lead { margin: 16px 0 0; max-width: 380px; }
+.ds-code-split__code { min-width: 0; }
+@media (max-width: 980px) {
+  .ds-code-split { grid-template-columns: 1fr; gap: 28px; }
+  .ds-code-split__heading { position: static; }
+  .ds-code-split__heading .ds-section-heading__lead { max-width: 100%; }
+}
+
+/* Card pipe — horizontal equal-height step cards joined by .ds-conn connectors. Edge cards (--io)
+   flex wider than middles so chip lists don't truncate. Flips to a column <1000px. From .vh-v2-pipe. */
+.ds-card-pipe { display: flex; align-items: stretch; gap: 0; }
+.ds-card-pipe__card { flex: 1.12 1 0; min-width: 0; }
+.ds-card-pipe__card--io { flex: 1.72 1 0; }
+@media (max-width: 1000px) { .ds-card-pipe { flex-direction: column; align-items: stretch; } }
+
+/* Viz — centers a small inner-illustration SVG in a card. The svg guard is REQUIRED: it stops a
+   parent `svg { width:100% }` rule from blowing tiny glyphs up. From .vh-v2-viz / .vh-mp-viz. */
+.ds-viz { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 56px; }
+.ds-viz svg { width: auto; height: auto; max-width: 100%; display: block; }
+@media (max-width: 1000px) { .ds-viz svg { max-width: 30%; max-height: 72px; } }
+
+/* Section bottom-pad reset — zeros a section's bottom padding; pairs with closing folds that blend to footer. */
+.ds-section--no-bottom-pad { padding-bottom: 0; }
+@media (max-width: 1023px) { .ds-section--no-bottom-pad { padding-bottom: 0; } }
+
+/* Reverse marquee track — opposing-direction row for the two-row photo ticker recipe. */
+.ds-marquee__track--reverse { animation-direction: reverse; }
+
+/* Desaturate-on-reveal — image loads grayscale, eases to colour on scroll-in (.is-revealed).
+   Snaps to colour under reduced-motion. From .vh-founder__media. */
+.ds-img-reveal--desaturate,
+.ds-img-reveal--desaturate img { filter: grayscale(1); transition: filter var(--ds-desaturate-dur) ease; }
+.ds-img-reveal--desaturate.is-revealed,
+.ds-img-reveal--desaturate.is-revealed img { filter: grayscale(0); }
+@media (prefers-reduced-motion: reduce) {
+  .ds-img-reveal--desaturate, .ds-img-reveal--desaturate img { filter: grayscale(0); transition: none; }
+}
+
+/* Centered form wrap — single-column form, max 720px, centred; pairs with .ds-section-heading--centered.
+   Rows 28px apart; the actions row sits 4px below with submit + disclaimer in a 20px-gap flex row. */
+.ds-form-section__wrap { max-width: 720px; margin-inline: auto; }
+.ds-form-section__wrap > * + * { margin-top: 28px; }
+.ds-form-section__wrap .ds-form-section__actions { margin-top: 4px; display: flex; align-items: center; gap: 20px; }
+
+/* Wide CTA-band inner — forces long closing H2s into a clean 2-line layout (default inner is 720px). */
+.ds-cta-band__inner--wide { max-width: 960px; }
+
+/* Code-block variants — --glass (only over a moving backdrop), --prose (sans body, normal wrap,
+   avoids the right-edge clip trap), --fill (full-width flexible line). (--syntax shipped in §3.) */
+.ds-code-block--glass { background: rgba(18, 18, 20, 0.55); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
+.ds-code-block--prose .ds-code-block__body,
+.ds-code-block--prose .ds-code-block__code { font-family: 'Geist', sans-serif; font-size: 15px; line-height: 1.75; white-space: normal; }
+.ds-code-block--fill { display: flex; width: 100%; }
+.ds-code-block--fill .ds-code-block__line { flex: 1; min-width: 0; }
+
+/* Balance utility — even multi-line wrapping for headings/short blocks. */
+.ds-balance { text-wrap: balance; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v2.3 NEW TEMPLATES — wave B: scroll-driven (feedback §D3). Each needs its JS controller
+   (ds-spotlight.js / ds-sticky-wipe.js); reduced-motion paths are CSS-only.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Split sticky — sticky title + scrolling prose. Title sticks at top:120px; prose caps ~560px.
+   Ratio modifiers set the column split + gap. Collapses ≤980px (title static). From .cs-story-grid / .cs-leaders-grid. */
+.ds-split-sticky { display: grid; grid-template-columns: 60fr 40fr; gap: 56px; align-items: start; }
+.ds-split-sticky--ratio-60-40 { grid-template-columns: 60fr 40fr; gap: 56px; }
+.ds-split-sticky--ratio-45-55 { grid-template-columns: 45fr 55fr; gap: 80px; }
+.ds-split-sticky--ratio-40-60 { grid-template-columns: 40fr 60fr; gap: 80px; }
+.ds-split-sticky__title { position: sticky; top: 120px; align-self: start; }
+.ds-split-sticky__title .ds-section-heading__title { text-align: left; font-size: clamp(26px, 3.2vw, 36px); letter-spacing: -0.02em; }
+.ds-split-sticky__prose { display: flex; flex-direction: column; gap: 22px; max-width: 560px; margin-left: -16px; padding-right: 48px; }
+@media (max-width: 980px) {
+  .ds-split-sticky,
+  .ds-split-sticky--ratio-60-40,
+  .ds-split-sticky--ratio-45-55,
+  .ds-split-sticky--ratio-40-60 { grid-template-columns: 1fr; gap: 32px; }
+  .ds-split-sticky__title { position: static; }
+  .ds-split-sticky__prose { margin-left: 0; padding-right: 0; max-width: 100%; }
+}
+
+/* Spotlight list — scroll-driven highlight of the row nearest the viewport pivot (JS toggles
+   .is-spotlight). Rest dim to 0.5; hover 0.85; neighbours get a gentle wave via :has(). Active row
+   lifts to a white card. __finale flips on a higher line (no layout shift). 580ms canonical. Needs ds-spotlight.js. From .cs-spotlight-list. */
+.ds-spotlight-list { display: flex; flex-direction: column; max-width: 1100px; margin: 0 auto; }
+.ds-spotlight-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1.1fr) minmax(0, 1.4fr);
+  align-items: center;
+  gap: 28px;
+  padding: 20px 28px;
+  opacity: 0.5;
+  transition: opacity 580ms var(--ds-ease-canonical),
+              background 580ms var(--ds-ease-canonical),
+              box-shadow 580ms var(--ds-ease-canonical),
+              transform 580ms var(--ds-ease-canonical),
+              padding 580ms var(--ds-ease-canonical);
+}
+.ds-spotlight-row::after {
+  content: ''; position: absolute; left: 24px; right: 24px; bottom: 0;
+  height: 1px; background: var(--border-on-light);
+  transition: opacity 580ms var(--ds-ease-canonical);
+}
+.ds-spotlight-row:last-child::after { display: none; }
+.ds-spotlight-row:hover { opacity: 0.85; }
+.ds-spotlight-row:has(+ .ds-spotlight-row.is-spotlight),
+.ds-spotlight-row.is-spotlight + .ds-spotlight-row { opacity: 0.75; transform: scale(1.002); }
+.ds-spotlight-row.is-spotlight {
+  opacity: 1;
+  background: var(--white);
+  border-radius: var(--r-card);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.07);
+  transform: scale(1.01);
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+.ds-spotlight-row.is-spotlight::after,
+.ds-spotlight-row:has(+ .ds-spotlight-row.is-spotlight)::after { opacity: 0; }
+.ds-spotlight-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; letter-spacing: 0.1em; color: var(--orange-500); }
+.ds-spotlight-meta { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ds-spotlight-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-on-light-muted); }
+.ds-spotlight-title { font-family: 'Geist', sans-serif; font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--text-on-light); margin: 0; }
+.ds-spotlight-query {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.4;
+  color: var(--orange-500); background: rgba(var(--orange-rgb), 0.06);
+  border: 1px solid rgba(var(--orange-rgb), 0.28); border-radius: 10px; padding: 10px 14px;
+  justify-self: stretch;
+  transition: border-color 0.42s var(--ds-ease-canonical), background 0.42s var(--ds-ease-canonical);
+}
+.ds-spotlight-row.is-spotlight .ds-spotlight-query { background: rgba(var(--orange-rgb), 0.1); border-color: rgba(var(--orange-rgb), 0.45); }
+/* Finale row — the closing "next" card; flips to .is-focus on the higher line. Border is always
+   1.5px (transparent → orange) so there is no layout shift. */
+.ds-spotlight-row__finale { border: 1.5px solid transparent; transition: border-color 580ms var(--ds-ease-canonical); }
+.ds-spotlight-row__finale.is-focus { border-color: var(--orange-500); }
+@media (max-width: 760px) {
+  .ds-spotlight-row { grid-template-columns: 32px 1fr; gap: 14px; padding: 18px 16px; }
+  .ds-spotlight-query { grid-column: 1 / -1; margin-top: 6px; font-size: 12px; }
+  .ds-spotlight-title { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-spotlight-row { opacity: 1; transition: none; }
+  .ds-spotlight-row.is-spotlight { transform: none; }
+}
+
+/* Sticky wipe — sticky two-phase "big visual holds, then a content card rises" reveal. JS sets
+   --ds-wipe-p (0→1) from scroll; the tunables below shape the choreography. CRITICAL: scroll-driven
+   transforms on SVG wrappers must resolve to INTEGER pixels (sub-pixel = SVG stroke shimmer) — round
+   in the JS. Reference impl (tune per page); apply only to genuine "big visual → content card" moments. From #primitives-alt. */
+.ds-sticky-wipe {
+  --ds-wipe-p: 0;
+  --ds-wipe-hold-px: 150;
+  --ds-wipe-slowness: 2.0;
+  --ds-wipe-pipe-drift-px: 40;
+  --ds-wipe-card-shift-px: 64;
+  position: relative;
+}
+.ds-sticky-wipe__zone { position: sticky; top: 0; min-height: 100vh; overflow: hidden; }
+.ds-sticky-wipe__content { transform: translateY(calc(var(--ds-wipe-p) * var(--ds-wipe-pipe-drift-px) * -1px)); }
+.ds-sticky-wipe__card { transform: translateY(calc((1 - var(--ds-wipe-p)) * var(--ds-wipe-card-shift-px) * 1px)); opacity: var(--ds-wipe-p); }
+@media (prefers-reduced-motion: reduce) {
+  .ds-sticky-wipe__content, .ds-sticky-wipe__card { transform: none; opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v2.3 — ap-doc LONG-FORM READER (feedback §5 decision: bring into the DS).
+   The canonical long-form reading system shared by blog / agentic-perception articles AND the legal
+   pages (terms, privacy, security, dpa). Light document panel by default; add --dark for the legal
+   surface (the "--blog" theme is simply the default light reader). Keeps the `ap-doc` namespace —
+   already shipped on those pages, so promoting the CSS unchanged avoids breaking them; a ds-* rename
+   is an OPTIONAL future reconciliation. Editorial titles use Geist 500 (the DS body font) — no separate editorial face.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ap-doc {
+  /* Type scale (14 / 15 / 16 / 18 / 20 / 22 / 26 / 32 / 56) */
+  --apt-eyebrow: 14px;
+  --apt-caption: 15px;
+  --apt-small:   16px;
+  --apt-body:    18px;
+  --apt-h3:      22px;
+  --apt-deck:    19px;
+  --apt-quote:   21px;
+  --apt-h2:      clamp(28px, 3.4vw, 34px);
+  --apt-h1:      clamp(38px, 5.2vw, 56px);
+  --apt-close:   clamp(30px, 4vw, 40px);
+  --apt-text: 700px;   /* ~66–72ch reading column */
+  --apt-wide: 960px;   /* images + closing card */
+  position: relative;
+  background: var(--white);
+  color: var(--text-on-light);
+  margin: 14px 20px 0;
+  border-radius: var(--r-surface) var(--r-surface) 0 0;
+  padding: 28px clamp(20px, 5vw, 64px) 88px;
+}
+.ap-doc__back { display: inline-flex; align-items: center; gap: 10px; font-family: 'Geist', sans-serif; font-size: var(--apt-caption); font-weight: 500; color: var(--text-on-light-muted); text-decoration: none; transition: color 180ms ease; }
+.ap-doc__back-circle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--r-control); background: var(--surface-light); transition: background 180ms ease; }
+.ap-doc__back-circle iconify-icon { font-size: 17px; color: var(--text-on-light); }
+@media (hover: hover) {
+  .ap-doc__back:hover { color: var(--text-on-light); }
+  .ap-doc__back:hover .ap-doc__back-circle { background: var(--surface-light-hover); }
+}
+.ap-doc__inner { max-width: var(--apt-wide); margin: 0 auto; }
+.ap-doc__head { max-width: var(--apt-text); margin: 56px auto 40px; }
+.ap-doc__head .ds-eyebrow { margin-bottom: 18px; }
+.ap-doc__title { font-family: 'Geist', sans-serif; font-weight: 500; font-size: var(--apt-h1); line-height: 1.08; letter-spacing: -0.022em; color: var(--text-on-light); margin: 0 0 22px; }
+.ap-doc__title em { font-style: normal; color: var(--text-on-light-second); }
+.ap-doc__deck { font-family: 'Geist', sans-serif; font-size: var(--apt-deck); line-height: 1.5; color: var(--text-on-light-muted); margin: 0; }
+.ap-doc__cover { max-width: var(--apt-wide); margin: 0 auto 36px; }
+.ap-doc__cover img { display: block; width: 100%; height: auto; aspect-ratio: 1260 / 700; object-fit: cover; border-radius: var(--r-surface-md); }
+.ap-doc__body { max-width: var(--apt-wide); margin: 0 auto; }
+.ap-doc__body > p,
+.ap-doc__body > h2,
+.ap-doc__body > h3,
+.ap-doc__body > ul,
+.ap-doc__body > blockquote,
+.ap-doc__body > pre,
+.ap-doc__body > .ap-doc__thesis,
+.ap-doc__body > .ap-doc__callout { max-width: var(--apt-text); margin-left: auto; margin-right: auto; }
+.ap-doc__body h2 { font-family: 'Geist', sans-serif; font-weight: 500; font-size: var(--apt-h2); line-height: 1.2; letter-spacing: -0.018em; color: var(--text-on-light); margin: 56px auto 6px; }
+.ap-doc__thesis { font-family: 'Geist', sans-serif; font-style: italic; font-size: var(--apt-body); line-height: 1.5; letter-spacing: -0.005em; color: var(--text-on-light-second); margin: 0 auto 20px; }
+.ap-doc__body h3 { font-family: 'Geist', sans-serif; font-weight: 500; font-size: var(--apt-h3); line-height: 1.3; color: var(--text-on-light); margin: 36px auto 12px; }
+.ap-doc__body p { font-family: 'Geist', sans-serif; font-size: var(--apt-body); line-height: 1.7; color: var(--text-on-light); margin: 0 auto 18px; }
+.ap-doc__body p.ap-doc__lead { font-size: var(--apt-body); line-height: 1.7; margin-bottom: 18px; }
+.ap-doc__body strong { font-weight: 600; }
+.ap-doc__body em { font-style: italic; color: var(--text-on-light-second); }
+.ap-doc__body ul { padding: 0; list-style: none; margin: 0 auto 24px; }
+.ap-doc__body ul li { font-family: 'Geist', sans-serif; font-size: var(--apt-body); line-height: 1.65; color: var(--text-on-light); padding-left: 24px; position: relative; margin-bottom: 10px; }
+.ap-doc__body ul li::before { content: ''; position: absolute; left: 4px; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--orange-500); }
+.ap-doc__body blockquote { border-left: 3px solid var(--orange-500); padding: 4px 0 4px 24px; margin: 32px auto; font-family: 'Geist', sans-serif; font-weight: 500; font-size: var(--apt-quote); line-height: 1.4; letter-spacing: -0.01em; color: var(--text-on-light); }
+.ap-doc__body code { font-family: 'JetBrains Mono', monospace; font-size: var(--apt-caption); background: rgba(0,0,0,0.06); color: var(--orange-500); padding: 2px 6px; border-radius: var(--r-subtle); }
+.ap-doc__body pre { background: var(--neutral-dark); color: #e8e8e8; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.65; padding: 22px 24px; border-radius: 10px; overflow-x: auto; margin: 24px auto 28px; }
+.ap-doc__body pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+.ap-doc__body pre .kw { color: var(--orange-500); }
+.ap-doc__body pre .cm { color: rgba(255,255,255,0.5); }
+.ap-doc__body pre .st { color: #ffbd6b; }
+.ap-doc__callout { display: flex; gap: 16px; align-items: flex-start; padding: 20px 24px; margin: 36px auto; background: rgba(var(--orange-rgb),0.06); border: 1px solid rgba(var(--orange-rgb),0.16); border-radius: var(--r-surface-md); }
+.ap-doc__callout-icon { flex: 0 0 auto; margin-top: 2px; line-height: 1; color: var(--orange-600); }
+.ap-doc__callout-icon iconify-icon { font-size: 24px; display: block; }
+.ap-doc__callout-body { min-width: 0; }
+.ap-doc__callout h3 { font-family: 'Geist', sans-serif; font-weight: 600; font-size: var(--apt-body); line-height: 1.3; color: var(--text-on-light); margin: 0 0 6px; }
+.ap-doc__callout p { margin: 0; font-size: var(--apt-small); line-height: 1.6; color: var(--text-on-light); }
+.ap-doc__closing { max-width: var(--apt-wide); margin: 72px auto 0; background: var(--neutral-dark); color: var(--text-on-dark); border-radius: var(--r-surface); padding: clamp(40px, 6vw, 64px) 32px; text-align: center; }
+.ap-doc__closing h2 { font-family: 'Geist', sans-serif; font-weight: 500; font-size: var(--apt-close); line-height: 1.12; letter-spacing: -0.018em; color: var(--text-on-dark); margin: 0 0 14px; }
+.ap-doc__closing h2 span { color: var(--text-on-dark-second); }
+.ap-doc__closing p { font-family: 'Geist', sans-serif; font-size: var(--apt-body); line-height: 1.55; color: var(--text-on-dark-muted); max-width: 600px; margin: 0 auto 28px; }
+.ap-doc ::selection, .ap-doc ::-moz-selection { background: rgba(var(--orange-rgb), 0.18); }
+@media (max-width: 640px) {
+  .ap-doc { border-radius: 24px 24px 0 0; padding: 22px 20px 64px; }
+  .ap-doc__head { margin: 36px auto 28px; }
+  .ap-doc__cover img { aspect-ratio: 1260 / 700; }
+}
+
+/* ap-doc --dark — legal-page dark surface variant (terms / privacy / security / dpa). */
+.ap-doc--dark { background: var(--charcoal); color: var(--text-on-dark); border: 1px solid var(--border-on-dark); --apt-text: var(--apt-wide); --apt-h3: 20px; }
+.ap-doc--dark .ap-doc__title { color: var(--text-on-dark); }
+.ap-doc--dark .ap-doc__title em { color: var(--text-on-dark-second); }
+.ap-doc--dark .ap-doc__deck { color: var(--text-on-dark-muted); }
+.ap-doc--dark .ap-doc__body h2,
+.ap-doc--dark .ap-doc__body h3 { color: var(--text-on-dark); }
+.ap-doc--dark .ap-doc__body h2 { font-size: clamp(23px, 2.6vw, 27px); }
+.ap-doc--dark .ap-doc__body p,
+.ap-doc--dark .ap-doc__body ul li { color: var(--text-on-dark-muted); }
+.ap-doc--dark .ap-doc__body p.ap-doc__lead { color: var(--text-on-dark); }
+.ap-doc--dark .ap-doc__thesis { color: var(--text-on-dark-second); }
+.ap-doc--dark .ap-doc__body strong { color: var(--text-on-dark); }
+.ap-doc--dark .ap-doc__body em { color: var(--text-on-dark-second); }
+.ap-doc--dark .ap-doc__body blockquote { color: var(--text-on-dark); }
+.ap-doc--dark .ap-doc__body code { background: rgba(255, 255, 255, 0.08); color: var(--orange-400); }
+.ap-doc--dark a { color: var(--orange-400); text-decoration: none; }
+@media (hover: hover) { .ap-doc--dark a:hover { text-decoration: underline; } }
+.ap-doc--dark .ap-doc__callout-icon { color: var(--orange-400); }
+.ap-doc--dark .ap-doc__callout h3 { color: var(--text-on-dark); }
+.ap-doc--dark .ap-doc__callout p { color: var(--text-on-dark-muted); }
+.ap-doc--dark .ap-doc__back { color: var(--text-on-dark-muted); }
+.ap-doc--dark .ap-doc__back-circle { background: rgba(255, 255, 255, 0.06); }
+.ap-doc--dark .ap-doc__back-circle iconify-icon { color: var(--text-on-dark); }
+@media (hover: hover) {
+  .ap-doc--dark .ap-doc__back:hover { color: var(--text-on-dark); }
+  .ap-doc--dark .ap-doc__back:hover .ap-doc__back-circle { background: rgba(255, 255, 255, 0.12); }
+}
 
 /* ──── Organisms / Code annotation chips ────────────────────────────────── */
 /* Orange-tinted chip pinned to a line of a code block. The wrapper is a
@@ -4043,7 +4782,7 @@ a.ds-testimonial-card { cursor: pointer; }
   gap: 16px;
   flex-wrap: wrap;
   padding-top: 24px;
-  border-top: 1px dashed;
+  border-top: 1px solid;
 }
 .ds-footer--dark .ds-footer__compliance { border-top-color: var(--border-on-dark); }
 .ds-footer--light .ds-footer__compliance { border-top-color: var(--border-on-light); }
@@ -4763,6 +5502,12 @@ a.ds-testimonial-card { cursor: pointer; }
   margin: 0 0 28px;
   max-width: 880px;
 }
+/* Content-heavy heroes — a more restrained display size that leaves room for prose. */
+.ds-hero__display--lg {
+  font-size: clamp(34px, 5vw, 60px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
 .ds-hero__display-second {
   /* Inline two-tone for "headline / second-line" pattern */
 }
@@ -4775,12 +5520,17 @@ a.ds-testimonial-card { cursor: pointer; }
   max-width: 640px;
   margin: 0 0 32px;
 }
+/* Long-prose heroes — tighter measure + one step down for denser intro copy. */
+.ds-hero__lead--compact {
+  font-size: 16px;
+  max-width: 576px;
+}
 .ds-section--dark .ds-hero__lead { color: var(--text-on-dark-muted); }
 .ds-section--light .ds-hero__lead { color: var(--text-on-light-muted); }
 .ds-hero__stats {
   margin-top: 56px;
   padding-top: 24px;
-  border-top: 1px dashed;
+  border-top: 1px solid;
   display: flex;
   flex-wrap: wrap;
   gap: 24px 48px;
@@ -4809,7 +5559,7 @@ a.ds-testimonial-card { cursor: pointer; }
 .ds-hero__meta {
   margin-top: 56px;
   padding-top: 24px;
-  border-top: 1px dashed;
+  border-top: 1px solid;
   display: flex;
   flex-wrap: wrap;
   gap: 16px 48px;
@@ -4893,6 +5643,7 @@ a.ds-testimonial-card { cursor: pointer; }
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.18em;
+  line-height: 1.7;
   text-transform: uppercase;
 }
 .ds-section--dark .ds-hero__big-stat-label { color: var(--text-on-dark-subtle); }
@@ -4955,8 +5706,9 @@ a.ds-testimonial-card { cursor: pointer; }
 }
 .ds-compare-card__row-tag {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 .ds-section--dark .ds-compare-card__row-tag { color: var(--text-on-dark-subtle); }
@@ -5152,11 +5904,20 @@ a.ds-testimonial-card { cursor: pointer; }
 }
 .ds-feature-tile-grid--2col { grid-template-columns: repeat(2, 1fr); }
 .ds-feature-tile-grid--3col { grid-template-columns: repeat(3, 1fr); }
+/* 4-up variant — mirrors --2col / --3col. Back-ported from website (developers + company). */
+.ds-feature-tile-grid--4col { grid-template-columns: repeat(4, 1fr); }
 @media (max-width: 768px) {
   .ds-feature-tile-grid--2col,
   .ds-feature-tile-grid--3col {
     grid-template-columns: 1fr;
   }
+}
+/* 4col collapses in two stages: 4 → 2 (≤900) → 1 (≤560). */
+@media (max-width: 900px) {
+  .ds-feature-tile-grid--4col { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .ds-feature-tile-grid--4col { grid-template-columns: 1fr; }
 }
 .ds-feature-tile {
   display: flex;
@@ -5194,8 +5955,8 @@ a.ds-testimonial-card { cursor: pointer; }
 .ds-section--light .ds-feature-tile__title { color: var(--text-on-light); }
 .ds-feature-tile__desc {
   font-family: 'Geist', sans-serif;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.65;
   margin: 0;
 }
 .ds-section--dark .ds-feature-tile__desc { color: var(--text-on-dark-muted); }
@@ -5325,7 +6086,7 @@ a.ds-testimonial-card { cursor: pointer; }
   font-size: 14px;
   font-weight: 500;
   text-decoration: underline;
-  text-decoration-style: dashed;
+  text-decoration-style: solid;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
 }
@@ -5655,7 +6416,7 @@ a.ds-testimonial-card { cursor: pointer; }
 .ds-empty {
   margin: 24px 0;
   padding: 48px 32px;
-  border: 1px dashed var(--border-on-dark-strong);
+  border: 1px solid var(--border-on-dark-strong);
   border-radius: var(--r-card);
   text-align: center;
   color: var(--text-on-dark-second);
@@ -7858,10 +8619,8 @@ a.ds-testimonial-card { cursor: pointer; }
 .ds-compare-card__rows li > span:first-child {
   display: inline-flex; align-items: center; gap: 12px;
 }
-.ds-compare-card__row-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-}
+/* row-tag font styling is now defined once with the compare-card component (collapsed the
+   former duplicate to a single canonical 12px / 600 / 0.12em rule). */
 .ds-section--dark  .ds-compare-card__row-tag { color: var(--text-on-dark-subtle); }
 .ds-section--light .ds-compare-card__row-tag { color: var(--text-on-light-subtle); }
 .ds-compare-card > .ds-pill-status { margin-top: auto; }
@@ -8196,7 +8955,8 @@ a.ds-testimonial-card { cursor: pointer; }
 
     <details class="ds-sidebar__group ds-sidebar__group--collapsible" open style="margin-bottom: 28px;">
       <summary class="ds-sidebar__group-label">Changelog <span style="color: var(--orange-500); font-size: 10px; margin-left: 6px;">NEW</span></summary>
-      <a class="ds-sidebar__link" href="#v2.2.2/changelog">2026-05-25 <span style="color: var(--orange-500); font-size: 10px; margin-left: 6px;">v2.2.2 NEW</span></a>
+      <a class="ds-sidebar__link" href="#v2.3/changelog">2026-06-25 <span style="color: var(--orange-500); font-size: 10px; margin-left: 6px;">v2.3 NEW</span></a>
+      <a class="ds-sidebar__link" href="#v2.2.2/changelog">2026-05-25 <span style="color: var(--text-on-dark-subtle); font-size: 10px; margin-left: 6px;">v2.2.2</span></a>
       <a class="ds-sidebar__link" href="#v2.2.1/changelog">2026-05-22 <span style="color: var(--text-on-dark-subtle); font-size: 10px; margin-left: 6px;">v2.2.1</span></a>
       <a class="ds-sidebar__link" href="#v2.2.0/changelog">2026-05-22 <span style="color: var(--text-on-dark-subtle); font-size: 10px; margin-left: 6px;">v2.2.0</span></a>
       <a class="ds-sidebar__link" href="#v2.1.1/changelog">2026-05-22 <span style="color: var(--text-on-dark-subtle); font-size: 10px; margin-left: 6px;">v2.1.1 patch</span></a>
@@ -8486,7 +9246,7 @@ a.ds-testimonial-card { cursor: pointer; }
         <div class="ds-swatch"><div class="ds-swatch__color" style="background: #9B9B9D;"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-400</div><div class="ds-swatch__hex">#9B9B9D</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__color" style="background: #737373;"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-500</div><div class="ds-swatch__hex">#737373</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__color" style="background: #525252;"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-600</div><div class="ds-swatch__hex">#525252</div></div></div>
-        <div class="ds-swatch"><div class="ds-swatch__color" style="background: #404040;"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-700</div><div class="ds-swatch__hex">#404040</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__color" style="background: #2A2A2A;"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-700</div><div class="ds-swatch__hex">#2A2A2A</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__color" style="background: #1F1F1F;"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-800</div><div class="ds-swatch__hex">#1F1F1F</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__color" style="background: var(--charcoal);"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-900</div><div class="ds-swatch__hex">#161616</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__color" style="background: var(--neutral-dark);"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--grey-1000</div><div class="ds-swatch__hex">#0A0A0A</div></div></div>
@@ -8853,7 +9613,7 @@ a.ds-testimonial-card { cursor: pointer; }
       <h1>Typography</h1>
       <div class="vh-v21-note" style="margin: 16px 0 24px; padding: 14px 18px; border-left: 3px solid var(--orange-500); background: rgba(var(--orange-rgb), 0.05); font-size: 13px; line-height: 1.55;">
         <strong style="color: var(--orange-500); display: block; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace;">* What changed in v2.1</strong>
-        Added <code>.ds-section-heading__title</code> responsive clamp: <code>font-size: clamp(26px, 4.5vw, 40px)</code> (was a fixed 40px). New <code>--display</code> modifier with <code>clamp(32px, 6vw, 56px)</code> for hero-adjacent section titles. Mobile <code>.ds-section-heading__lead</code> drops 18→16px.
+        Added <code>.ds-section-heading__title</code> responsive clamp: <code>font-size: clamp(26px, 4.5vw, 40px)</code> (was a fixed 40px). New <code>--display</code> modifier with <code>clamp(32px, 5vw, 56px)</code> for hero-adjacent section titles. Mobile <code>.ds-section-heading__lead</code> drops 18→16px.
       </div>
       <p class="ds-page__lead">Geist + JetBrains Mono. Two families. Single-family discipline for everything readable — Geist carries display, body, UI; JetBrains Mono is reserved for technical chrome (section codes, eyebrow labels, code blocks, bracketed labels).</p>
 
@@ -14012,6 +14772,22 @@ cp renders/&lt;slug&gt;.mp4 &lt;design-system&gt;/assets/motion/&lt;slug&gt;.mp4
 
       <h2 id="variants">Variants</h2>
       <div style="display: flex; flex-direction: column; gap: 16px;">
+        <script>
+        // Docs-only: stop the demo header's links from navigating (they use href="#", which would
+        // reroute the SPA). Scoped to .ds-header-nav so the dropdown trigger buttons + page
+        // pagination still work, and link hover states are preserved.
+        (function(){
+          function bind(){
+            var page = document.querySelector('[data-page="organisms/site-header"]');
+            if(!page) return;
+            page.querySelectorAll('.ds-header-nav').forEach(function(hdr){
+              if(hdr.__navBound) return; hdr.__navBound = true;
+              hdr.addEventListener('click', function(e){ var a = e.target.closest('a'); if(a) e.preventDefault(); });
+            });
+          }
+          if(document.readyState !== 'loading') bind(); else document.addEventListener('DOMContentLoaded', bind);
+        })();
+        </script>
         <div style="position: relative; background: var(--neutral-dark); border-radius: var(--r-card); padding: 56px 0 320px; overflow: hidden;">
           <span class="ds-preview__label" style="position: absolute; top: 16px; left: 24px;">on-dark</span>
           <header class="ds-header-nav ds-header-nav--dark">
@@ -16499,8 +17275,8 @@ COMPANY  ⌄</code></pre>
       <p class="ds-page__lead">Horizontal scroll-snap modifier for <code>.ds-tabgroup</code>. Use when a tab row has 5+ triggers and could overflow narrow viewports. Pills stay nowrap; track snaps to start of each pill; scrollbar hidden.</p>
 
       <h2>Preview</h2>
-      <div class="ds-preview ds-preview--stacked" style="padding: 48px; max-width: 480px; margin: 0 auto;">
-        <span class="ds-preview__label">.ds-tabgroup--light.ds-tabgroup--scroll · narrow viewport</span>
+      <div class="ds-preview ds-preview--stacked" style="padding: 24px; max-width: 320px; margin: 0 auto;">
+        <span class="ds-preview__label">.ds-tabgroup--light.ds-tabgroup--scroll · narrow viewport — scroll the pills sideways; each snaps to the start edge</span>
         <div class="ds-tabgroup ds-tabgroup--light ds-tabgroup--scroll" role="tablist" aria-label="Primitives" style="width: 100%; max-width: 100%; box-sizing: border-box; padding: 6px; gap: 8px; scroll-padding-inline: 6px;">
           <button class="ds-tabgroup__trigger is-selected" type="button" role="tab" aria-selected="true">Ingest</button>
           <button class="ds-tabgroup__trigger" type="button" role="tab" aria-selected="false">Index</button>
@@ -16659,10 +17435,8 @@ COMPANY  ⌄</code></pre>
 
           <!-- Simulated site header (always visible, z-60 within demo) -->
           <div style="position: absolute; inset: 0 0 auto 0; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: rgba(10, 10, 10, 0.92); border-bottom: 1px solid var(--border-on-dark); z-index: 6;">
-            <span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist', sans-serif; font-weight: 600; font-size: 16px; color: var(--text-on-dark);">
-              <span style="display: inline-block; width: 14px; height: 14px; background: var(--orange-500); clip-path: polygon(0 0, 100% 0, 50% 100%);"></span>
-              VideoDB
-            </span>
+            <img decoding="async" src="assets/logos/wordmark-dark.png" alt="VideoDB" style="height: 18px; width: auto; display: block;">
+
             <div style="display: inline-flex; align-items: center; gap: 10px;">
               <a class="ds-btn ds-btn--ghost-dark ds-btn--sm" href="#" style="pointer-events: none;">Try VideoDB</a>
               <button class="ds-menu-toggle" type="button" data-vh-drawer-toggle aria-label="Open menu">
@@ -16848,7 +17622,7 @@ COMPANY  ⌄</code></pre>
                   <a class="ds-btn ds-btn--ghost-dark">Read the docs</a>
                 </div>
               </div>
-              <div class="ds-hero--split__illustration ds-hero--split__illustration--tilt-right" style="background: radial-gradient(circle at center, rgba(var(--orange-rgb), 0.18), transparent 70%); border: 1px dashed var(--border-on-dark); display: flex; align-items: center; justify-content: center; color: var(--text-on-dark-subtle); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+              <div class="ds-hero--split__illustration ds-hero--split__illustration--tilt-right" style="background: radial-gradient(circle at center, rgba(var(--orange-rgb), 0.18), transparent 70%); border: 1px solid var(--border-on-dark); display: flex; align-items: center; justify-content: center; color: var(--text-on-dark-subtle); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
                 illustration slot
               </div>
             </div>
@@ -16981,25 +17755,50 @@ COMPANY  ⌄</code></pre>
     <section data-page="atoms/skip-link" class="ds-page">
       <div class="ds-page__breadcrumb">3.1 Atoms · 19 of 20</div>
       <h1>Skip link <span style="font-size: 18px; color: var(--orange-500);">NEW v2.2</span></h1>
-      <p class="ds-page__lead">Standard a11y skip-to-main-content link. Visually hidden by default (positioned 100px above the viewport top edge); becomes visible at top-left of the viewport when keyboard-focused. Brand-orange treatment so it reads as a system signal, not a stray browser default.</p>
+      <p class="ds-page__lead">Standard a11y skip-to-main-content link. Rests at the top-left, hidden (faded out and nudged down) until keyboard-focused — then it fades in and slides up from below into place. Brand-orange treatment so it reads as a system signal, not a stray browser default.</p>
 
-      <h2>Preview · focused state (always visible here for documentation)</h2>
-      <div class="ds-preview ds-preview--stacked" style="position: relative; min-height: 80px; padding: 40px 32px; background: var(--charcoal); border: 1px solid var(--border-on-dark); border-radius: 12px;">
-        <span class="ds-preview__label">.ds-skip-link rendered in its keyboard-focused position</span>
-        <!-- Render as a non-interactive visual so the orange focus-ring + browser
-             link underline don't fire on this documentation preview. -->
-        <span class="ds-skip-link" style="position: static; top: auto; left: auto; outline: 0; pointer-events: none;">Skip to main content</span>
+      <h2>Preview · interactive — hover the box, or Tab to focus the link</h2>
+      <div class="ds-preview ds-preview--stacked vh-skip-demo" style="position: relative; min-height: 128px; padding: 24px 32px; background: var(--charcoal); border: 1px solid var(--border-on-dark); border-radius: 12px; overflow: hidden;">
+        <span class="ds-preview__label">on-dark · hover the box (or Tab) — the orange link slides up from below.</span>
+        <a class="ds-skip-link vh-skip-demo__link" tabindex="0">Skip to main content</a>
       </div>
 
+      <h2>Preview · light variant — dark-grey button on a light surface</h2>
+      <div class="ds-preview ds-preview--stacked vh-skip-demo" style="position: relative; min-height: 128px; padding: 24px 32px; background: var(--neutral-light); border: 1px solid var(--border-on-light); border-radius: 12px; overflow: hidden;">
+        <span class="ds-preview__label" style="color: var(--text-on-light-subtle);">on-light · <code>.ds-skip-link--on-light</code> · hover (or Tab) — the dark-grey link slides up from below.</span>
+        <a class="ds-skip-link ds-skip-link--on-light vh-skip-demo__link" tabindex="0">Skip to main content</a>
+      </div>
+      <style>
+        /* Demo-only: rest the link below the label (so it clears the heading) and centre it, then reveal
+           it sliding UP from just below — the same motion as the real component, just positioned for the
+           box. Scoped to .vh-skip-demo. Demo links carry NO href, so they never navigate; tabindex keeps
+           them keyboard-focusable. */
+        .vh-skip-demo .vh-skip-demo__link {
+          top: 56px; left: 50%;
+          transform: translateX(-50%) translateY(14px);
+          opacity: 0;
+          transition: opacity 200ms var(--ds-ease-canonical),
+                      transform 200ms var(--ds-ease-canonical),
+                      background-color var(--ds-duration-hover) var(--ds-ease-canonical);
+        }
+        .vh-skip-demo:hover .vh-skip-demo__link,
+        .vh-skip-demo .vh-skip-demo__link:focus,
+        .vh-skip-demo .vh-skip-demo__link:focus-visible {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+          pointer-events: auto;
+        }
+      </style>
+
       <h2>Behavior</h2>
-      <p>Default state: positioned absolute, <code>top: -100px</code> (sits above the viewport, invisible). Focus state: <code>top: 16px</code>, slides into view via the <code>--dur-ui</code> token. Tab once on page load to reveal; activate to jump anchor to <code>#main</code>.</p>
+      <p>Default state: positioned absolute at <code>top: 16px</code> (top-left) but hidden — <code>opacity: 0</code>, nudged down <code>translateY(10px)</code>, and <code>pointer-events: none</code> so the invisible link can't intercept clicks. Focus state: it fades in and slides up from below into place (<code>translateY(0)</code>) via the <code>--dur-ui</code> token. Tab once on page load to reveal; activate to jump anchor to <code>#main</code>.</p>
 
       <p>Sits at the very top of the page's <code>&lt;header&gt;</code>, as the first focusable element. Every page's <code>&lt;main&gt;</code> element must carry <code>id="main"</code> so the anchor resolves.</p>
 
       <h2>CSS</h2>
       <pre class="ds-code-block"><code>.ds-skip-link {
   position: absolute;
-  top: -100px;
+  top: 16px;          /* resting position — top-left */
   left: 16px;
   z-index: 100;
   padding: 12px 20px;
@@ -17012,14 +17811,24 @@ COMPANY  ⌄</code></pre>
   text-transform: uppercase;
   text-decoration: none;
   border-radius: var(--r-control);
-  transition: top var(--dur-ui) var(--ease-ui);
+  opacity: 0;                  /* hidden: faded out + nudged down, non-interactive */
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity var(--dur-ui) var(--ease-ui),
+              transform var(--dur-ui) var(--ease-ui);
 }
 .ds-skip-link:focus,
-.ds-skip-link:focus-visible {
-  top: 16px;
+.ds-skip-link:focus-visible {   /* fades in + slides up into place */
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
   outline: 2px solid var(--orange-500);
   outline-offset: 3px;
-}</code></pre>
+}
+.ds-skip-link:hover { background: var(--orange-600); }   /* darken on hover */
+/* Light-surface variant — dark-grey button */
+.ds-skip-link--on-light { background: var(--grey-700); color: var(--white); }
+.ds-skip-link--on-light:hover { background: var(--charcoal); }</code></pre>
 
       <div class="ds-pagination">
         <a class="ds-pagination__link" href="#v2.2.0/changelog"><span class="ds-pagination__label">Previous</span><span class="ds-pagination__title">&larr; v2.2.0 changelog</span></a>
@@ -17784,6 +18593,73 @@ console.log(result.timestamps)</pre>
     <!-- v2.2.2 — company + developers page lift                              -->
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 
+    <!-- ━━━ v2.3 changelog ━━━ -->
+    <section data-page="v2.3/changelog" class="ds-page">
+      <div class="ds-page__breadcrumb">Changelog &middot; v2.3</div>
+      <h1>v2.3 — website → DS reconciliation <span style="font-size: 18px; color: var(--orange-500);">NEW</span></h1>
+      <p class="ds-page__lead">The consolidated June website feedback (validated against the live <code>Design/Staging</code> build) was cross-checked against this repo and the gaps were back-ported. The repo was <strong>not broadly behind</strong> — ~39 of 40 component families were already canonical; v2.3 closes the real gaps: foundation tunings, the net-new June component roster + JS utilities, the ap-doc long-form reader, and 9 new rules.</p>
+
+      <h2 id="foundation">Foundation tunings</h2>
+      <ul class="ds-ul">
+        <li><strong>Eyebrow xs</strong> <span class="ds-code-name">.ds-eyebrow--xs</span> — 10 → <strong>12px</strong> (the legibility-floor fix).</li>
+        <li><strong>Section heading title</strong> <span class="ds-code-name">.ds-section-heading__title</span> — line-height 1.1 → <strong>1.375</strong>; font-size now fluid <code>clamp(26px, 4.5vw, 40px)</code> (desktop unchanged at 40px).</li>
+        <li><strong>Feature-tile body</strong> <span class="ds-code-name">.ds-feature-tile__desc</span> — 13/1.55 → <strong>14/1.65</strong>.</li>
+        <li><strong>Compare-card row tag</strong> <span class="ds-code-name">.ds-compare-card__row-tag</span> — two clashing definitions collapsed to one canonical 12px rule.</li>
+        <li><strong>Hero stat label</strong> <span class="ds-code-name">.ds-hero__big-stat-label</span> — added <code>line-height: 1.7</code>.</li>
+      </ul>
+
+      <h2 id="tokens">New tokens</h2>
+      <ul class="ds-ul">
+        <li><span class="ds-code-name">--ds-ease-canonical</span> + <span class="ds-code-name">--ds-duration-hover</span> — the canonical hover curve (previously hand-typed) and its 280ms duration.</li>
+        <li><span class="ds-code-name">--color-success</span> — <code>#1f9d55</code>, unifies two hardcoded form greens.</li>
+        <li><span class="ds-code-name">--text-on-dark-strong</span> / <span class="ds-code-name">--text-on-light-strong</span> — the missing emphasis text tier.</li>
+        <li><span class="ds-code-name">--surface-illus-base / -sunken / -raised</span> — the illustration-surface stack (<code>#121212 / #0c0c0c / #1c1c1c</code>).</li>
+        <li><span class="ds-code-name">.ds-hero__display--lg</span> / <span class="ds-code-name">.ds-hero__lead--compact</span> — content-heavy hero modifiers.</li>
+      </ul>
+
+      <h2 id="backports">Back-ports (were website-only, now canonical)</h2>
+      <ul class="ds-ul">
+        <li><span class="ds-code-name">.ds-section-heading--display</span> — CSS shipped (was doc-only in the repo), <code>clamp(32px, 5vw, 56px)</code>, lh 1.05.</li>
+        <li><span class="ds-code-name">.ds-code-block--syntax</span> — scoped <code>.c / .k / .s / .n</code> token colours, dark + light.</li>
+        <li><span class="ds-code-name">.ds-feature-tile-grid--4col</span> — the 4-up rule + responsive collapse (4 → 2 @900 → 1 @560).</li>
+      </ul>
+
+      <h2 id="atoms">New atoms</h2>
+      <ul class="ds-ul">
+        <li><span class="ds-code-name">.ds-conn</span> / <span class="ds-code-name">.ds-pipeline-connector</span> — pure HTML/CSS pipeline connector (line + arrowhead + streaming dots) that <strong>replaces decorative arrow SVGs</strong>.</li>
+        <li><span class="ds-code-name">.ds-flow-tagline</span>, <span class="ds-code-name">.ds-text-accent</span>, <span class="ds-code-name">.ds-heading-second-dark</span> / <span class="ds-code-name">--light</span>, <span class="ds-code-name">.ds-snippet__value</span>, <span class="ds-code-name">.ds-code-block__action</span>, <span class="ds-code-name">.ds-code-block__cursor--thin</span>.</li>
+      </ul>
+
+      <h2 id="molecules">New molecules</h2>
+      <ul class="ds-ul">
+        <li><span class="ds-code-name">.ds-illustration-card</span> (+ <span class="ds-code-name">--dark</span> / <span class="ds-code-name">--grid</span>), <span class="ds-code-name">.ds-choice-card</span> + <span class="ds-code-name">.ds-choice-grid</span>, <span class="ds-code-name">.ds-page-crumb</span>, <span class="ds-code-name">.ds-media-text</span>, <span class="ds-code-name">.ds-ticker-tile</span>.</li>
+        <li><span class="ds-code-name">.ds-result-preview</span>, <span class="ds-code-name">.ds-chat-row</span>, <span class="ds-code-name">.ds-action-tile</span>, <span class="ds-code-name">.ds-source-thumbnail</span>, <span class="ds-code-name">.ds-player-mockup</span>, <span class="ds-code-name">.ds-stat-card__inner</span>, <span class="ds-code-name">.ds-callout--accent-orange</span>.</li>
+      </ul>
+
+      <h2 id="templates">New templates</h2>
+      <ul class="ds-ul">
+        <li><span class="ds-code-name">.ds-stage-grid</span>, <span class="ds-code-name">.ds-note-grid</span>, <span class="ds-code-name">.ds-code-split</span>, <span class="ds-code-name">.ds-card-pipe</span>, <span class="ds-code-name">.ds-viz</span> — grid / code / pipeline composition patterns.</li>
+        <li>Scroll-driven: <span class="ds-code-name">.ds-split-sticky</span>, <span class="ds-code-name">.ds-spotlight-list</span>, <span class="ds-code-name">.ds-sticky-wipe</span> (each with a JS controller).</li>
+        <li>Plus the reverse photo ticker (<span class="ds-code-name">.ds-marquee__track--reverse</span>), <span class="ds-code-name">.ds-img-reveal--desaturate</span>, <span class="ds-code-name">.ds-form-section__wrap</span>, <span class="ds-code-name">.ds-cta-band__inner--wide</span>, <span class="ds-code-name">.ds-section--no-bottom-pad</span>, the code-block <code>--glass / --prose / --fill</code> variants, and the <span class="ds-code-name">.ds-balance</span> utility.</li>
+      </ul>
+
+      <h2 id="js">JS utilities</h2>
+      <ul class="ds-ul">
+        <li>Ship in <code>scripts/ds/</code>: <code>ds-form-submit.js</code> (in-page Formspark state machine), <code>ds-spotlight.js</code>, <code>ds-sticky-wipe.js</code>, <code>ds-marquee.js</code> (smoothPause), <code>ds-proximity-hover.js</code>, <code>ds-snippet-copy.js</code>, and <code>verify-widows.mjs</code> (a CI widow linter).</li>
+      </ul>
+
+      <h2 id="apdoc">ap-doc long-form reader</h2>
+      <ul class="ds-ul">
+        <li><span class="ds-code-name">.ap-doc</span> (+ <span class="ds-code-name">--dark</span>) — the canonical article / legal reading system, shared by the blog and legal pages (terms, privacy, security, DPA). Editorial titles now use <strong>Geist</strong> — the off-system GT Walsheim Pro was removed.</li>
+      </ul>
+
+      <h2 id="rules">New rules (§9 of the spec)</h2>
+      <ul class="ds-ul">
+        <li><strong>Borders.</strong> Decorative dashes → solid hairlines, with three sanctioned exceptions (tooltip underline, focus outline, the dotted "pending" connector edge).</li>
+        <li><strong>Opacity discipline</strong> (dim via a token / HSL shift, not <code>opacity</code>); the <strong>form-submit state machine</strong> (<span class="ds-code-name">.ds-btn.is-sending</span> / <span class="ds-code-name">.is-success</span> / <span class="ds-code-name">.is-error</span>); the <strong>SVG-illustration checklist</strong>; diagram foundations; concentric corner-radius; <code>figure { margin: 0 }</code>; and the page-local token-shadow caveat.</li>
+      </ul>
+    </section>
+
     <!-- ━━━ v2.2.2 changelog ━━━ -->
     <section data-page="v2.2.2/changelog" class="ds-page">
       <div class="ds-page__breadcrumb">Changelog &middot; v2.2.2</div>
@@ -17871,14 +18747,28 @@ console.log(result.timestamps)</pre>
 
       <h2 id="preview">Preview</h2>
       <div class="ds-preview ds-preview--split ds-preview--stacked">
-        <div class="ds-preview__half ds-preview__half--dark" style="padding: 40px 32px;"><span class="ds-preview__label">on-dark · ds-recap-grid</span>
-          <div class="ds-recap-grid" style="width: 100%;">
-            <div class="ds-recap-grid__tile ds-recap-grid__tile--p1 is-loaded" style="background: linear-gradient(135deg, #F24E1E, #5A1C0A);"></div>
-            <div class="ds-recap-grid__tile ds-recap-grid__tile--p2 is-loaded"></div>
-            <div class="ds-recap-grid__tile ds-recap-grid__tile--p3 is-loaded" style="background: linear-gradient(135deg, #444, #111);"></div>
-            <div class="ds-recap-grid__tile ds-recap-grid__tile--p4 is-loaded"></div>
-            <div class="ds-recap-grid__tile ds-recap-grid__tile--p5 is-loaded" style="background: linear-gradient(135deg, #2A2A2A, #050505);"></div>
+        <div class="ds-preview__half ds-preview__half--dark" style="padding: 40px 32px;"><span class="ds-preview__label">on-dark · ds-recap-grid · drag the right edge of the box below 768px to test the mobile reflow</span>
+          <div class="vh-recap-resize" style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 300px; container-type: inline-size; border: 1px solid var(--border-on-dark-strong); border-radius: 14px; padding: 10px;">
+            <div class="ds-recap-grid" style="width: 100%;">
+              <div class="ds-recap-grid__tile ds-recap-grid__tile--p1 is-loaded" style="background: linear-gradient(135deg, #F24E1E, #5A1C0A);"></div>
+              <div class="ds-recap-grid__tile ds-recap-grid__tile--p2 is-loaded"></div>
+              <div class="ds-recap-grid__tile ds-recap-grid__tile--p3 is-loaded" style="background: linear-gradient(135deg, #444, #111);"></div>
+              <div class="ds-recap-grid__tile ds-recap-grid__tile--p4 is-loaded"></div>
+              <div class="ds-recap-grid__tile ds-recap-grid__tile--p5 is-loaded" style="background: linear-gradient(135deg, #2A2A2A, #050505);"></div>
+            </div>
           </div>
+          <style>
+            /* Demo-only: make the preview box horizontally resizable and mirror the component's
+               768px mobile layout as a CONTAINER query, so dragging the box narrow shows the real
+               mobile reflow without resizing the browser. The canonical @media rule is unchanged. */
+            @container (max-width: 768px) {
+              .vh-recap-resize .ds-recap-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+                grid-template-areas: "p1 p1" "p2 p3" "p4 p5";
+              }
+            }
+          </style>
         </div>
       </div>
 
@@ -18156,23 +19046,23 @@ console.log(result.timestamps)</pre>
 
       <h2 id="preview">Preview</h2>
       <div class="ds-preview ds-preview--split ds-preview--stacked">
-        <div class="ds-preview__half ds-preview__half--light" style="padding: 32px;"><span class="ds-preview__label">on-light · ds-partner-card · 4-up grid</span>
+        <div class="ds-preview__half ds-preview__half--dark" style="padding: 32px;"><span class="ds-preview__label">on-dark · ds-partner-card · 4-up grid (the partner logos are white, so they need a dark surface)</span>
           <div class="ds-partner-grid" style="width: 100%;">
-            <div class="ds-content-card ds-content-card--light" style="text-align: center;">
-              <span class="ds-eyebrow">Design partner</span>
-              <div style="height: 32px; display: flex; align-items: center; justify-content: center; margin: 16px auto 0; color: var(--text-on-light); font-family: 'JetBrains Mono', monospace;">[ CloudPhysician ]</div>
+            <div class="ds-content-card ds-content-card--dark" style="text-align: center;">
+              <span class="ds-eyebrow ds-eyebrow--muted-on-dark">Design partner</span>
+              <img class="ds-partner-card__logo" decoding="async" src="assets/customer-logos/cp.png" alt="CloudPhysician" style="height: 26px; max-width: 100%; margin: 18px auto 0;">
             </div>
-            <div class="ds-content-card ds-content-card--light" style="text-align: center;">
-              <span class="ds-eyebrow">Design partner</span>
-              <div style="height: 32px; display: flex; align-items: center; justify-content: center; margin: 16px auto 0; color: var(--text-on-light); font-family: 'JetBrains Mono', monospace;">[ Hoichoi ]</div>
+            <div class="ds-content-card ds-content-card--dark" style="text-align: center;">
+              <span class="ds-eyebrow ds-eyebrow--muted-on-dark">Design partner</span>
+              <img class="ds-partner-card__logo" decoding="async" src="assets/customer-logos/hoichoi.png" alt="Hoichoi" style="height: 26px; max-width: 100%; margin: 18px auto 0;">
             </div>
-            <div class="ds-content-card ds-content-card--light" style="text-align: center;">
-              <span class="ds-eyebrow">Design partner</span>
-              <div style="height: 32px; display: flex; align-items: center; justify-content: center; margin: 16px auto 0; color: var(--text-on-light); font-family: 'JetBrains Mono', monospace;">[ Voxel ]</div>
+            <div class="ds-content-card ds-content-card--dark" style="text-align: center;">
+              <span class="ds-eyebrow ds-eyebrow--muted-on-dark">Design partner</span>
+              <img class="ds-partner-card__logo" decoding="async" src="assets/customer-logos/voxel.png" alt="Voxel" style="height: 26px; max-width: 100%; margin: 18px auto 0;">
             </div>
-            <div class="ds-content-card ds-content-card--light" style="text-align: center;">
-              <span class="ds-eyebrow">Design partner</span>
-              <div style="height: 32px; display: flex; align-items: center; justify-content: center; margin: 16px auto 0; color: var(--text-on-light); font-family: 'JetBrains Mono', monospace;">[ Docket ]</div>
+            <div class="ds-content-card ds-content-card--dark" style="text-align: center;">
+              <span class="ds-eyebrow ds-eyebrow--muted-on-dark">Design partner</span>
+              <img class="ds-partner-card__logo" decoding="async" src="assets/customer-logos/docket.png" alt="Docket" style="height: 26px; max-width: 100%; margin: 18px auto 0;">
             </div>
           </div>
         </div>
@@ -18597,7 +19487,7 @@ console.log(result.timestamps)</pre>
           </div>
         </div>
         <!-- Dome canvas anchor — opt-in gradient via data attr -->
-        <div data-ds-particle-dome data-ds-particle-scale="hero" data-ds-particle-gradient="orange-white" style="position: absolute; inset: 0; opacity: 0.5; z-index: 1; pointer-events: none;"></div>
+        <div data-ds-particle-dome data-ds-particle-scale="hero" data-ds-particle-gradient="grey-white" style="position: absolute; inset: 0; opacity: 0.5; z-index: 1; pointer-events: none;"></div>
       </section>
 
       <h2 id="anatomy">Anatomy</h2>
@@ -18618,13 +19508,13 @@ console.log(result.timestamps)</pre>
     &lt;/div&gt;
   &lt;/div&gt;
   &lt;div data-ds-particle-dome data-ds-particle-scale="hero"
-       data-ds-particle-gradient="orange-white"&gt;&lt;/div&gt;
+       data-ds-particle-gradient="grey-white"&gt;&lt;/div&gt;
 &lt;/section&gt;</code></pre>
 
       <h2 id="behavior">Behavior</h2>
       <ul class="ds-ul">
         <li><strong>Cascade reveal.</strong> Auto-applied by <code>decorateReveals()</code> when the section has <code>id="hero"</code>. Each direct child of the inner hero container gets <code>data-ds-reveal</code> + <code>data-ds-reveal-delay="N*120"</code>.</li>
-        <li><strong>Particle dome.</strong> Three.js loaded on demand. <code>data-ds-particle-gradient="orange-white"</code> opts into the per-vertex gradient (white top → orange bottom). Omit the attr for a single-color dome.</li>
+        <li><strong>Particle dome.</strong> Three.js loaded on demand. <code>data-ds-particle-gradient="grey-white"</code> opts into the per-vertex gradient (white top → grey bottom). Omit the attr for a single-color dome.</li>
         <li><strong>Stats count-up.</strong> Each <code>.ds-stat__value</code> with <code>data-ds-count-up</code> animates from 0 → target on first viewport entry.</li>
       </ul>
 
@@ -19721,7 +20611,8 @@ console.log(result.timestamps)</pre>
   // pages need them; raw hex pairs can be wired ad-hoc by setting
   // `data-ds-particle-gradient-top` + `-bottom` on the container.
   const DOME_GRADIENTS = {
-    'orange-white': { top: '#FFFFFF', bottom: '#F24E1E' }
+    'orange-white': { top: '#FFFFFF', bottom: '#F24E1E' },
+    'grey-white': { top: '#FFFFFF', bottom: '#8A8A8A' }
   };
   function initParticleDomes() {
     const domes = document.querySelectorAll('[data-ds-particle-dome]');
